@@ -11,8 +11,8 @@ export type Category = {
 // 🟢 Cập nhật type Step để hỗ trợ cả `image` (1 link) và `images` (mảng link)
 export type Step = {
   text: string;
-  image?: string;     // 👈 Thêm cái này để hỗ trợ 1 link ảnh đơn lẻ
-  images?: string[];  // 👈 Giữ cái này nếu muốn truyền nhiều ảnh trong 1 bước
+  image?: string;     // 
+  images?: string[];  // 
 };
 
 export type ErrorItem = {
@@ -22,7 +22,7 @@ export type ErrorItem = {
   title: string;
   description: string;
   steps: Step[] | string[];
-  images?: string[]; // 👈 Sửa thành `images?:` (thêm dấu ?) để nếu mã lỗi nào không có mảng ảnh chung thì không bị bắt buộc điền
+  images?: string[]; // 
   videoUrls?: {
     url: string;
     type: "vertical" | "horizontal";
