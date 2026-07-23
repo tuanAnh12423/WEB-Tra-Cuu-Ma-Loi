@@ -49,14 +49,13 @@ function ErrorDetailPage() {
         <p style={{ margin: 0, color: "#555", lineHeight: 1.6, textAlign: 'left' }}>{error.description}</p>
       </div>
 
-      {/* 📋 Các Bước Xử Lý (Kèm ảnh theo từng bước nếu có) */}
+      {/* 📋 Các Bước Xử Lý (Kèm ảnh theo từng bước) */}
       <div style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16, boxShadow: "0 2px 4px rgba(0,0,0,0.05)", textAlign: 'left' }}>
         <p style={{ color: "#1a6fc4", fontWeight: 700, margin: "0 0 16px", textAlign: 'left' }}>📋 CÁC BƯỚC XỬ LÝ</p>
 
         {error.steps.map((step: any, idx: number) => {
           const stepText = typeof step === "string" ? step : step.text;
 
-          // Lấy mảng ảnh của bước (linh hoạt cả dạng 1 link hoặc mảng link)
           let stepImagesList: string[] = [];
           if (typeof step === "object") {
             if (step.image) stepImagesList.push(step.image);
@@ -66,16 +65,13 @@ function ErrorDetailPage() {
           return (
             <div key={idx} style={{ marginBottom: 16, borderBottom: idx < error.steps.length - 1 ? "1px solid #f0f0f0" : "none", paddingBottom: 12, textAlign: 'left' }}>
               <div style={{ display: "flex", gap: 12, alignItems: 'flex-start', justifyContent: 'flex-start', textAlign: 'left' }}>
-                {/* Số thứ tự bước */}
                 <div style={{ width: 24, height: 24, background: "#1a6fc4", color: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 12, flexShrink: 0, marginTop: 2 }}>
                   {idx + 1}
                 </div>
 
-                {/* Nội dung chữ & Ảnh minh họa bước */}
                 <div style={{ flex: 1, textAlign: 'left' }}>
                   <p style={{ margin: 0, color: "#333", lineHeight: 1.5, fontWeight: 500, textAlign: 'left' }}>{stepText}</p>
 
-                  {/* 🖼️ Hiển thị ảnh của từng bước */}
                   {stepImagesList.length > 0 && (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 10, justifyContent: 'flex-start' }}>
                       {stepImagesList.map((imgUrl, imgIdx) => (
@@ -110,6 +106,64 @@ function ErrorDetailPage() {
         })}
       </div>
 
+      {/* 🎬 KHỐI VIDEO HƯỚNG DẪN MỚI BỔ SUNG */}
+      {error.videoUrls && error.videoUrls.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16, boxShadow: "0 2px 4px rgba(0,0,0,0.05)", textAlign: 'left' }}>
+          <p style={{ color: "#1a6fc4", fontWeight: 700, margin: "0 0 16px", textAlign: 'left' }}>🎬 VIDEO HƯỚNG DẪN SỬA CHỮA</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: 'flex-start' }}>
+            {error.videoUrls.map((video, idx) => {
+              // Tự động tối ưu tỉ lệ khung hình (Khung dọc 9:16 cho Shorts/TikTok, Khung ngang 16:9 cho YouTube thường)
+              const isVertical = video.type === "vertical";
+
+              // Xử lý link nhúng (embed)
+              let embedUrl = video.url;
+              if (video.url.includes("youtube.com/watch?v=")) {
+                embedUrl = video.url.replace("watch?v=", "embed/");
+              } else if (video.url.includes("youtu.be/")) {
+                embedUrl = video.url.replace("youtu.be/", "youtube.com/embed/");
+              } else if (video.url.includes("youtube.com/shorts/")) {
+                embedUrl = video.url.replace("shorts/", "embed/");
+              }
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    width: isVertical ? "260px" : "100%",
+                    maxWidth: "100%",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                    background: "#000"
+                  }}
+                >
+                  <div style={{
+                    position: "relative",
+                    paddingTop: isVertical ? "177.78%" : "56.25%", // Tỉ lệ 9:16 (dọc) hoặc 16:9 (ngang)
+                    height: 0
+                  }}>
+                    <iframe
+                      src={embedUrl}
+                      title={`Video hướng dẫn ${idx + 1}`}
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        border: "none"
+                      }}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* 🖼️ Danh Sách Ảnh Chung / Sơ Đồ Mạch */}
       {error.images && error.images.length > 0 && (
         <div style={{ background: "#fff", borderRadius: 12, padding: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.05)", textAlign: 'left' }}>
@@ -139,7 +193,7 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🔍 Lớp Phủ (Modal) Phóng To Ảnh */}
+      {/* 🔍 Modal Phóng To Ảnh */}
       {selectedImg && (
         <div
           onClick={() => setSelectedImg(null)}
