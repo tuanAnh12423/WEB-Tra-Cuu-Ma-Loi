@@ -12,6 +12,6 @@ export const fridgeErrors: ErrorItem[] = [
       { text: "Kiểm tra gioăng cao su cửa tủ xem có bị hở không." },
       { text: "Kiểm tra lỗ thông gió ngăn đá xuống ngăn mát có bị cản trở không." }
     ],
-    images: [],
+    images: ["https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",],
   }
 ];
