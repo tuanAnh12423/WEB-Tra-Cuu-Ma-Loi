@@ -105,11 +105,39 @@ function ErrorDetailPage() {
           );
         })}
       </div>
+      {/* 🖼️ Danh Sách Ảnh Chung / Sơ Đồ Mạch */}
+      {error.images && error.images.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 12, padding: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.05)", textAlign: 'left' }}>
+          <p style={{ color: "#1a6fc4", fontWeight: 700, margin: "0 0 16px", textAlign: 'left' }}>🖼️ HÌNH ẢNH MINH HOẠ</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: 'flex-start' }}>
+            {error.images.map((imgUrl: string, idx: number) => (
+              <div
+                key={idx}
+                onClick={() => setSelectedImg(imgUrl)}
+                style={{
+                  width: 100,
+                  height: 100,
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  border: "2px solid #eee",
+                  cursor: 'pointer'
+                }}
+              >
+                <img
+                  src={imgUrl}
+                  alt={`Sơ đồ ${idx + 1}`}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* 🎬 KHỐI VIDEO HƯỚNG DẪN MỚI BỔ SUNG */}
       {error.videoUrls && error.videoUrls.length > 0 && (
         <div style={{ background: "#fff", borderRadius: 12, padding: 20, marginBottom: 16, boxShadow: "0 2px 4px rgba(0,0,0,0.05)", textAlign: 'left' }}>
-          <p style={{ color: "#1a6fc4", fontWeight: 700, margin: "0 0 16px", textAlign: 'left' }}>🎬 VIDEO HƯỚNG DẪN SỬA CHỮA</p>
+          <p style={{ color: "#1a6fc4", fontWeight: 700, margin: "0 0 16px", textAlign: 'left' }}>🎬 VIDEO HƯỚNG DẪN</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: 'flex-start' }}>
             {error.videoUrls.map((video, idx) => {
               // Tự động tối ưu tỉ lệ khung hình (Khung dọc 9:16 cho Shorts/TikTok, Khung ngang 16:9 cho YouTube thường)
@@ -160,35 +188,6 @@ function ErrorDetailPage() {
                 </div>
               );
             })}
-          </div>
-        </div>
-      )}
-
-      {/* 🖼️ Danh Sách Ảnh Chung / Sơ Đồ Mạch */}
-      {error.images && error.images.length > 0 && (
-        <div style={{ background: "#fff", borderRadius: 12, padding: 20, boxShadow: "0 2px 4px rgba(0,0,0,0.05)", textAlign: 'left' }}>
-          <p style={{ color: "#1a6fc4", fontWeight: 700, margin: "0 0 16px", textAlign: 'left' }}>🖼️ HÌNH ẢNH CHUNG & SƠ ĐỒ MẠCH</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: 'flex-start' }}>
-            {error.images.map((imgUrl: string, idx: number) => (
-              <div
-                key={idx}
-                onClick={() => setSelectedImg(imgUrl)}
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 8,
-                  overflow: "hidden",
-                  border: "2px solid #eee",
-                  cursor: 'pointer'
-                }}
-              >
-                <img
-                  src={imgUrl}
-                  alt={`Sơ đồ ${idx + 1}`}
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              </div>
-            ))}
           </div>
         </div>
       )}

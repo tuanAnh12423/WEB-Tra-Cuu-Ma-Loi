@@ -3,7 +3,7 @@ import type { ErrorItem } from "./errors";
 export const dryerError: ErrorItem[] = [
     {
         id: "TD01",
-        category: "dryer",
+        category: "dryerError",
         code: "Máy sấy sấy không khô",
         title: "Máy sấy sau khi hoàn tất chu trình mà quần áo chưa khô",
         description:
@@ -33,7 +33,7 @@ export const dryerError: ErrorItem[] = [
     },
     {
         id: "TD02",
-        category: "dryer",
+        category: "dryerError",
         code: "Máy sấy bị giảm thời gian",
         title:
             "Máy sấy đang trong chu trình sấy thì bị giảm thời gian đột ngột và quần áo chưa khô",

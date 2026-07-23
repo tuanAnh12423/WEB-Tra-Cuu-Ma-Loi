@@ -32,6 +32,7 @@ function HomePage() {
             }}
           >
             <div style={{ width: 64, height: 64, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
+              {cat.icon || ""}
             </div>
             <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#1a1a2e" }}>{cat.name}</p>
             <p style={{ margin: 0, fontSize: 13, color: "#888" }}>
