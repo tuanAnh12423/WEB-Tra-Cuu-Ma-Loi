@@ -12,7 +12,7 @@ export const washingErrors: ErrorItem[] = [
       { text: "Kiểm tra phích cắm và dây nguồn xem có bị chuột cắn/gãy đứt ngầm." },
       { text: "Kiểm tra cầu dao tổng gia đình." }
     ],
-    images: [],
+    images: ["https://drive.google.com/uc?export=view&id=17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v"],
   },
   {
     id: "W02",
