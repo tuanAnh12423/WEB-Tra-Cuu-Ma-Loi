@@ -4,7 +4,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W01",
     category: "washing",
-    code: "E1",
+    code: "Cảnh báo E1",
     title: "Máy giặt không vào điện",
     description: "Bấm phím Power nhưng màn hình/đèn LED không sáng.",
     steps: [

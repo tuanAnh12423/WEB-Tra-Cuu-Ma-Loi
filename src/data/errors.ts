@@ -30,8 +30,8 @@ export type ErrorItem = {
 };
 
 export const categories: Category[] = [
-  { id: "washing", name: "Máy giặt", icon: "🫧", bgColor: "#e6fffa" },
-  { id: "fridge", name: "Tủ lạnh", icon: "❄️", bgColor: "#e8f0fe" },
+  { id: "washing", name: "MÁY GIẶT", icon: "🫧", bgColor: "#e6fffa" },
+  { id: "fridge", name: "TỦ LẠNH", icon: "❄️", bgColor: "#e8f0fe" },
 ];
 
 export const errors: ErrorItem[] = [
