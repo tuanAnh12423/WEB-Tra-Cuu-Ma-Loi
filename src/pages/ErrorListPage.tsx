@@ -55,7 +55,7 @@ function ErrorListPage() {
             ← Quay lại
           </button>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span style={{ fontSize: 26 }}>{category?.icon || "🛠️"}</span>
+            <span style={{ fontSize: 26 }}></span>
             <h1 style={{ fontSize: 24, color: "#111827", margin: 0, fontWeight: 700 }}>
               {category?.name ? category.name.toUpperCase() : "DANH SÁCH MÃ LỖI"}
             </h1>
