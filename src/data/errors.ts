@@ -1,5 +1,8 @@
 import { washingErrors } from "./errorWashing";
 import { fridgeErrors } from "./errorFridge";
+import { dishWasherError } from "./errorDishWasher";
+import { dryerError } from "./errorDryer";
+import { waterPurifierError } from "./errorWaterPurifier";
 
 export type Category = {
   id: string;
@@ -32,9 +35,30 @@ export type ErrorItem = {
 export const categories: Category[] = [
   { id: "washing", name: "MÁY GIẶT", icon: "🫧", bgColor: "#e6fffa" },
   { id: "fridge", name: "TỦ LẠNH", icon: "❄️", bgColor: "#e8f0fe" },
+  {
+    id: "dishWasher",
+    name: "MÁY RỬA CHÉN",
+    icon: "🍽️",
+    bgColor: "#fef3c7", // Vàng cam pastel nhạt
+  },
+  {
+    id: "dryerError",
+    name: "MẤY SẤY",
+    icon: "🍽️",
+    bgColor: "#fef3c7",
+  },
+  {
+    id: "waterPurifierError",
+    name: "MÁY LỌC NƯỚC",
+    icon: "🍽️",
+    bgColor: "#fef3c7",
+  },
 ];
 
 export const errors: ErrorItem[] = [
   ...washingErrors,
   ...fridgeErrors,
+  ...dishWasherError,
+  ...dryerError,
+  ...waterPurifierError,
 ];
