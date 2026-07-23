@@ -18,10 +18,10 @@ function HomePage() {
             key={cat.id}
             onClick={() => navigate(`/error-list/${cat.id}`)}
             style={{
-              width: "calc(50% - 8px)",
+              width: "calc(30% - 5px)",
               background: "#fff",
-              borderRadius: 16,
-              padding: 24,
+              borderRadius: 15,
+              padding: 20,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
@@ -31,8 +31,7 @@ function HomePage() {
               boxSizing: "border-box"
             }}
           >
-            <div style={{ width: 64, height: 64, borderRadius: 16, background: cat.bgColor || "#e8f0fe", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
-              {cat.icon}
+            <div style={{ width: 64, height: 64, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>
             </div>
             <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#1a1a2e" }}>{cat.name}</p>
             <p style={{ margin: 0, fontSize: 13, color: "#888" }}>

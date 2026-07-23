@@ -7,8 +7,6 @@ import { waterPurifierError } from "./errorWaterPurifier";
 export type Category = {
   id: string;
   name: string;
-  icon: string;
-  bgColor?: string;
 };
 
 // 🟢 Cập nhật type Step để hỗ trợ cả `image` (1 link) và `images` (mảng link)
@@ -33,25 +31,19 @@ export type ErrorItem = {
 };
 
 export const categories: Category[] = [
-  { id: "washing", name: "MÁY GIẶT", icon: "🫧", bgColor: "#e6fffa" },
-  { id: "fridge", name: "TỦ LẠNH", icon: "❄️", bgColor: "#e8f0fe" },
+  { id: "washing", name: "MÁY GIẶT", },
+  { id: "fridge", name: "TỦ LẠNH", },
   {
     id: "dishWasher",
     name: "MÁY RỬA CHÉN",
-    icon: "🍽️",
-    bgColor: "#fef3c7", // Vàng cam pastel nhạt
   },
   {
     id: "dryerError",
     name: "MẤY SẤY",
-    icon: "🍽️",
-    bgColor: "#fef3c7",
   },
   {
     id: "waterPurifierError",
     name: "MÁY LỌC NƯỚC",
-    icon: "🍽️",
-    bgColor: "#fef3c7",
   },
 ];
 
