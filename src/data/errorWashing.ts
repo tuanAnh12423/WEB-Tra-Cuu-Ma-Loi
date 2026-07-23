@@ -10,9 +10,9 @@ export const washingErrors: ErrorItem[] = [
     steps: [
       { text: "Kiểm tra ổ cắm điện nguồn xem có điện hay không." },
       { text: "Kiểm tra phích cắm và dây nguồn xem có bị chuột cắn/gãy đứt ngầm." },
-      { text: "Kiểm tra cầu dao tổng gia đình." }
+      { text: "Kiểm tra cầu dao tổng gia đình.", images: ["https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v"] },
     ],
-    images: ["https://drive.google.com/uc?export=view&id=17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v"],
+    images: ["https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v"],
   },
   {
     id: "W02",
