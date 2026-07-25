@@ -14,8 +14,8 @@ export type Category = {
 // 🟢 Cập nhật type Step để hỗ trợ cả `image` (1 link) và `images` (mảng link)
 export type Step = {
   text: string;
-  image?: string;     // 
-  images?: string[];  // 
+  image?: string; //
+  images?: string[]; //
 };
 
 export type ErrorItem = {
@@ -24,8 +24,10 @@ export type ErrorItem = {
   code: string;
   title: string;
   description: string;
+  subtypes?: string[];
+  subtype?: string; // Cập nhật subtype để hỗ trợ cả mảng và chuỗi
   steps: Step[] | string[];
-  images?: string[]; // 
+  images?: string[]; //
   videoUrls?: {
     url: string;
     type: "vertical" | "horizontal";

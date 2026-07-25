@@ -5,11 +5,23 @@ export const washingErrors: ErrorItem[] = [
     id: "W01",
     category: "washing",
     code: "Cảnh báo E1",
+    subtype: "Lồng đứng",
     title: "Máy giặt lồng đứng không có nước cấp trong thời gian quy định",
-    description: "Máy giặt lồng đứng không có nước cấp trong một khoảng thời gian. Lý do áp lực nước quá yếu. Lưới lọc Van cấp bẩn.",
+    description:
+      "Máy giặt lồng đứng không có nước cấp trong một khoảng thời gian. Lý do áp lực nước quá yếu. Lưới lọc Van cấp bẩn.",
     steps: [
-      { text: "Kiểm tra ống và vòi khoá nước cấp của máy giặt.", images: ["https://lh3.googleusercontent.com/d/1-b_lHmxY0cSLkn0ZyfdoPuPWIaHtTVCr"] },
-      { text: "Nếu áp lực nước quá thấp thời gian cấp nước sẽ không đủ hãy cải thiện nguồn nước", images: ["https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v"] },
+      {
+        text: "Kiểm tra ống và vòi khoá nước cấp của máy giặt.",
+        images: [
+          "https://lh3.googleusercontent.com/d/1-b_lHmxY0cSLkn0ZyfdoPuPWIaHtTVCr",
+        ],
+      },
+      {
+        text: "Nếu áp lực nước quá thấp thời gian cấp nước sẽ không đủ hãy cải thiện nguồn nước",
+        images: [
+          "https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",
+        ],
+      },
       {
         text: "Kiểm tra lưới lọc van cấp → Vệ sinh nếu bẩn",
         images: [
@@ -33,6 +45,7 @@ export const washingErrors: ErrorItem[] = [
     id: "W02",
     category: "washing",
     code: "CẢNH BÁO E10",
+    subtype: "Lồng ngang",
     title:
       "Máy giặt lồng ngang Không có nước cấp trong khoảng thời gian quy định",
     description:
@@ -127,6 +140,7 @@ export const washingErrors: ErrorItem[] = [
     id: "W05",
     category: "washing",
     code: "CẢNH BÁO E7-1, E7-4",
+    subtype: "Lồng đứng",
     title: "Máy giặt giặt quá tải hoặc nguồn điện yếu",
     description:
       "Khách hàng giặt quá nhiều đồ vượt số ký của máy giặt. Hoặc nguồn điện của nhà khách hàng quá yếu gây nên tình trạng này (XUẤT HIỆN TRÊN MÁY GIẶT LỒNG ĐỨNG)",
@@ -173,6 +187,7 @@ export const washingErrors: ErrorItem[] = [
     id: "W06",
     category: "washing",
     code: "MÁY GIẶT RUNG LẮC, ỒN",
+    subtypes: ["Lồng đứng", "Lồng ngang"],
     title: "Máy giặt hoạt động rung lắc ồn, Trong quá trình vắt hoặc giặt",
     description:
       "Khi khách hàng giặt, hoặc vắt bằng máy giặt, máy tạo nên âm thanh rung hoặc lắc mạnh lồng giặt, gây tiếng ồn khó chịu",
