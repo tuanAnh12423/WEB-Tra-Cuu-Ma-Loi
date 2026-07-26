@@ -1,7 +1,6 @@
 import { washingErrors } from "./errorWashing";
 import { fridgeErrors } from "./errorFridge";
 import { dishWasherError } from "./errorDishWasher";
-import { dryerError } from "./errorDryer";
 import { waterPurifierError } from "./errorWaterPurifier";
 import { airConditionalError } from "./errorAirConditional";
 
@@ -11,7 +10,6 @@ export type Category = {
   icon?: string;
 };
 
-// 🟢 Cập nhật type Step để hỗ trợ cả `image` (1 link) và `images` (mảng link)
 export type Step = {
   text: string;
   image?: string; //
@@ -35,17 +33,12 @@ export type ErrorItem = {
 };
 
 export const categories: Category[] = [
-  { id: "washing", name: "MÁY GIẶT", icon: "🧺" },
+  { id: "washing", name: "MÁY GIẶT - MÁY SẤY", icon: "🧺" },
   { id: "fridge", name: "TỦ LẠNH", icon: "🧊" },
   {
     id: "dishWasher",
     name: "MÁY RỬA CHÉN",
     icon: "🍽️",
-  },
-  {
-    id: "dryerError",
-    name: "MẤY SẤY",
-    icon: "👕",
   },
   {
     id: "waterPurifierError",
@@ -63,7 +56,6 @@ export const errors: ErrorItem[] = [
   ...washingErrors,
   ...fridgeErrors,
   ...dishWasherError,
-  ...dryerError,
   ...waterPurifierError,
   ...airConditionalError,
 ];

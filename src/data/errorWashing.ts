@@ -4,7 +4,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W01",
     category: "washing",
-    code: "Cảnh báo E1",
+    code: "(WM01) Cảnh báo E1",
     subtype: "Lồng đứng",
     title: "Máy giặt lồng đứng không có nước cấp trong thời gian quy định",
     description:
@@ -44,7 +44,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W02",
     category: "washing",
-    code: "CẢNH BÁO E10",
+    code: "(WM02)CẢNH BÁO E10",
     subtype: "Lồng ngang",
     title:
       "Máy giặt lồng ngang Không có nước cấp trong khoảng thời gian quy định",
@@ -85,7 +85,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W03",
     category: "washing",
-    code: "CẢNH BÁO E2",
+    code: "(WM03) CẢNH BÁO E2",
     title: "Máy giặt lồng đứng không thoát nước, không xả nước",
     description: "Sau khi giặt xong máy không bơm nước ra ngoài.",
     steps: [
@@ -112,7 +112,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W04",
     category: "washing",
-    code: "CẢNH BÁO E21",
+    code: "(WM04) CẢNH BÁO E21",
     title: "Máy giặt lồng ngang không thoát nước, không xả nước",
     description: "Sau khi giặt xong máy không xả được nước",
     steps: [
@@ -139,7 +139,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W05",
     category: "washing",
-    code: "CẢNH BÁO E7-1, E7-4",
+    code: "(WM09) CẢNH BÁO E7-1, E7-4",
     subtype: "Lồng đứng",
     title: "Máy giặt giặt quá tải hoặc nguồn điện yếu",
     description:
@@ -186,7 +186,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W06",
     category: "washing",
-    code: "MÁY GIẶT RUNG LẮC, ỒN",
+    code: "(WM31) MÁY GIẶT RUNG LẮC, ỒN",
     subtypes: ["Lồng đứng", "Lồng ngang"],
     title: "Máy giặt hoạt động rung lắc ồn, Trong quá trình vắt hoặc giặt",
     description:
@@ -224,7 +224,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W07",
     category: "washing",
-    code: "CẢNH BÁO E3",
+    code: "(WM05) CẢNH BÁO E3",
     title: "Máy giặt lồng đứng cảnh báo E3 (Chưa đóng nắp cửa)",
     description:
       "Trong quá trình sử dụng nếu gặp mã cảnh báo E3. Nguyên nhân: Cửa máy giặt chưa đóng kín hoặc kẹt đồ",
@@ -252,7 +252,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W08",
     category: "washing",
-    code: "CẢNH BÁO E30",
+    code: "(WM06)CẢNH BÁO E30",
     title: "Máy giặt lồng ngang cảnh báo E30 (Chưa đóng nắp cửa)",
     description:
       "Trong quá trình sử dụng nếu gặp mã cảnh báo E30. Nguyên nhân: Cửa máy giặt chưa đóng kín hoặc kẹt đồ",
@@ -277,7 +277,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W09",
     category: "washing",
-    code: "CẢNH BÁO CL",
+    code: "(WM57) CẢNH BÁO CL",
     title: "Máy giặt hiện Cảnh báo CL (Khoá trẻ em)",
     description:
       "Bạn vừa mở máy lên và máy giặt hiện cảnh báo CL, và bạn không thể thao tác được để giặt quần áo. Phần này sẽ hướng dẫn bạn xử lý vấn đề này.",
@@ -317,7 +317,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W010",
     category: "washing",
-    code: "GIẶT KHÔNG THƠM",
+    code: "(WM38) GIẶT KHÔNG THƠM",
     title: "Máy giặt giặt xong quần áo không thơm",
     description:
       "Sau khi bạn giặt xong, quần áo không thơm. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
@@ -367,7 +367,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W012",
     category: "washing",
-    code: "CÒN NƯỚC TRONG LỒNG GIẶT (Máy giặt cửa trên)",
+    code: "(WM59) CÒN NƯỚC TRONG LỒNG GIẶT (Máy giặt cửa trên)",
     title:
       "Máy giặt giặt xong vẫn còn nước trong lồng giặt ở máy giặt cửa trên",
     description:
@@ -386,7 +386,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W013",
     category: "washing",
-    code: "MÁY GIẶT KHÔNG GIẶT (Máy giặt cửa trước)",
+    code: "(WM61) MÁY GIẶT KHÔNG GIẶT (Máy giặt cửa trước)",
     title: "Máy giặt cửa trước có nguồn nhưng không giặt",
     description:
       "Bạn mở máy lên bấm giặt máy giảm thời gian, nhưng không giặt, không thấy nước cấp hoặc nước cấp vào rất yếu",
@@ -410,7 +410,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W014",
     category: "washing",
-    code: "KHÔNG HOÀN TẤT CHU TRÌNH GIẶT, TĂNG THỜI GIAN GIẶT, GIẶT LÂU",
+    code: "(WM53) KHÔNG HOÀN TẤT CHU TRÌNH GIẶT, TĂNG THỜI GIAN GIẶT, GIẶT LÂU",
     title:
       "Máy giặt không hoàn tất được chu trình giặt, hoặc bị tăng thời gian giặt",
     description:
@@ -432,7 +432,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W015",
     category: "washing",
-    code: "VÁT KHÔNG KHÔ",
+    code: "(WM48) VẮT KHÔNG KHÔ",
     title: "Máy giặt vắt không khô",
     description:
       "Bạn hoàn thành chu trình giặt nhưng quần áo vẫn vắt chưa khô. Phần này sẽ hướng dẫn bạn cách xử lý vấn đề này",
@@ -461,7 +461,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W016",
     category: "washing",
-    code: "TRÀO BỌT, CÒN XÀ BÔNG TRONG LỒNG GIẶT, QUẦN ÁO",
+    code: "(WM25) TRÀO BỌT, CÒN XÀ BÔNG TRONG LỒNG GIẶT, QUẦN ÁO",
     title:
       "Máy sau khi giặt xong nhưng vẫn còn xà bông, bột giặt trên quần áo, lồng giặt, cửa,...",
     description:
@@ -488,7 +488,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W017",
     category: "washing",
-    code: "MÁY GIẶT KHÔNG GIẶT (Máy giặt cửa trên)",
+    code: "(WM60) MÁY GIẶT KHÔNG GIẶT (Máy giặt cửa trên)",
     title: "Máy giặt cửa trên có nguồn nhưng không giặt",
     description:
       "Bạn mở máy lên bấm giặt máy giảm thời gian, nhưng không giặt, không thấy nước cấp hoặc nước cấp vào rất yếu, hoặc giặt một lúc máy rung lắc sau đó ngưng không giặt nữa.",
@@ -529,7 +529,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W019",
     category: "washing",
-    code: "MÁY GIẶT KHÔNG VẮT (Máy giặt cửa trên)",
+    code: "(WM47) MÁY GIẶT KHÔNG VẮT (Máy giặt cửa trên)",
     title: "Máy giặt cửa trên không vắt khi đã hoàn tất chu trình giặt",
     description:
       "Sau khi hoàn tất chu trình giặt máy giặt cửa trên của bạn không vắt không xả nước ra ngoài. Phần này sẽ hướng dẫn xử lý vấn đề đó.",
@@ -552,5 +552,528 @@ export const washingErrors: ErrorItem[] = [
         type: "vertical",
       },
     ],
+  },
+  {
+    id: "W020",
+    category: "washing",
+    code: "(WM47) MÁY GIẶT KHÔNG VẮT (Máy giặt cửa trước)",
+    title: "Máy giặt cửa trước không vắt khi đã hoàn tất chu trình giặt",
+    description:
+      "Sau khi hoàn tất chu trình giặt máy giặt cửa trước của bạn không vắt không xả nước ra ngoài. Phần này sẽ hướng dẫn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Kiểm tra máy dừng vắt ở giai đoạn nào. Có hiển thị báo lỗi trên bảng hiển thị không?",
+      },
+      {
+        text: "Kiểm tra ống xả có bị thả xuống, Cố định lại ống xả theo quy định và theo dõi lại chu trình giặt khác. ",
+      },
+      {
+        text: "Vệ sinh bộ lọc bơm xả.",
+      },
+      {
+        text: "Thử lại chu trình giặt khác nếu không khắc phục được chuyển ASP kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W021",
+    category: "washing",
+    code: "(WM08) Cảnh báo E4 (Các Model sau này rất ít hiển thị E4 mà thay thành E3)",
+    title: "Mất cân bằng chân máy hoặc liên quan đến cửa máy giặt.",
+    description:
+      "Máy giặt cửa trên hoặc cửa trước báo lỗi E4 hoặc E3. Nguyên nhân: Máy giặt bị mất cân bằng, hoặc liên quan đến cửa máy giặt.",
+    steps: [
+      {
+        text: "Quần áo có thể bị mất cân bằng trong lồng giặt - Nên phân loại đồ trước khi giặt",
+      },
+      {
+        text: "Bạn có thể chỉ giặt một món đồ nặng như chăn bông hoặc quần jean, hoặc những món đồ nhỏ trong lưới giặt. ",
+      },
+      {
+        text: "Có thể bạn đang giặt quá nhiều đồ lớn như ga trải giường.",
+      },
+      {
+        text: "Máy giặt có thể đang bị lắp đặt trên sàn nghiêng hoặc có thể không bằng phẳng.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W022",
+    category: "washing",
+    code: "(WM10) Lỗi C8",
+    title: "Lỗi C8 - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi kết nối. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W023",
+    category: "washing",
+    code: "(WM11) Lỗi F2",
+    title: "Lỗi F2 - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi bộ nhớ. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W024",
+    category: "washing",
+    subtype: "Lồng đứng",
+    code: "(WM12) Lỗi F5",
+    title: "Lỗi F5 - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi cân đồ. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W025",
+    category: "washing",
+    code: "(WM13) Lỗi F8",
+    title: "Lỗi F8 - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi cảm biến mực nước. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W026",
+    category: "washing",
+    code: "(WM14) Lỗi Fd",
+    title: "Lỗi Fd - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi khoá nắp. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W027",
+    category: "washing",
+    code: "(WM15) Lỗi E50/ E52 / E57/ E58 / E64 /,... ",
+    title: "Lỗi liên quan đến motor máy giặt - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi liên quan đến motor máy giặt. Chuyển ASP kiểm tra",
+      },
+      {
+        text: "TĐV báo trạm bảo hành chuẩn bị sẵn linh kiện thay thế cho khách nếu máy nằm trong phạm vi bảo hành.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W028",
+    category: "washing",
+    code: "(WM16) Lỗi E33",
+    title: "Lỗi cảm biến mực nước - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi cảm biến mực nước. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W029",
+    category: "washing",
+    code: "(WM17) Lỗi E34",
+    title: "Lỗi cảm biến nhiệt độ nước - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi cảm biến nhiệt độ nước. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W030",
+    category: "washing",
+    code: "(WM18) Lỗi E35",
+    title: "Lỗi cảm biến nhiệt độ nước - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi cảm biến nhiệt độ nước. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W031",
+    category: "washing",
+    code: "(WM19) Lỗi E36",
+    title: "Lỗi cảm biến nhiệt độ. - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi cảm biến nhiệt độ. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W032",
+    category: "washing",
+    code: "(WM20) Lỗi E37",
+    title: "Lỗi hệ thống sấy. - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi hệ thống sấy. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W033",
+    category: "washing",
+    code: "(WM21) Lỗi E38",
+    title: "Lỗi hệ thống sấy. - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi hệ thống sấy. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W034",
+    category: "washing",
+    code: "(WM22) Lỗi E3A",
+    title: "Lỗi hệ thống sấy. - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi hệ thống sấy. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W035",
+    category: "washing",
+    code: "(WM23) Lỗi E80",
+    title: "Lỗi bo mạch chính. - Không thể tư vấn.",
+    description: "Lỗi liên quan đến kỹ thuật máy giặt",
+    steps: [
+      {
+        text: "Lỗi bo mạch chính. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W036",
+    category: "washing",
+    code: "(WM24) Nước còn đọng 1 ít trong hộc chứa xà phòng/ nước xã vải",
+    title: "Còn nước trong hộc chứa xà phòng/ nước xã vải.",
+    description:
+      "Sau khi giặt xong vẫn còn nước trong hộc chứa xà phòng/ nước xã vải. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Áp lực nước thấp (sách HDSD). Hãy kiểm tra lại áp lực nước cấp cho máy giặt.",
+      },
+      {
+        text: "Máy bị nghiêng, không cân bằng. Hãy kiểm tra lại vị trí đặt máy giặt, cân chỉnh lại chân máy.",
+      },
+      {
+        text: "Hộc nước xã/ nước giặt bị nghẹt. Hãy vệ sinh hộc chứa nước giặt/ nước xã vải.",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W037",
+    category: "washing",
+    code: "(WM26) Mùi bất thường",
+    title: "Mùi bất thường sau khi giặt.",
+    description:
+      "Sau khi giặt xong vẫn còn mùi bất thường. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Có thể có nấm mốc, bụi bẩn hoặc cặn chất tẩy rửa trên lồng giặt, ống xả có ghim vào đường thoát nước không?",
+      },
+      {
+        text: "TDV tư vấn khách hàng vệ sinh vệ sinh ron cao su (đối với các model máy giặt cửa trước)",
+      },
+      {
+        text: "Kiểm tra model có chức năng vệ sinh lồng giặt và khuyến nghị khách hàng thực hiện. Bao lâu rồi chưa vệ sinh máy giặt?",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W038",
+    category: "washing",
+    code: "(WM27) Tất cả các phím không thể điều khiển được",
+    title: "Tất cả các phím không thể điều khiển được",
+    description:
+      "Không thể thao tác hay điều khiển các phím trên bảng điều khiển. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Khóa trẻ em có thể đang được kích hoạt. Hãy kiểm tra và tắt chế độ khoá trẻ em (CL) nếu đang bật.",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W039",
+    category: "washing",
+    code: "(WM28) Không thể mở nắp cửa khi hết chương trình giặt",
+    title: "Không thể mở nắp cửa khi hết chương trình giặt",
+    description:
+      "Sau khi giặt xong không thể mở nắp cửa. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Máy giặt cửa TRÊN: TDV báo KH rút nguồn và 1 phút sau cắm lại",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W040",
+    category: "washing",
+    code: "(WM29) Máy mất nguồn",
+    title: "Máy mất nguồn",
+    description:
+      "Máy giặt bật không lên nguồn hoặc đang thao tác thì bị mất nguồn. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "TDV tư vấn KH kiểm tra lại cắm điện/ phích cắm, ổ cắm điện, dây nguồn, cầu dao điện, aptomat, dây điện có bị hở hay không.",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W041",
+    category: "washing",
+    code: "(WM30) Hiển thị các thay đổi thời gian còn lại",
+    title: "Hiển thị các thay đổi thời gian còn lại",
+    description:
+      "Máy giặt giặt lâu, hoặc giặt gần xong thì tăng lại thời gian lên. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Thời gian giặt có thể bị kéo dài nếu tải không cân bằng, vì máy giặt cố gắng điều chỉnh sự mất cân bằng.",
+      },
+      {
+        text: "Thời gian giặt có thể bị kéo dài khi có quá nhiều bọt, vì cần phải thực hiện thêm hành động loại bỏ bọt.",
+      },
+      {
+        text: "Áp lực nước yếu có thể kéo dài thời gian cấp nước vào lồng giặt, vì vậy hãy kiểm tra áp lực nước.",
+      },
+      {
+        text: "Đường thoát nước xả của máy đang lắp đặt sai. (Hãy kiểm tra máy của KH là cửa trước hay cửa trên).",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W042",
+    category: "washing",
+    code: "(WM32) Tiếng ồn trong chu kỳ xả nước",
+    subtype: "Lồng ngang",
+    title: "Tiếng ồn trong chu kỳ xả nước",
+    description:
+      "Máy đang xả nước và KH nghe thấy tiếng ồn. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Điều này là bình thường. Có thể có tiếng ồn khi máy bơm xả đang hoạt động (chỉ xuất hiện máy giặt cửa trước)",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W043",
+    category: "washing",
+    code: "(WM33) Tiếng ồn hoặc độ rung bất thường ",
+    subtype: "Lồng ngang",
+    title: "Tiếng ồn hoặc độ rung bất thường ",
+    description:
+      "Máy đang hoạt động và có tiếng ồn hoặc rung mạnh. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Tiếng của motor xã nước (chỉ có ở máy giặt lồng ngang)",
+      },
+      {
+        text: "Các bu lông vận chuyển có thể chưa được tháo ra.",
+      },
+      {
+        text: "Máy giặt có thể được lắp đặt trên bề mặt dốc hoặc không ổn định hoặc đặt trên chân inox, hoặc chân máy gập gềnh",
+      },
+      {
+        text: "Có thể có vật lạ bên trong lồng giặt.",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W044",
+    category: "washing",
+    code: "(WM34) Nước cấp và xã ra đồng thời liên tục",
+    title: "Nước cấp và xã ra đồng thời liên tục",
+    description:
+      "Máy cấp nước và xả nước đồng thời liên tục. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Kiểm tra lại van cấp nước có bị bẩn. (Vệ sinh)",
+      },
+      {
+        text: "Kiểm tra lại ống xả có bị thả xuống (Nếu là máy giặt lồng ngang). Nếu bị thả xuống giải thích với KH và hướng dẫn KH treo lại ống xả lên theo HDSD.",
+      },
+      {
+        text: "Máy giặt có thể được lắp đặt trên bề mặt dốc hoặc không ổn định hoặc đặt trên chân inox, hoặc chân máy gập gềnh",
+      },
+      {
+        text: "Đối với máy giặt lồng ngang nếu ống xã không được treo cao sẽ xuất hiện tình trạng này.",
+      },
+      {
+        text: "Nếu không khắc phục được hãy liên hệ trung tâm bảo hành kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W045",
+    category: "washing",
+    code: "(WM35) Công tắc cửa đóng/ mở liên tục",
+    title: "Công tắc cửa đóng/ mở liên tục",
+    description:
+      "Công tắc cửa đóng/ mở liên tục. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "TĐV chuyển ASP kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W046",
+    category: "washing",
+    code: "(WM36) Nước xả ra liên tục",
+    title: "Nước xả ra liên tục",
+    description: "Nước xả ra liên tục.",
+    steps: [
+      {
+        text: "TĐV chuyển ASP kiểm tra.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W047",
+    category: "washing",
+    subtype: "Máy sấy",
+    code: "(WM37) Quần áo còn ướt sau khi sấy",
+    title: "Quần áo còn ướt sau khi sấy",
+    description:
+      "Quần áo còn ướt sau khi sấy. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Phân loại đồ trước khi cho vào máy sấy. Nên vắt quần áo ráo nước để máy sấy sấy hiệu quả hơn.",
+      },
+      {
+        text: "Không nên sấy vượt quá số kg quy định, Tư vấn KH sử dụng loại ổ điện tốt.",
+      },
+      {
+        text: "Nếu KH không phân loại quần áo, nên hướng dẫn KH chọn chương trình đồ hỗn hợp và chọn mức sấy cao nhất. Sau đó sấy lại 1 lần khác",
+      },
+      {
+        text: "Kiểm tra và vệ sinh bộ lọc xơ vải.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W048",
+    category: "washing",
+    code: "(WM38) Quần áo giặt không thơm",
+    title: "Quần áo giặt không thơm",
+    description:
+      "Quần áo giặt không thơm sau khi giặt xong. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+    steps: [
+      {
+        text: "Xác định ngày mua nếu khách hàng mua thời gian dài. HD KH thuê thợ vệ sinh chuyên sau máy giặt. Và HD KH vệ sinh máy hằng ngày (khay chứa nước giặt, bộ lọc van cấp,...)",
+      },
+      {
+        text: "TDV xác nhận model máy → xác nhận có chức năng dosing không?",
+      },
+      {
+        text: "Không có auto dosing: tư vấn khách hàng có thay đổi loại nước giặt gần đây không? Thuyết phục KH thêm/ bớt nước xã cho phù hợp.",
+      },
+      {
+        text: "Nếu có Auto Dosing. Hướng dẫn KH bật tính năng.",
+      },
+    ],
+    images: [],
+    videoUrls: [],
   },
 ];
