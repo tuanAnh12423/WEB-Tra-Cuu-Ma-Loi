@@ -25,7 +25,6 @@ export const washingErrors: ErrorItem[] = [
       {
         text: "Kiểm tra lưới lọc van cấp → Vệ sinh nếu bẩn",
         images: [
-          "https://lh3.googleusercontent.com/d/1ZduTPVJIyppJ4GxqYcZ-nUAufEZLj1hB",
           "https://lh3.googleusercontent.com/d/1nk21oHoXrBX-d0KODdRJef5jl3MrX1zJ",
           "https://lh3.googleusercontent.com/d/17WB5fAmpXu6MnH-Gl_i5wFIxxMnzVtBO",
         ],
