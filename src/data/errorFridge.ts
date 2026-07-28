@@ -4,14 +4,20 @@ export const fridgeErrors: ErrorItem[] = [
   {
     id: "F01",
     category: "fridge",
-    code: "F1",
+    code: "Cả tủ không lạnh",
     title: "Tủ lạnh không làm lạnh",
-    description: "Máy nén vẫn chạy nhưng ngăn mát không có hơi lạnh.",
+    description: "Tủ không hoạt động không có hơi lạnh",
     steps: [
-      { text: "Kiểm tra nhiệt độ cài đặt (Nên để ngăn mát 3-5°C, ngăn đá -18°C)." },
-      { text: "Kiểm tra gioăng cao su cửa tủ xem có bị hở không." },
-      { text: "Kiểm tra lỗ thông gió ngăn đá xuống ngăn mát có bị cản trở không." }
+      {
+        text: "Kiểm tra tủ có nguồn không? Vui lòng kiểm tra đèn led có sáng và máy nén có hoạt động không, xem lại ổ cắm điện",
+      },
+      { text: "KH cách cài đặt theo từng model đã đúng cách chưa?" },
+      {
+        text: "Nếu Led sáng + Máy nén hoạt động +  cài đặt đúng",
+      },
     ],
-    images: ["https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",],
-  }
+    images: [
+      "https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",
+    ],
+  },
 ];

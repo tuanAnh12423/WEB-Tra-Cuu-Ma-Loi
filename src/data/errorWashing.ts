@@ -1031,10 +1031,10 @@ export const washingErrors: ErrorItem[] = [
     id: "W047",
     category: "washing",
     subtype: "Máy sấy",
-    code: "(WM37) Quần áo còn ướt sau khi sấy",
-    title: "Quần áo còn ướt sau khi sấy",
+    code: "(WM37) Quần áo còn ướt sau khi sấy. Sấy không khô",
+    title: "Quần áo còn ướt sau khi sấy, sấy không khô",
     description:
-      "Quần áo còn ướt sau khi sấy. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
+      "Quần áo còn ướt sau khi sấy, sấy không khô. Phần này sẽ hướng dẫn bạn xử lý vấn đề đó.",
     steps: [
       {
         text: "Phân loại đồ trước khi cho vào máy sấy. Nên vắt quần áo ráo nước để máy sấy sấy hiệu quả hơn.",
