@@ -291,9 +291,14 @@ function ErrorDetailPage() {
               >
                 <img
                   src={imgUrl}
-                  alt="Ảnh hướng dẫn"
+                  alt={`Ảnh minh hoạ ${idx + 1}`}
                   referrerPolicy="no-referrer"
-                  className="..."
+                  style={{
+                    width: "100%", // 👈 Ép chiều rộng thu nhỏ đúng 100px
+                    height: "100%", // 👈 Ép chiều cao thu nhỏ đúng 100px
+                    objectFit: "cover", // 👈 Thu nhỏ nhưng không làm méo hình
+                    display: "block",
+                  }}
                 />
               </div>
             ))}
