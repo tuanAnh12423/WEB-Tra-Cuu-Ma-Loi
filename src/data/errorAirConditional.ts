@@ -5,7 +5,7 @@ export const airConditionalError: ErrorItem[] = [
         id: "AC01",
         category: "airConditional",
         code: "Máy lạnh tươm nước",
-        title: "Máy lạnh hoạt động chảy nướch",
+        title: "Máy lạnh hoạt động chảy nước",
         description: "",
         steps: [],
         images: [],
