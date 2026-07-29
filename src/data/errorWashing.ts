@@ -38,7 +38,7 @@ export const washingErrors: ErrorItem[] = [
       "https://lh3.googleusercontent.com/d/1c02WRUg_sBBezXaw7aoVCxqbb7TDUmiz",
     ],
     videoUrls: [
-      { url: "https://www.youtube.com/embed/I-dCP2bbx5o", type: "horizontal" },
+      { url: "https://drive.google.com/file/d/1dTXxPmveqeBsorxawDbMxamDXZenNpyl/preview", type: "horizontal" },
     ],
   },
   {
