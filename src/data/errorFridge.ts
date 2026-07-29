@@ -13,6 +13,8 @@ export const fridgeErrors: ErrorItem[] = [
       { text: "Nếu Led sáng + 2 bên hông tủ có nóng không +  cài đặt đúng" },
       { text: "Báo ASP kiểm tra" }
     ],
-    images: ["https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",],
-  }
+    images: [
+      "https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",
+    ],
+  },
 ];
