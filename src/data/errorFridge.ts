@@ -223,4 +223,224 @@ export const fridgeErrors: ErrorItem[] = [
     ],
     images: [],
   },
+  {
+    id: "F11",
+    category: "fridge",
+    code: "(R011) Cửa không đều, không cân bằng.",
+    title: "Cửa không đều, không cân bằng.",
+    description: "Cửa không đều, không cân bằng.",
+    steps: [
+      {
+        text: "Tình trạng này sẽ xuất hiện ở các dòng nhiều cửa/ SBS - Sách HDSD có ghi chú cách cân chỉnh bằng chân tăng đưa. Thuyết phục KH cân chỉnh, và chỉ có khả năng cân chỉnh tương đối, không thể tuyệt đối ",
+      },
+      {
+        text: "TDV báo ASP kiểm tra + cân chỉnh cho KH",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F12",
+    category: "fridge",
+    code: "(R012) Đóng cửa này bật cửa kia.",
+    title: "Đóng cửa này bật cửa kia.",
+    description: "Đóng cửa này bật cửa kia.",
+    steps: [
+      {
+        text: "Vì ngăn đá và ngăn lạnh thông với nhau nên khi đóng mạnh cửa này sẽ tạo áp lực đẩy cửa kia ra",
+      },
+      {
+        text: "Điều này bình thường, nên đóng cửa nhẹ nhàng",
+      },
+      {
+        text: "HIỆN TƯỢNG NÀY THƯỜNG XẢY RA TỦ NGĂN ĐÁ TRÊN/ NGĂN ĐÁ DƯỚI",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F13",
+    category: "fridge",
+    code: "(R013) Có khe hở ở ron cửa tủ lạnh.",
+    title: "Có khe hở ở ron cửa tủ lạnh.",
+    description: "Có khe hở ở ron cửa tủ lạnh.",
+    steps: [
+      {
+        text: "Các hộp thực phẩm có đặt sau viền khay kính không?",
+      },
+      {
+        text: "Ron cửa có bị gập không?",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F14",
+    category: "fridge",
+    code: "(R014) Nóng 2 bên hông tủ lạnh.",
+    title: "Nóng 2 bên hông tủ lạnh.",
+    description: "Nóng 2 bên hông tủ lạnh.",
+    steps: [
+      {
+        text: "Hệ thống giải nhiệt được bố trí (bên trong vách - xung quanh thân) tủ khi tủ hoạt động. Sau lưng và 2 bên thân tủ sẽ nên nhiệt độ mặt sau và hai bên tủ có thể bị nóng nóng hơn khi tủ mới hoạt động hoặc khi đóng, mở cửa tủ quá thường xuyên",
+      },
+      {
+        text: "Đây là hiện tượng bình thường của sản phẩm",
+      },
+      {
+        text: "Với một thiết bị điện lạnh, tương tự như máy lạnh, thì sẽ có cục nóng để tản nhiệt, trao đổi nhiệt với môi trường, và cục lạnh để làm giảm nhiệt độ nơi mong muốn, thì tủ lạnh cũng vậy, cũng sẽ có bên ngoài thân tủ là nơi để tản nhiệt, trao đổi nhiệt với môi trường bên ngoài, và bên trong ngăn sẽ có dàn lạnh để giảm nhiệt độ tủ lạnh. Khi trao đổi tản nhiệt bên ngoài tốt, thì tủ làm lạnh cũng sẽ tốt, để trao đổi, giải nhiệt được, thì bắt buộc nhiệt độ thân vỏ phải cao hơn so với nhiệt độ môi trường, chưa kể còn phụ thuộc vào mức độ nhiệt đang mong muốn càng sâu càng lạnh, thì sẽ tỏa nhiệt sẽ cao hơn !",
+      },
+      {
+        text: "Đó là cơ chế hoạt động bình thường của tủ không phải hư hỏng !",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F15",
+    category: "fridge",
+    code: "(R015) Đá viên nhỏ, hình dáng không đều.",
+    title: "Đá viên nhỏ, hình dáng không đều.",
+    description: "Đá viên nhỏ, hình dáng không đều.",
+    steps: [
+      {
+        text: "Vì khay làm đá có các rãnh để nước được châm đều, do đó viên đá có thể có các phần thừa này",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F16",
+    category: "fridge",
+    code: "(R016) Đá viên dính chặt lại với nhau ",
+    title: "Đá viên dính chặt lại với nhau ",
+    description: "Đá viên dính chặt lại với nhau ",
+    steps: [
+      {
+        text: "Có bị cúp điện không?.",
+      },
+      {
+        text: "Cửa có bị mở thường xuyên không?.",
+      },
+      {
+        text: "Vì khi nhiệt độ trong ngăn đá tăng lên, các viên đá tan ra và dính lại với nhau. Hãy lấy hộc chứa đá ra và đổ bỏ lượng đá này đi, sau đó làm mẻ đá mới. Trong lúc này nên hạn chế mở cửa tủ quá thường xuyên. Không sử dụng chức năng lấy đá ngoài trong thời gian dài",
+      },
+      {
+        text: "Nếu chức năng lấy đá ngoài không được sử dụng thường xuyên các viên đá có thể dính lại với nhau, nên lấy đá ngoài thường xuyên hơn.",
+      },
+      {
+        text: "Cửa tủ có bị hở không?. Nếu cửa tủ không được đóng kín, nhiệt độ ngăn đông có thể tăng lên và các viên đá tan ra và dính lại với nhau. Hãy đóng cửa tủ cho kín",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F17",
+    category: "fridge",
+    code: "(R017) Lỗi làm đá tự động -  Đá tự động không rơi xuống ",
+    title: "Lỗi làm đá tự động -  Đá tự động không rơi xuống ",
+    description: "Lỗi làm đá tự động -  Đá tự động không rơi xuống ",
+    steps: [
+      {
+        text: "Bảng điều khiển của khách hàng có chớp đèn báo lỗi không (model tủ RT, RB)? Hoặc hiển thị lỗi E0/EP (model tủ RF,RS)",
+      },
+      {
+        text: "Có : tư vấn KH rút điện, ghim lại, để theo dõi 15p, xem còn báo lỗi nữa không ?",
+      },
+      {
+        text: "KH có đang bật chế độ làm đá tự động ? hiển thị ICE ON đang sáng không ? ( đặc biệt model GR-RS755WIA)",
+      },
+      {
+        text: "Hộp nước đã được lắp đúng vị trí chưa ? Có nước trong hộp chứa nước không ? (lấy nước uống được ko?)",
+      },
+      {
+        text: "Có => Tạo WO chuyển ASP kiểm tra",
+      },
+      {
+        text: "Không => Chức năng làm đá đã được kích hoạt + nhiệt độ ngăn ĐÔNG  đã chỉnh mức lạnh nhất chưa?",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F18",
+    category: "fridge",
+    code: "(R018) Tủ có tiếng ồn bất thường",
+    title: "Tủ có tiếng ồn bất thường",
+    description: "Tủ có tiếng ồn bất thường",
+    steps: [
+      {
+        text: "Kiểm tra tủ đã được lắp đặt trên sàn chắc chắn chưa?",
+      },
+      {
+        text: "Vị trí đặt tủ có gần giường ngủ ko?",
+      },
+      {
+        text: "Kiểm tra các phụ kiện (ngăn, hộc, khay) có được lắp đặt đúng vị trí chưa?",
+      },
+      {
+        text: "Hướng dẫn KH mở cửa tủ ra có còn nghe tiếng ồn nữa không?",
+      },
+      {
+        text: "Có => Giải thích là do máy nén hoạt động",
+      },
+      {
+        text: "Không => Do quạt gió chém vào đá nghe tiếng kêu lạch cạch. Nếu là TH này thì tạo WO chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F19",
+    category: "fridge",
+    code: "(R019) Ngăn đông không lạnh",
+    title: "Ngăn đông không lạnh",
+    description: "Ngăn đông không lạnh",
+    steps: [
+      {
+        text: "Thuyết phục khách hàng kiểm tra lại bảng điều khiển đã điều chỉnh mức thấp nhất chưa? (Hỏi thăm KH đang chỉnh nhiệt độ mức nào?)",
+      },
+      {
+        text: "Thực phẩm đã khách hàng trữ có cản trở luồng gió lạnh thổi ra không?",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F20",
+    category: "fridge",
+    code: "(R020) Không nguồn",
+    title: "Tủ lạnh Không nguồn",
+    description: "Tủ lạnh Không nguồn",
+    steps: [
+      {
+        text: "Kiểm tra ổ cắm điện có nguồn không? Phích dây nguồn đã được cắm chặt vào ổ cắm điện chưa?",
+      },
+      {
+        text: "Nếu ổ cắm điện có nguồn. Mở ngăn mát ra mà đèn không sáng. Hoặc Bảng điều khiển không sáng",
+      },
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
 ];
