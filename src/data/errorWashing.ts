@@ -77,7 +77,7 @@ export const washingErrors: ErrorItem[] = [
       "https://lh3.googleusercontent.com/d/1cKsWIHdZZC6pOv-rUqcwh5uLC2_f1rcb",
     ],
     videoUrls: [
-      { url: "https://www.youtube.com/embed/I-dCP2bbx5o", type: "horizontal" },
+      { url: "https://drive.google.com/file/d/1dTXxPmveqeBsorxawDbMxamDXZenNpyl/preview", type: "horizontal" },
     ],
   },
 
@@ -105,7 +105,7 @@ export const washingErrors: ErrorItem[] = [
     ],
     images: [],
     videoUrls: [
-      { url: "https://www.youtube.com/embed/Ai8_TK_SOSA", type: "horizontal" },
+      { url: "https://drive.google.com/file/d/1brUJo9jKc4mI6KwO3G_VQyEGfPFwhCwm/preview", type: "horizontal" },
     ],
   },
   {
@@ -129,7 +129,7 @@ export const washingErrors: ErrorItem[] = [
     ],
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/cwZoiQgDX-Q?feature=share",
+        url: "https://drive.google.com/file/d/17Q8h0x1mvjx0HsLAkjlC2x8OZmWiBTDM/preview",
         type: "vertical",
       },
     ],
@@ -173,11 +173,11 @@ export const washingErrors: ErrorItem[] = [
     // 🔥 Cấu trúc mới: Mỗi video tự mang theo cấu hình tỷ lệ của chính nó
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/5gh2MvcOuyM?si=Q88pMKKtBFw9Rner",
+        url: "https://drive.google.com/file/d/18dU3oS1JlffoZ444RGsr4syqc3azpgtP/preview",
         type: "vertical",
       },
       {
-        url: "https://www.youtube.com/embed/G_bcKXOIVRw?si=wmTHtUvsuPVjGSjs",
+        url: "https://drive.google.com/file/d/1oKH_4jqG5tKkjphLccdSqnfaEmbzJhQv/preview",
         type: "horizontal",
       },
     ],
@@ -215,7 +215,7 @@ export const washingErrors: ErrorItem[] = [
     images: [],
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/T4UFSzV5FVE?si=2ErNqQjy--VOJ2I-",
+        url: "https://drive.google.com/file/d/1MLgN2yKNqGPtFgZYdcOeqK0r2m1eOxBd/preview",
         type: "vertical",
       },
     ],
@@ -243,7 +243,7 @@ export const washingErrors: ErrorItem[] = [
     ],
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/V4Zk5PtISrA?feature=share",
+        url: "https://drive.google.com/file/d/1SuBNn0FaTRPUUxWPc3_A4cqEdsosAgnK/preview",
         type: "vertical",
       },
     ],
@@ -268,7 +268,7 @@ export const washingErrors: ErrorItem[] = [
     ],
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/A0lut76uIPY?feature=share",
+        url: "https://drive.google.com/file/d/1MLgN2yKNqGPtFgZYdcOeqK0r2m1eOxBd/preview",
         type: "vertical",
       },
     ],
@@ -296,19 +296,19 @@ export const washingErrors: ErrorItem[] = [
     ],
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/y_CN6J7xsMI",
+        url: "https://drive.google.com/file/d/1fv8BA2sQzA99rrt2Vvwo8JZEeJrXRPvD/preview",
         type: "horizontal",
       },
       {
-        url: "https://www.youtube.com/embed/oyc7jn9KRho",
+        url: "https://drive.google.com/file/d/1MHS7CNiHBppMuSYBJLS2ETCrEWODJw0X/preview",
         type: "horizontal",
       },
       {
-        url: "https://www.youtube.com/embed/I7dGUz5j8tA",
+        url: "https://drive.google.com/file/d/1iHJ9uHgVAak-Rj7r0vRWrsXg0YdXn-iG/preview",
         type: "horizontal",
       },
       {
-        url: "https://www.youtube.com/embed/IcW3uDMUkeI",
+        url: "https://drive.google.com/file/d/1iErsOTxAG6hgrL641sQrQJitTPek1DDI/preview",
         type: "horizontal",
       },
     ],
@@ -339,7 +339,7 @@ export const washingErrors: ErrorItem[] = [
     ],
     videoUrls: [
       {
-        url: "https://www.youtube.com/embed/Bp8hk49zUrA",
+        url: "https://drive.google.com/file/d/1n0Tn5XmVEjtuJqT2RO_hPlJqPqC1kQkp/preview",
         type: "horizontal",
       },
     ],

@@ -25,7 +25,7 @@ export const waterPurifierError: ErrorItem[] = [
         images: [],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/nuVX5VX6NlQ?feature=share",
+                url: "https://drive.google.com/file/d/1ERWbFR5jmA6to5wHG1cCtT3PF4eF8otj/preview",
                 type: "vertical",
             },
         ],
@@ -46,7 +46,7 @@ export const waterPurifierError: ErrorItem[] = [
         images: [],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/68EweH1m_Mo?feature=share",
+                url: "https://drive.google.com/file/d/1ryCWPP8dHMml9Krxxm_A1qzokwvQdra4/preview",
                 type: "vertical",
             },
         ],
@@ -71,11 +71,11 @@ export const waterPurifierError: ErrorItem[] = [
         ],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/68EweH1m_Mo?feature=share",
+                url: "https://drive.google.com/file/d/1ryCWPP8dHMml9Krxxm_A1qzokwvQdra4/preview",
                 type: "vertical",
             },
             {
-                url: "https://www.youtube.com/embed/MvqbGnmssgk?si=mbQWmRdkK0L1hgTa",
+                url: "https://drive.google.com/file/d/1Lbk1CPSO8L4HHIPz6GHwp4nv_BqMbs83/preview",
                 type: "vertical",
             },
         ],
@@ -111,11 +111,11 @@ export const waterPurifierError: ErrorItem[] = [
         images: [],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/oCWOnjlj0BY?feature=share",
+                url: "https://drive.google.com/file/d/1H9KYHlVoxg5R2_N7Uy0OWL0i8Y_D0uYT/preview",
                 type: "vertical",
             },
             {
-                url: "https://www.youtube.com/embed/ViucmBJXwAg?feature=share",
+                url: "https://drive.google.com/file/d/1nKl2Qs0CC5WD8YvRkzJm5Qs0ESqLTKHK/preview",
                 type: "vertical",
             },
         ],
@@ -147,7 +147,7 @@ export const waterPurifierError: ErrorItem[] = [
         images: [],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/68EweH1m_Mo?feature=share",
+                url: "https://drive.google.com/file/d/1ryCWPP8dHMml9Krxxm_A1qzokwvQdra4/preview",
                 type: "vertical",
             },
         ],
@@ -174,11 +174,11 @@ export const waterPurifierError: ErrorItem[] = [
         ],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/ALQ0saIHODM?feature=share",
+                url: "https://drive.google.com/file/d/1V4FSNKJHDHo2ILkjM58eVaTJ98GtEq_P/preview",
                 type: "vertical",
             },
             {
-                url: "https://www.youtube.com/embed/qiIsdm9j4iU?si=sfAW3Qi5onpQlWO2",
+                url: "https://drive.google.com/file/d/1wOiwksfDmDFTVM6Ozw8cjG2ABr_Q-ntL/preview",
                 type: "vertical",
             },
         ],
@@ -210,11 +210,11 @@ export const waterPurifierError: ErrorItem[] = [
         ],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/bhwszrAM_sw",
+                url: "https://drive.google.com/file/d/1W9yGTyNyAAEJ4RLnGfRc6CXoXYTTyfHl/preview",
                 type: "vertical",
             },
             {
-                url: "https://www.youtube.com/embed/iGrSJj1brk8?feature=share",
+                url: "https://drive.google.com/file/d/1x1h3ppE9-RgnRmb9c-vTi8oJkF9OAR41/preview",
                 type: "vertical",
             },
         ],
@@ -236,7 +236,7 @@ export const waterPurifierError: ErrorItem[] = [
         ],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/wxxUlEc5gyQ?feature=share",
+                url: "https://drive.google.com/file/d/1AB-H8ZBDNBJX-hPSIWXsu15tRUzMic7l/preview",
                 type: "vertical",
             },
         ],
@@ -262,7 +262,7 @@ export const waterPurifierError: ErrorItem[] = [
         ],
         videoUrls: [
             {
-                url: "https://www.youtube.com/embed/Ku5bKujOmVk",
+                url: "https://drive.google.com/file/d/12wif_iUatmJzYQugy3_kelXDsnax3CES/preview",
                 type: "vertical",
             },
         ],
