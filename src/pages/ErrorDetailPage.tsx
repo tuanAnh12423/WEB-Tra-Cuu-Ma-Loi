@@ -51,7 +51,7 @@ function ErrorDetailPage() {
       {/* 🏷️ Header Mã Lỗi */}
       <div
         style={{
-          background: "linear-gradient(135deg, #0a1628 0%, #1a3a5c 100%)",
+          background: "linear-gradient(135deg, #8b594d 0%, #1b2e42 100%)",
           borderRadius: 16,
           padding: "24px",
           color: "#fff",
