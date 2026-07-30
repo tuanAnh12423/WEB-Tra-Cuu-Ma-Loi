@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import ErrorListPage from "./pages/ErrorListPage";
 import ErrorDetailPage from "./pages/ErrorDetailPage";
 import ReportPage from "./pages/ReportPage";
+import ManualListPage from "./pages/ManualListPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/error-list/:categoryId" element={<ErrorListPage />} />
           <Route path="/error-detail/:errorId" element={<ErrorDetailPage />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/manuals" element={<ManualListPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </div>
