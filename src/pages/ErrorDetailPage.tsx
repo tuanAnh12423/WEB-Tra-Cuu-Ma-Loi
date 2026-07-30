@@ -1,13 +1,27 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { errors } from "../data/errors";
 
 function ErrorDetailPage() {
   const navigate = useNavigate();
   const { errorId } = useParams();
 
-  // State quản lý phóng to hình ảnh khi nhấp vào
+  // State quản lý phóng to hình ảnh
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
+
+  // State quản lý trạng thái Nút Copy (Hiện thông báo "Đã copy!")
+  const [copied, setCopied] = useState(false);
+
+  // Lắng nghe phím ESC để đóng ảnh
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedImg(null);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const error = errors.find((e) => e.id === errorId);
 
@@ -17,6 +31,29 @@ function ErrorDetailPage() {
         Không tìm thấy mã lỗi!
       </div>
     );
+
+  // 📋 HÀM TẠO NỘI DUNG VÀ COPY CHO KHÁCH HÀNG
+  const handleCopyForCustomer = () => {
+    let text = `[HỖ TRỢ KỸ THUẬT]\n`;
+    text += `📌 Mã lỗi/Sự cố: ${error.code ? error.code + " - " : ""}${error.title}\n`;
+    if (error.description) {
+      text += `📝 Mô tả: ${error.description}\n`;
+    }
+    text += `\n📋 CÁC BƯỚC HƯỚNG DẪN XỬ LÝ:\n`;
+
+    error.steps.forEach((step: any, idx: number) => {
+      const stepText = typeof step === "string" ? step : step.text;
+      text += `Bước ${idx + 1}: ${stepText}\n`;
+    });
+
+    text += `\nDạ anh/chị kiểm tra thử giúp bên em nhé. Nếu cần hỗ trợ thêm hãy báo lại cho trung tâm nhé!`;
+
+    // Sao chép vào bộ nhớ tạm (Clipboard)
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500); // Ẩn thông báo sau 2.5 giây
+    });
+  };
 
   return (
     <div
@@ -28,25 +65,57 @@ function ErrorDetailPage() {
         textAlign: "left",
       }}
     >
-      {/* 🔙 Nút quay lại */}
-      <button
-        onClick={() => navigate(-1)}
+      {/* 🔙 HÀNG NÚT QUAY LẠI & NÚT COPY NHANH */}
+      <div
         style={{
-          background: "#e4e6eb",
-          border: "none",
-          padding: "8px 16px",
-          borderRadius: 8,
-          cursor: "pointer",
-          marginBottom: 16,
-          display: "inline-flex",
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          gap: 4,
-          fontWeight: 600,
-          color: "#333",
+          marginBottom: 16,
+          flexWrap: "wrap",
+          gap: 10,
         }}
       >
-        ← Quay lại
-      </button>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            background: "#e4e6eb",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: 8,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            fontWeight: 600,
+            color: "#333",
+          }}
+        >
+          ← Quay lại
+        </button>
+
+        {/* 📋 NÚT COPY HƯỚNG DẪN CHO KHÁCH HÀNG */}
+        <button
+          onClick={handleCopyForCustomer}
+          style={{
+            background: copied ? "#16a34a" : "#0284c7", // Đổi sang màu xanh lá khi đã Copy
+            color: "#ffffff",
+            border: "none",
+            padding: "8px 16px",
+            borderRadius: 8,
+            cursor: "pointer",
+            fontWeight: 700,
+            fontSize: 13,
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            boxShadow: "0 2px 6px rgba(2, 132, 199, 0.25)",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {copied ? "✓ Đã copy nội dung!" : "📋 Copy hướng dẫn cho khách"}
+        </button>
+      </div>
 
       {/* 🏷️ Header Mã Lỗi */}
       <div
@@ -59,17 +128,19 @@ function ErrorDetailPage() {
           textAlign: "left",
         }}
       >
-        <span
-          style={{
-            background: "rgba(255,255,255,0.2)",
-            padding: "4px 12px",
-            borderRadius: 20,
-            fontWeight: 700,
-            display: "inline-block",
-          }}
-        >
-          {error.code}
-        </span>
+        {error.code && (
+          <span
+            style={{
+              background: "rgba(255,255,255,0.2)",
+              padding: "4px 12px",
+              borderRadius: 20,
+              fontWeight: 700,
+              display: "inline-block",
+            }}
+          >
+            {error.code}
+          </span>
+        )}
         <h1 style={{ fontSize: 22, margin: "10px 0 0", textAlign: "left" }}>
           {error.title}
         </h1>
@@ -247,6 +318,7 @@ function ErrorDetailPage() {
           );
         })}
       </div>
+
       {/* 🖼️ Danh Sách Ảnh Chung / Sơ Đồ Mạch */}
       {error.images && error.images.length > 0 && (
         <div
@@ -294,9 +366,9 @@ function ErrorDetailPage() {
                   alt={`Ảnh minh hoạ ${idx + 1}`}
                   referrerPolicy="no-referrer"
                   style={{
-                    width: "100%", // 👈 Ép chiều rộng thu nhỏ đúng 100px
-                    height: "100%", // 👈 Ép chiều cao thu nhỏ đúng 100px
-                    objectFit: "cover", // 👈 Thu nhỏ nhưng không làm méo hình
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
                     display: "block",
                   }}
                 />
@@ -306,7 +378,7 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🎬 KHỐI VIDEO HƯỚNG DẪN MỚI BỔ SUNG */}
+      {/* 🎬 KHỐI VIDEO HƯỚNG DẪN */}
       {error.videoUrls && error.videoUrls.length > 0 && (
         <div
           style={{
@@ -320,7 +392,6 @@ function ErrorDetailPage() {
           {error.videoUrls.map((video, idx) => {
             const isVertical = video.type === "vertical";
 
-            // Hàm lấy ID video YouTube siêu chuẩn cho mọi loại link
             const getYouTubeEmbedUrl = (url: string) => {
               if (!url) return "";
               let videoId = "";
@@ -357,7 +428,7 @@ function ErrorDetailPage() {
                 <div
                   style={{
                     position: "relative",
-                    paddingTop: isVertical ? "177.78%" : "56.25%", // Tỉ lệ 9:16 (dọc) hoặc 16:9 (ngang)
+                    paddingTop: isVertical ? "177.78%" : "56.25%",
                     height: 0,
                   }}
                 >
@@ -382,7 +453,7 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🔍 Modal Phóng To Ảnh */}
+      {/* 🔍 MODAL PHÓNG TO ẢNH */}
       {selectedImg && (
         <div
           onClick={() => setSelectedImg(null)}
@@ -390,43 +461,73 @@ function ErrorDetailPage() {
             position: "fixed",
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(0,0,0,0.85)",
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9999,
             display: "flex",
-            justifyContent: "center",
             alignItems: "center",
-            zIndex: 1000,
-            cursor: "zoom-out",
+            justifyContent: "center",
             padding: 20,
+            boxSizing: "border-box",
+            cursor: "zoom-out",
           }}
         >
-          <img
-            src={selectedImg}
-            alt="Ảnh phóng to"
-            style={{
-              maxWidth: "95%",
-              maxHeight: "95%",
-              borderRadius: 8,
-              boxShadow: "0 5px 15px rgba(0,0,0,0.5)",
-            }}
+          <div
             onClick={(e) => e.stopPropagation()}
-          />
-          <button
-            onClick={() => setSelectedImg(null)}
             style={{
-              position: "absolute",
-              top: 20,
-              right: 20,
-              background: "none",
-              border: "none",
-              color: "#fff",
-              fontSize: 32,
-              cursor: "pointer",
+              position: "relative",
+              maxWidth: "90vw",
+              maxHeight: "85vh",
+              display: "inline-block",
+              cursor: "default",
             }}
           >
-            ×
-          </button>
+            <button
+              onClick={() => setSelectedImg(null)}
+              style={{
+                position: "absolute",
+                top: -14,
+                right: -14,
+                width: 34,
+                height: 34,
+                borderRadius: "50%",
+                backgroundColor: "#ef4444",
+                color: "#ffffff",
+                border: "2px solid #ffffff",
+                fontSize: 16,
+                fontWeight: "bold",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+                zIndex: 10000,
+                transition: "transform 0.15s ease",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "scale(1.1)")
+              }
+              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              title="Đóng (Bấm ra ngoài hoặc phím ESC để tắt)"
+            >
+              ✕
+            </button>
+
+            <img
+              src={selectedImg}
+              alt="Ảnh phóng to"
+              style={{
+                maxWidth: "100%",
+                maxHeight: "80vh",
+                objectFit: "contain",
+                borderRadius: 12,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                display: "block",
+              }}
+            />
+          </div>
         </div>
       )}
     </div>
