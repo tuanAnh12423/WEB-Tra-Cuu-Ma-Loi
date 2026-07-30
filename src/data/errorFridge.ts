@@ -443,4 +443,705 @@ export const fridgeErrors: ErrorItem[] = [
     ],
     images: [],
   },
+  {
+    id: "F21",
+    category: "fridge",
+    code: "(R021) Đèn LED không sáng",
+    title:
+      "Tủ lạnh Đèn LED không sáng, đèn LED trong ngăn mát hoặc ngăn đông không sáng",
+    description: "Tủ lạnh Đèn LED trong ngăn mát hoặc ngăn đông không sáng",
+    steps: [
+      {
+        text: "Kiểm tra ổ cắm điện có nguồn không? Phích dây nguồn đã được cắm chặt vào ổ cắm điện chưa?",
+      },
+      {
+        text: "Kiểm tra lại máy nén có đang hoạt động không?",
+      },
+      {
+        text: "Nếu có, báo MSC kiểm tra và xử lý cho KH",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F22",
+    category: "fridge",
+    code: "(R022) Tiếng kêu to từ máy nén",
+    title: "Tủ lạnh Tiếng kêu to từ máy nén",
+    description: "Tủ lạnh Tiếng kêu to từ máy nén",
+    steps: [
+      {
+        text: "Máy nén có thể kêu to hơn thông thường khi tủ làm lạnh với công suất cao trong trường hợp: sử dụng tủ lần đầu, tủ chưa đủ lạnh, đóng/mở cửa quá thường xuyên. Máy nén sẽ êm hơn khi tủ đã đủ lạnh",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F23",
+    category: "fridge",
+    code: "(R023) Tiếng kêu khác - âm thanh bình thường của tủ",
+    title: "Tủ lạnh Tiếng kêu khác - âm thanh bình thường của tủ",
+    description: "Tủ lạnh Tiếng kêu khác - âm thanh bình thường của tủ",
+    steps: [
+      {
+        text: "Âm thanh như tiếng nước chảy, tiếng sôi, tiếng lách tách. Đây là âm thanh của dòng chảy của môi chất lạnh (gas lạnh) trong hệ thống lạnh",
+      },
+      {
+        text: "Âm thanh kêu lớn KH đang phản ánh là tiếng gas luân chuyển trong hệ thống dàn, thường thì sau khi chạy xả đá xong, tủ cần chạy lại công suất cao để giữ nhiệt lạnh cho thực phẩm, nên sẽ nghe tiếng gas rõ tiếng hơn trong vài phút và hết, đó là là tiếng vận hành của tủ không phải hư hỏng",
+      },
+      {
+        text: "Tiếng lách tách. Đây là âm thanh của lớp nhựa bên trong tủ co dãn khi nhệt độ thay đổi (thông thường các tủ mới sẽ có)",
+      },
+      {
+        text: " Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F24",
+    category: "fridge",
+    code: "(R024) Ngăn mát không lạnh",
+    title: "Tủ lạnh Ngăn mát không lạnh",
+    description: "Tủ lạnh Ngăn mát không lạnh",
+    steps: [
+      {
+        text: "Thuyết phục khách hàng kiểm tra lại bảng điều khiển đã điều chỉnh mức thấp nhất chưa?",
+      },
+      {
+        text: "Thực phẩm đã khách hàng trữ có cản trở luồng gió lạnh thổi ra không?",
+      },
+      {
+        text: " Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F25",
+    category: "fridge",
+    code: "(R025) Ngăn mát quá lạnh",
+    title: "Tủ lạnh Ngăn mát quá lạnh",
+    description: "Tủ lạnh Ngăn mát quá lạnh",
+    steps: [
+      {
+        text: "Nhiệt độ có đang cài đặt ở mức 'lạnh nhất' không?  => Chỉnh lại nhiệt độ trung bình/ cao nhất",
+      },
+      {
+        text: "Có đặt thực phẩm sát các khe thoát khí lạnh? Thực phẩm sẽ dễ bị đông đá. => Giữ khoảng cách vừa đủ giữa các loại thực phẩm. Không chặn lỗ thông hơi lạnh",
+      },
+      {
+        text: " Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F26",
+    category: "fridge",
+    code: "(R026) Ron cửa hít không chặt",
+    title: "Tủ lạnh Ron cửa hít không chặt",
+    description: "Tủ lạnh Ron cửa hít không chặt",
+    steps: [
+      {
+        text: "Trường hợp khách hàng mua hơn 3 tháng, khuyến nghị khách hàng vệ sinh lại ron cửa bằng nước ấm",
+      },
+      {
+        text: "Điều chỉnh lại tủ cân bằng",
+      },
+      {
+        text: "Kiểm tra lại ron cửa có bị gập không?",
+      },
+      {
+        text: "Kiểm tra lại khay kệ có bị cấn thực phẩm trong tủ không?",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F27",
+    category: "fridge",
+    code: "(R027) Thời gian đông đá quá lâu",
+    title: "Tủ lạnh Thời gian đông đá quá lâu",
+    description: "Tủ lạnh Thời gian đông đá quá lâu",
+    steps: [
+      {
+        text: "TDV hỏi khách hàng số lượng lon đá làm cùng 1 lúc bao nhiêu lon?",
+      },
+      {
+        text: "Khuyến nghị khách hàng làm từ 6-8 lon (tuỳ theo dung tích lon đá) sau khi lon đá đông sẽ làm thêm và xen kẽ",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F28",
+    category: "fridge",
+    code: "(R028) Tủ kém lạnh",
+    title: "Tủ lạnh kém lạnh",
+    description: "Tủ lạnh kém lạnh",
+    steps: [
+      {
+        text: "Thuyết phục khách hàng kiểm tra lại bảng điều khiển đã điều chỉnh mức nhiệt độ thấp nhất chưa?",
+      },
+      {
+        text: "Thực phẩm đã khách hàng trữ có cản trở luồng gió lạnh thổi ra không?",
+      },
+      {
+        text: "Tủ có đặt vị trí có ánh nắng chiếu tực tiếp vào tủ hoặc gần các thiết bị điện, nhiệt?",
+      },
+      {
+        text: "Luôn chừa khoảng trống xung quanh để tủ làm lạnh hiệu quả: Trên 30cm, hông 10cm, sau 10cm (Lưu ý dòng JAPANDi sẽ nhỏ hơn)",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F29",
+    category: "fridge",
+    code: "(R029) Tủ gợn sóng bên hông tủ",
+    title: "Tủ lạnh gợn sóng bên hông tủ",
+    description: "Tủ lạnh gợn sóng bên hông tủ",
+    steps: [
+      {
+        text: "Đây không phải lỗi sản phẩm",
+      },
+      {
+        text: "Dàn nóng được thiết kế đặt bên hông tủ đổ form cách nhiệt và điều này được tạo ra trong quá trình sản xuất",
+      },
+      {
+        text: "Vấn đề này sẽ dễ nhận thấy khi tủ đặt ở vị trí có ánh sáng tốt và nhìn nghiêng",
+      },
+      {
+        text: "Tình trạng này không ảnh hưởng đến vận hành của tủ",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F30",
+    category: "fridge",
+    code: "(R030) Cảnh báo EF",
+    title: "Tủ lạnh Cảnh báo EF",
+    description: "Mã lỗi này chỉ báo ở model: GR-RS755WIA-PGV(22)-XK",
+    steps: [
+      {
+        text: "TDV tư vấn KH điều chỉnh lại hộp đựng nước (hình bên cạnh)",
+      },
+      {
+        text: "Sau đó nhờ KH lấy lại nước để lấy xác nhận hộp nước đã vô đúng vị trí",
+      },
+
+      {
+        text: "Nếu KH đã làm đúng mà vẫn báo EF, TDV tạo WO chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F31",
+    category: "fridge",
+    code: "(R031) Tủ Side By Side không lấy được đá ngoài",
+    title: "Tủ lạnh Tủ Side By Side không lấy được đá ngoài",
+    description: "Tủ lạnh Tủ Side By Side không lấy được đá ngoài",
+    steps: [
+      {
+        text: "TDV tư vấn khách hàng kiểm tra xem đá trong hộc trữ có dính lại với nhau không?",
+      },
+      {
+        text: "Nếu có hãy bỏ và vệ sinh",
+      },
+
+      {
+        text: "Nguyên nhân gây đá dính với nhau: Có bị cúp điện không?, Cửa có bị mở thường xuyên không",
+      },
+      {
+        text: "Nếu không khắc phục được. Chuyển ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F32",
+    category: "fridge",
+    code: "(R032) Tủ lạnh không làm đá tự động",
+    title: "Tủ lạnh không làm đá tự động:",
+    description:
+      "Các model: GR-RT435WEA-PMV(06)-MG, GR-RT535WEA-PMV(06)-MG, GR-RB405WEA-PMV(06)-MG, GR-RF665WIA-PGV(22)-XK, GR-RS755WIA-PGV(22)-XK",
+    steps: [
+      {
+        text: "TDV tư vấn khách hàng bật ON tính năng làm đá tự động",
+      },
+      {
+        text: "Tư vấn khách hàng kiểm tra vị trí lắp đặt hộp nước + đổ đầy bình",
+      },
+
+      {
+        text: "Nếu bước 1-2 đã ok nhưng tủ không làm đá",
+      },
+      {
+        text: "Báo ASP kiểm tra - kèm ghi chú các nội dung đã tư vấn vào WO",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F33",
+    category: "fridge",
+    code: "(R033) Tủ bị bẩn (Dơ) (Có thể vệ sinh) ",
+    title: "Tủ bị bẩn (Dơ) (Có thể vệ sinh)",
+    description: "Tủ dơ, chảy nước có màu đen trong tủ.",
+    steps: [
+      {
+        text: "Hỏi KH Model, ngày mua, khi nào gặp hiện tượng",
+      },
+      {
+        text: "Xin KH Video Hình ảnh (Nếu có thể)",
+      },
+
+      {
+        text: "Hướng dẫn khách vệ sinh chỗ bị bẩn (dơ)",
+      },
+      {
+        text: "Xin KH video/ hình ảnh (trước và sau khi vệ sinh)",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F34",
+    category: "fridge",
+    code: "(R034) Màn hình không hiển thị, bảng điều khiển không hiển thị",
+    title: "Màn hình không hiển thị, bảng điều khiển không hiển thị",
+    description: "Màn hình không hiển thị, bảng điều khiển không hiển thị",
+    steps: [
+      {
+        text: "Sau 30s không hoạt động tủ sẽ tự động tăt màn hình hiển thị",
+      },
+      {
+        text: "Kiểm tra ổ điện phích cắm, Kiểm tra tủ có đang hoạt động bình thường",
+      },
+
+      {
+        text: "Hướng dẫn KH chạm vào khu vực màn hình hiển thị để điều khiển.",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F35",
+    category: "fridge",
+    code: "(R035) Cảnh báo E0 : bộ làm đá tự động",
+    title: "Cảnh báo E0 : bộ làm đá tự động",
+    description: "Cảnh báo E0 : bộ làm đá tự động",
+    steps: [
+      {
+        text: "Kiểm tra trên hộp chứa đá có đá không, Kiểm tra hộp chứa nước có đủ nước",
+      },
+      {
+        text: "Rút điện tủ lạnh ra cắm lại để tủ tự  khởi động lại làm đá nếu tủ vẫn báo E0 liên hệ trạm gửi KTV kiểm tra.",
+      },
+      {
+        text: "Xin thêm hình lỗi từ KH (Nếu có). Ghi chú trên ca lỗi tương ứng",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F36",
+    category: "fridge",
+    code: "(R036) Cảnh báo E1 : cảm biến ngăn trữ",
+    title: "Cảnh báo E1 : cảm biến ngăn trữ",
+    description: "Cảnh báo E1 : cảm biến ngăn trữ",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F37",
+    category: "fridge",
+    code: "(R037) Cảnh báo  E2 : cảm biến ngăn đá",
+    title: "Cảnh báo  E2 : cảm biến ngăn đá",
+    description: "Cảnh báo  E2 : cảm biến ngăn đá",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F38",
+    category: "fridge",
+    code: "(R038) Cảnh báo E3 : cảm biến ngăn đa năng",
+    title: "Cảnh báo E3 : cảm biến ngăn đa năng",
+    description: "Cảnh báo E3 : cảm biến ngăn đa năng",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F39",
+    category: "fridge",
+    code: "(R039) Cảnh báo E4 : cảm biến xả đá ngăn trữ",
+    title: "Cảnh báo E4 : cảm biến xả đá ngăn trữ",
+    description: "Cảnh báo E4 : cảm biến xả đá ngăn trữ",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F40",
+    category: "fridge",
+    code: "(R040) Cảnh báo E5 : cảm biến xả đá ngăn đá",
+    title: "Cảnh báo E5 : cảm biến xả đá ngăn đá",
+    description: "Cảnh báo E5 : cảm biến xả đá ngăn đá",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F41",
+    category: "fridge",
+    code: "(R041) Cảnh báo E6 : lỗi giao tiếp bo hiển thị và bo mạch chính",
+    title: "Cảnh báo E6 : lỗi giao tiếp bo hiển thị và bo mạch chính",
+    description: "Cảnh báo E6 : lỗi giao tiếp bo hiển thị và bo mạch chính",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F42",
+    category: "fridge",
+    code: "(R042) Cảnh báo E7 : cảm biến môi trường (nhiệt độ)",
+    title: "Cảnh báo E7 : cảm biến môi trường (nhiệt độ)",
+    description: "Cảnh báo E7 : cảm biến môi trường (nhiệt độ)",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F43",
+    category: "fridge",
+    code: "(R043) Cảnh báo EE : cảm biến lật đá làm đá tự động",
+    title: "Cảnh báo EE : cảm biến lật đá làm đá tự động",
+    description: "Cảnh báo EE : cảm biến lật đá làm đá tự động",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F44",
+    category: "fridge",
+    code: "(R044) Cảnh báo EH : cảm biến môi trường (độ ẩm)",
+    title: "Cảnh báo EH : cảm biến môi trường (độ ẩm)",
+    description: "Cảnh báo EH : cảm biến môi trường (độ ẩm)",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F45",
+    category: "fridge",
+    code: "(R045) Cảnh báo EP : bộ làm đá tự động",
+    title: "Cảnh báo EP : bộ làm đá tự động",
+    description: "Cảnh báo EP : bộ làm đá tự động",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F46",
+    category: "fridge",
+    code: "(R046) Cảnh báo P1 : nhiệt độ ngăn trữ bất thường",
+    title: "Cảnh báo P1 : nhiệt độ ngăn trữ bất thường",
+    description: "Cảnh báo P1 : nhiệt độ ngăn trữ bất thường",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F47",
+    category: "fridge",
+    code: "(R047) Cảnh báo P2 : nhiệt độ ngăn đá bất trường",
+    title: "Cảnh báo P2 : nhiệt độ ngăn đá bất trường",
+    description: "Cảnh báo P2 : nhiệt độ ngăn đá bất trường",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F48",
+    category: "fridge",
+    code: "(R048) Cảnh báo CA : giao tiếp bo mạch chính và bo khiển làm đá tự động",
+    title: "Cảnh báo CA : giao tiếp bo mạch chính và bo khiển làm đá tự động",
+    description:
+      "Cảnh báo CA : giao tiếp bo mạch chính và bo khiển làm đá tự động",
+    steps: [
+      {
+        text: "Lưu lại thông tin, xin thêm hình ảnh mã lỗi của KH (Nếu có)",
+      },
+
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F49",
+    category: "fridge",
+    code: "(R049) Chảy nước sàn nhà",
+    title: "Chảy nước sàn nhà",
+    description: "Tủ lạnh bị Chảy nước ra sàn nhà",
+    steps: [
+      {
+        text: "Kiểm tra lại nguồn điện đổi ổ cắm khác, theo dõi.",
+      },
+      {
+        text: "Kiểm tra chảy nước từ đâu",
+      },
+      {
+        text: "Nếu nước chảy từ đằng sau liên hệ trạm gửi KTV kiểm tra",
+      },
+      {
+        text: "Nếu nước chảy từ cánh tủ. Kiểm tra lại thực phẩm hoặc cách sắp xếp thực phẩm có kín hoặc bị đổ nước bên trong tủ",
+      },
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F50",
+    category: "fridge",
+    code: "(R050) Bảng điều khiển chớp đèn",
+    title: "Bảng điều khiển chớp đèn",
+    description: "Bảng điều khiển chớp đèn",
+    steps: [
+      {
+        text: "TDV khai khác tình trạng của tủ: Không lạnh/ không làm đá?",
+      },
+      {
+        text: "Nhờ KH quay lại video tủ đang  chớp đèn nào (Ghi chú lên ca).",
+      },
+      {
+        text: "Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F51",
+    category: "fridge",
+    code: "(R051) 711L Model - Tủ không lạnh hoàn toàn/ Lúc lạnh lúc không",
+    title: "711L Model - Tủ không lạnh hoàn toàn/ Lúc lạnh lúc không",
+    description:
+      "711L Model - Tủ không lạnh hoàn toàn/ Lúc lạnh lúc không. (GR-RF895WIA-PGV(22)-XK GR-RF900WI-PMV(06)-MG)",
+    steps: [
+      {
+        text: "CC nếu nhận các khiếu nại về các hiện tượng nêu trên sẽ tiến hành:",
+      },
+      {
+        text: "Liên hệ trấn an khách hàng + khuyến nghị khách hàng rút phích nguồn của tủ lạnh",
+      },
+      {
+        text: "Tạo WO và ghi chú cho TBH thực hiện: TBH kết nối IOT + kiểm tra kỹ van tiết lưu + xem hướng dẫn xử lý trong app MISA",
+      },
+      {
+        text: "Báo cho ASP kiểm tra cho KH.",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F52",
+    category: "fridge",
+    code: "(R052) Khách hàng phản ánh có tiếng kêu (ọc ọc ọc) sau khi  mở đóng cửa ngăn đông",
+    title:
+      "Đối với các model khách hàng phản ánh có tiếng kêu (ọc ọc ọc) sau khi  mở đóng cửa ngăn đông",
+    description:
+      "GR-RT395WE-PMV(06)-MG, GR-RT435WEA-PMV(06)-MG, GR-RT416WE-PMV(58)-MM, GR-RT535WEA-PMV(06)-MG, GR-RT535WE-PMV, GR-RT468WE-PMV(58)-MM, GR-RT559WE-PMV(58)-MMGR, RB405WEA-PMV(06)-MG, GR-RB410WE-PMV(37)-SG, GR-RB405WE-PMV(06)-MG",
+    steps: [
+      {
+        text: "CC tiếp nhận và chia sẻ thời gian gần đây môi trường có ẩm nhiều không (mưa nhiều/ đóng mở cửa thường xuyên)",
+      },
+      {
+        text: "Hỏi thăm tình trạng hộc nước phía sau có bị đầy không? => Đầy => Khuyến nghị KH hút bớt nước trong hộc và kiểm tra lại.",
+      },
+      {
+        text: "TH 1: Giải thích cho khách hàng  đây không phải lỗi sản phẩm và là nguyên lý hoạt động do có nước trong ống chảy nước + máng nước đầy sẽ có tiếng kêu → Đóng ca FCR",
+      },
+      {
+        text: "TH 2: khách hàng chưa hài lòng và yêu cầu được kiểm, TDV ghi rõ đã tư vấn về tiếng kêu + KTV kiểm tra - cân chỉnh lại máng nước + ống xã",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F53",
+    category: "fridge",
+    code: "(R053) Tủ hoạt động có tiếng ồn ở ngăn đá",
+    title: "Tủ hoạt động có tiếng ồn ở ngăn đá",
+    description: "Tủ hoạt động có tiếng ồn ở ngăn đá",
+    steps: [
+      {
+        text: "HD KH khi mở tủ có còn tiếng động. Nếu còn => Báo trạm kiểm tra",
+      },
+      {
+        text: "Nếu không tiếp tục HD",
+      },
+      {
+        text: "Sắp xếp lại thực phẩm ngăn mát ngăn đông.",
+      },
+      {
+        text: "Kiểm tra thực phẩm có bao bọc kín tránh bốc hơi nước.",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F54",
+    category: "fridge",
+    code: "(R054) Có côn trùng bên trong tủ",
+    title: "Có côn trùng bên trong tủ",
+    description: "Có côn trùng bên trong tủ",
+    steps: [
+      {
+        text: "Kiểm tra xem cửa có đang bị cấn khay kệ làm không đóng kín hay không.",
+      },
+      {
+        text: "Giải thích KH có thể lúc mở cửa ra vào có côn trùng lọt vào là không thể tránh khỏi. Thử Lau dọn sạch sẽ, và hạn chế đóng mở cửa tủ lại, và theo dõi nếu số lượng quá nhiều báo trạm xuống kiểm tra và xử lý",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F55",
+    category: "fridge",
+    code: "(R055) Không lấy được nước ngoài",
+    title: "Không lấy được nước ngoài",
+    description: "Không lấy được nước ngoài - Áp dụng Model GR-RS755",
+    steps: [
+      {
+        text: "CC chia sẻ Khách rút hộp chứa nước ra, xong đóng cửa tủ lại để : - đổ bớt nước bên trong ra, dưới mức MAX - nhấn lấy nước (khi không gắn hộp chứa nước) - xem tủ có báo lỗi (EF) không ? có (EF) là bình thường + sau đó, gắn hộp chứa nước lại, đóng cửa lại : - chờ khoảng 5-10p, thử nhấn lấy nước lại ngoài lại, xem đã được chưa ?",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+  },
 ];

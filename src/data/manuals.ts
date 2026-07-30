@@ -1,6 +1,7 @@
 // 1. Import mảng dữ liệu từ các file ngành hàng riêng biệt
 import { washingManuals } from "./washingManual";
 import { fridgeManuals } from "./fridgeManual";
+import { waterPurifierManuals } from "./waterPurifierManual";
 
 // 2. Khai báo kiểu dữ liệu
 export interface ManualItem {
@@ -16,4 +17,5 @@ export interface ManualItem {
 export const manuals: ManualItem[] = [
   ...washingManuals,
   ...fridgeManuals,
+  ...waterPurifierManuals,
 ];

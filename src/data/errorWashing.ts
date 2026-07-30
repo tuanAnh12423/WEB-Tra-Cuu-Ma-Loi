@@ -37,7 +37,10 @@ export const washingErrors: ErrorItem[] = [
       "https://lh3.googleusercontent.com/d/1c02WRUg_sBBezXaw7aoVCxqbb7TDUmiz",
     ],
     videoUrls: [
-      { url: "https://drive.google.com/file/d/1dTXxPmveqeBsorxawDbMxamDXZenNpyl/preview", type: "horizontal" },
+      {
+        url: "https://drive.google.com/file/d/1dTXxPmveqeBsorxawDbMxamDXZenNpyl/preview",
+        type: "horizontal",
+      },
     ],
   },
   {
@@ -77,7 +80,10 @@ export const washingErrors: ErrorItem[] = [
       "https://lh3.googleusercontent.com/d/1cKsWIHdZZC6pOv-rUqcwh5uLC2_f1rcb",
     ],
     videoUrls: [
-      { url: "https://drive.google.com/file/d/1dTXxPmveqeBsorxawDbMxamDXZenNpyl/preview", type: "horizontal" },
+      {
+        url: "https://drive.google.com/file/d/1dTXxPmveqeBsorxawDbMxamDXZenNpyl/preview",
+        type: "horizontal",
+      },
     ],
   },
 
@@ -105,7 +111,10 @@ export const washingErrors: ErrorItem[] = [
     ],
     images: [],
     videoUrls: [
-      { url: "https://drive.google.com/file/d/1brUJo9jKc4mI6KwO3G_VQyEGfPFwhCwm/preview", type: "horizontal" },
+      {
+        url: "https://drive.google.com/file/d/1brUJo9jKc4mI6KwO3G_VQyEGfPFwhCwm/preview",
+        type: "horizontal",
+      },
     ],
   },
   {
@@ -204,7 +213,8 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Quần áo bị dồn về 1 phía gây rung lắc => Phân phối lại quần áo",
-        image: "https://lh3.googleusercontent.com/d/17wH-bLT7CmmUWza_oEAsQU4LmaU1ZfUP",
+        image:
+          "https://lh3.googleusercontent.com/d/17wH-bLT7CmmUWza_oEAsQU4LmaU1ZfUP",
       },
       {
         text: "Cân chỉnh lại chân máy khi đã đặt máy tại vị trí mặt phẳng cứng, hoặc đã bỏ ra khỏi chân đế",
@@ -488,7 +498,7 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W017",
     category: "washing",
-    code:  "(WM60) MÁY GIẶT KHÔNG GIẶT (Máy giặt cửa trên)",
+    code: "(WM60) MÁY GIẶT KHÔNG GIẶT (Máy giặt cửa trên)",
     title: "Máy giặt cửa trên có nguồn nhưng không giặt",
     description:
       "Bạn mở máy lên bấm giặt máy giảm thời gian, nhưng không giặt, không thấy nước cấp hoặc nước cấp vào rất yếu, hoặc giặt một lúc máy rung lắc sau đó ngưng không giặt nữa.",
@@ -601,9 +611,9 @@ export const washingErrors: ErrorItem[] = [
     images: [],
     videoUrls: [
       {
-      url: "https://drive.google.com/file/d/1VjUvNS-Nl-Cvq1EM8hDD_MRweUgFj4R6/preview",
-      type: "horizontal"
-      }
+        url: "https://drive.google.com/file/d/1VjUvNS-Nl-Cvq1EM8hDD_MRweUgFj4R6/preview",
+        type: "horizontal",
+      },
     ],
   },
   {
@@ -1062,8 +1072,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM39) Ron cửa bị rách, gập",
     title: "Ron cửa bị rách, gập",
-    description:
-      "Ron cửa bị rách, gập",
+    description: "Ron cửa bị rách, gập",
     steps: [
       {
         text: "TDV trao đổi khách hàng có để quần áo bị kẹt khi đóng cửa không? Căn cứ chính sách các trường hợp không bảo hành - kiến nghị khách hàng (nếu hư hỏng do các yếu tố tác động có thể) sẽ sửa chữa tính phí",
@@ -1075,13 +1084,12 @@ export const washingErrors: ErrorItem[] = [
     images: [],
     videoUrls: [],
   },
-   {
+  {
     id: "W049",
     category: "washing",
     code: "(WM40) Nước giặt/ nước xả không cấp",
     title: "Nước giặt/ nước xả không cấp",
-    description:
-      "Nước giặt/ nước xả không cấp",
+    description: "Nước giặt/ nước xả không cấp",
     steps: [
       {
         text: "Căn cứ sách HDSD tư vấn KH điều chỉnh lại mức nước giặt/ xã phù hợp (CHỈ CÓ Ở MODEL T25-T22-BM115-BM135)",
@@ -1098,8 +1106,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM41) Máy không có nguồn, máy giặt không nguồn",
     title: "Máy không có nguồn",
-    description:
-      "Máy không có nguồn",
+    description: "Máy không có nguồn",
     steps: [
       {
         text: "TDV tư vấn khách hàng kiểm tra lại ổ cắm + phích cắm. Nếu máy vẫn không hoạt động, dùng thiết bị điện khác cắm thử vào ổ cắm để kiểm tra. (Nên tư vấn KH sử dụng loại ổ cắm tốt, tránh TH kéo dài ổ cắm.)",
@@ -1116,8 +1123,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM42) Âm thanh khác",
     title: "Âm thanh khác",
-    description:
-      "Âm thanh khác",
+    description: "Âm thanh khác",
     steps: [
       {
         text: "TDV khai thác âm thanh lạ này phát sinh khi nào?",
@@ -1137,8 +1143,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM43) Máy kêu to khi giặt",
     title: "Máy kêu to khi giặt",
-    description:
-      "Máy kêu to khi giặt",
+    description: "Máy kêu to khi giặt",
     steps: [
       {
         text: "Máy đang được lắp đặt trên nền cứng, vững chưa? (Khuyến cáo không đặt máy trên chân inox, chân nhựa cao...)",
@@ -1173,8 +1178,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM44) Máy kêu to khi vắt",
     title: "Máy kêu to khi vắt",
-    description:
-      "Máy kêu to khi vắt",
+    description: "Máy kêu to khi vắt",
     steps: [
       {
         text: "Máy đang được lắp đặt trên nền cứng, vững chưa? (Khuyến cáo không đặt máy trên chân inox, chân nhựa cao...)",
@@ -1209,8 +1213,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM45) Giặt xong có vết bẩn lạ, bụi bẩn trên quần áo",
     title: "Giặt xong có vết bẩn lạ, bụi bẩn trên quần áo",
-    description:
-      "Giặt xong có vết bẩn lạ, bụi bẩn trên quần áo",
+    description: "Giặt xong có vết bẩn lạ, bụi bẩn trên quần áo",
     steps: [
       {
         text: "Hỏi model số máy, ngày mua, trước đây có hiện tượng này?",
@@ -1225,8 +1228,8 @@ export const washingErrors: ErrorItem[] = [
         text: "Tư vấn khách hàng vệ sinh lồng giặt, bộ lọc sơ vải, dùng chương trình vệ sinh lồng giặt.",
       },
       {
-        text: "Nếu không khắc phục được. Báo ca ASP Kiểm tra"
-      }
+        text: "Nếu không khắc phục được. Báo ca ASP Kiểm tra",
+      },
     ],
     images: [],
     videoUrls: [],
@@ -1236,8 +1239,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM46) Máy lúc giặt lúc không (Model máy giặt lồng đứng)",
     title: "Máy lúc giặt lúc không (Model máy giặt lồng đứng)",
-    description:
-      "Máy lúc giặt lúc không (Model máy giặt lồng đứng)",
+    description: "Máy lúc giặt lúc không (Model máy giặt lồng đứng)",
     steps: [
       {
         text: "Kiểm tra nguồn cấp điện của KH (ổ cắm, dây nguồn,…) có bị lỏng lẻo đổi ổ cắm khác để thử.",
@@ -1260,8 +1262,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM47) Không vắt",
     title: "Không vắt",
-    description:
-      "Không vắt",
+    description: "Không vắt",
     steps: [
       {
         text: "Máy dừng vắt ở giai đoạn nào?",
@@ -1271,7 +1272,7 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Kiểm tra ống xả nước của máy:",
-      },  
+      },
       {
         text: "Lồng Đứng: Ống có bị gấp khúc hoặc kẹt vật lạ,… Điều chỉnh lại ống xả, hoặc vệ sinh vật bị kẹt. Sau đó theo dõi lại chu trình giặt khác.",
       },
@@ -1289,10 +1290,9 @@ export const washingErrors: ErrorItem[] = [
     id: "W058",
     category: "washing",
     code: "(WM49) Máy sấy sấy không khô quần áo",
-    subtype:"Máy sấy",
+    subtype: "Máy sấy",
     title: "Máy sấy sấy không khô quần áo",
-    description:
-      "Máy sấy sấy không khô quần áo",
+    description: "Máy sấy sấy không khô quần áo",
     steps: [
       {
         text: "Vệ sinh sạch lưới lọc xơ vải đằng trước máy",
@@ -1302,7 +1302,7 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Phân loại quần áo",
-      },  
+      },
       {
         text: "Khuyến nghị khách hàng vắt thêm 1 lần nữa",
       },
@@ -1318,8 +1318,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM50) Đèn hiển thị không sáng",
     title: "Đèn hiển thị không sáng",
-    description:
-      "Đèn hiển thị không sáng",
+    description: "Đèn hiển thị không sáng",
     steps: [
       {
         text: "Kiểm tra lại ổ cắm điện.",
@@ -1329,7 +1328,7 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Nếu được xin lại video tình trạng của máy KH.",
-      },  
+      },
       {
         text: "Nếu không khắc phục được, Báo ASP kiểm tra",
       },
@@ -1342,8 +1341,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM51) Máy rò rỉ nước vào lồng giặt",
     title: "Máy rò rỉ nước vào lồng giặt",
-    description:
-      "Máy rò rỉ nước vào lồng giặt",
+    description: "Máy rò rỉ nước vào lồng giặt",
     steps: [
       {
         text: "Trước khi mở nguồn máy giặt nước có chảy không?",
@@ -1353,7 +1351,7 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Có bật nguồn nước chảy vào lồng giặt. Giải thích với khách hàng hiện tượng bình thường.",
-      },  
+      },
       {
         text: "Nếu không khắc phục được, Báo ASP kiểm tra",
       },
@@ -1366,8 +1364,7 @@ export const washingErrors: ErrorItem[] = [
     category: "washing",
     code: "(WM54) Chảy nước dưới đáy máy",
     title: "Chảy nước dưới đáy máy",
-    description:
-      "Chảy nước dưới đáy máy",
+    description: "Chảy nước dưới đáy máy",
     steps: [
       {
         text: "Nhờ KH xác định được nước chảy ra từ đâu của máy giặt (Dưới đáy máy, ống xả, nước trào ra từ bên trong lồng giặt",
@@ -1377,7 +1374,7 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "→ Nếu là xà phòng kiểm tra loại nước giặt/ xả KH đang sử dụng",
-      },  
+      },
       {
         text: "→ Nếu là nước thường, ghi nhận lại TH báo trạm kiểm tra",
       },
@@ -1407,10 +1404,10 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Repair 1/ n lần nhưng chưa lần nào thay motor: Mã HOT KEY đang gặp + WM55: APS đem theo motor tư vấn + thay cho khách hàng - xác LK Trạm dán tem ngoài  motor (LAD PROJECT 1)",
-      },  
+      },
       {
         text: "Repair 1/ n lần nhưng đã thay motor: Xin ý kiến  A THẢO trước. Mã HOT KEY đang gặp + nội dung A Thảo yêu cầu xử lý",
-      },  
+      },
     ],
     images: [],
     videoUrls: [],
@@ -1431,10 +1428,10 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "HD KH kết nối IOT, và HD KH kích hoạt tính năng chống nhăn trên ứng dụng TSmart Life",
-      },  
+      },
       {
         text: "Nếu không khắc phục được. Báo ASP kiểm tra",
-      },  
+      },
     ],
     images: [],
     videoUrls: [],
@@ -1442,11 +1439,10 @@ export const washingErrors: ErrorItem[] = [
   {
     id: "W064",
     category: "washing",
-    subtype:"Máy sấy",
+    subtype: "Máy sấy",
     code: "(WM58) Máy sấy có âm thanh lạ khi hoạt động, Máy sấy kêu to.",
     title: "Máy sấy có âm thanh lạ khi hoạt động, Máy sấy kêu to.",
-    description:
-      "Máy sấy có âm thanh lạ khi hoạt động, Máy sấy kêu to.",
+    description: "Máy sấy có âm thanh lạ khi hoạt động, Máy sấy kêu to.",
     steps: [
       {
         text: "Tình trạng có xảy ra liên tục hay chỉ đôi khi xảy ra",
@@ -1456,15 +1452,68 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Khi sấy có đồ: nếu có tiếng kêu lạch cạch xảy ra => Giả thích với KH, đây là hiện tượng bình thường. Do áo khoác hoặc quần jean, sẽ có nút bằng kim loại va chạm vào lồng sấy nên sẽ có tiếng kêu. KH yên tâm sử dụng.",
-      },  
+      },
       {
         text: "Khi sấy không có đồ: Nếu KH sử dụng máy sấy mà không có quần áo mà gây ra tiếng ồn lớn, mà trước đây không có. => Báo KTV kiểm tra cho KH",
-      },  
+      },
       {
         text: "Nếu không khắc phục được. Báo ASP kiểm tra",
-      },  
+      },
     ],
     images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W065",
+    category: "washing",
+    subtype: "Lồng ngang",
+    code: "(WM62) Máy giặt không xả nước",
+    title: "Máy giặt lồng ngang không xả nước",
+    description: "Máy giặt lồng ngang không xả nước",
+    steps: [
+      {
+        text: "Máy giặt tới chu trình xả nhưng không xả hết nước ra. Tư vấn KH chạy thử chu trình Chỉ vắt lần nữa xem máy có xả hết nước hay không",
+      },
+      {
+        text: "Kiểm tra lại bộ lọc bơm xả đằng trước máy. Nếu bẩn nên tháo ra vệ sinh lắp lại.",
+      },
+      {
+        text: "Kiểm tra ống xả có bị gấp khúc hoặc kẹt vật lạ hay không",
+      },
+      {
+        text: "Sau khi hoàn tất kiểm tra thử lại chu trình chỉ vắt",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [],
+    videoUrls: [],
+  },
+  {
+    id: "W066",
+    category: "washing",
+    subtype: "Lồng đứng",
+    code: "(WM63) Máy giặt không xả nước",
+    title: "Máy giặt lồng đứng không xả nước",
+    description: "Máy giặt lồng đứng không xả nước",
+    steps: [
+      {
+        text: "Máy giặt tới chu trình xả nhưng không xả hết nước ra. Tư vấn KH chạy thử chu trình Chỉ vắt lần nữa xem máy có xả hết nước hay không",
+      },
+      {
+        text: "Kiểm tra ống xả có bị treo lên quá cao (> 15cm), thử thả xuống dưới sàn, nếu ống xả gấp khúc hoặc kẹt vật lạ nên xử lý và thử lại chu trình chỉ vắt",
+      },
+      {
+        text: "Sau khi hoàn tất kiểm tra thử lại chu trình chỉ vắt",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra",
+      },
+    ],
+    images: [
+      "https://lh3.googleusercontent.com/d/1zYeOB_XkqkLIZkzd8c_LS0Gmwkav01X0",
+    ],
     videoUrls: [],
   },
 ];
