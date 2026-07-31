@@ -27,6 +27,30 @@ function ErrorDetailPage() {
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const [quickSearchTerm, setQuickSearchTerm] = useState("");
 
+  // 🟢 1. HÀM TẢI ẢNH VỀ MÁY AN TOÀN (Hoạt động tốt trên cả máy tính & điện thoại)
+  const handleDownloadImage = async (
+    imgUrl: string,
+    fileName = "anh-huong-dan.jpg",
+  ) => {
+    try {
+      const response = await fetch(imgUrl);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Lỗi khi tải ảnh:", error);
+      // Phương án dự phòng: Mở ảnh ở tab mới nếu bị chặn CORS/blob
+      window.open(imgUrl, "_blank");
+    }
+  };
+
   // Lắng nghe phím ESC để đóng ảnh hoặc đóng ô tìm kiếm nhanh
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -76,7 +100,9 @@ function ErrorDetailPage() {
     ? errors.filter((e) => {
         const cleanCode = e.code ? removeVietnameseTones(e.code) : "";
         const cleanTitle = removeVietnameseTones(e.title);
-        const cleanDesc = e.description ? removeVietnameseTones(e.description) : "";
+        const cleanDesc = e.description
+          ? removeVietnameseTones(e.description)
+          : "";
         return (
           cleanCode.includes(cleanKeyword) ||
           cleanTitle.includes(cleanKeyword) ||
@@ -350,17 +376,45 @@ function ErrorDetailPage() {
                               }}
                             />
                           </div>
-                          <span
+                          {/* 🟢 NÚT TẢI XUỐNG VỚI HÌNH ẢNH NHỎ TRONG BƯỚC */}
+                          <div
                             style={{
-                              fontSize: 11,
-                              color: "#888",
-                              display: "block",
-                              marginTop: 2,
-                              textAlign: "left",
+                              display: "flex",
+                              gap: 8,
+                              marginTop: 4,
+                              alignItems: "center",
                             }}
                           >
-                            🔍 Phóng to
-                          </span>
+                            <span
+                              onClick={() => setSelectedImg(imgUrl)}
+                              style={{
+                                fontSize: 11,
+                                color: "#888",
+                                cursor: "pointer",
+                              }}
+                            >
+                              🔍 Phóng to
+                            </span>
+                            <span style={{ fontSize: 11, color: "#ccc" }}>
+                              •
+                            </span>
+                            <span
+                              onClick={() =>
+                                handleDownloadImage(
+                                  imgUrl,
+                                  `buoc-${idx + 1}-anh-${imgIdx + 1}.jpg`,
+                                )
+                              }
+                              style={{
+                                fontSize: 11,
+                                color: "#0284c7",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                              }}
+                            >
+                              💾 Tải về
+                            </span>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -402,29 +456,60 @@ function ErrorDetailPage() {
             }}
           >
             {error.images.map((imgUrl: string, idx: number) => (
-              <div
-                key={idx}
-                onClick={() => setSelectedImg(imgUrl)}
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 8,
-                  overflow: "hidden",
-                  border: "2px solid #eee",
-                  cursor: "pointer",
-                }}
-              >
-                <img
-                  src={imgUrl}
-                  alt={`Ảnh minh hoạ ${idx + 1}`}
-                  referrerPolicy="no-referrer"
+              <div key={idx} style={{ textAlign: "left" }}>
+                <div
+                  onClick={() => setSelectedImg(imgUrl)}
                   style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    display: "block",
+                    width: 100,
+                    height: 100,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    border: "2px solid #eee",
+                    cursor: "pointer",
                   }}
-                />
+                >
+                  <img
+                    src={imgUrl}
+                    alt={`Ảnh minh hoạ ${idx + 1}`}
+                    referrerPolicy="no-referrer"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
+                {/* 🟢 NÚT TẢI XUỐNG DƯỚI ẢNH MINH HỌA */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 6,
+                    marginTop: 4,
+                    alignItems: "center",
+                  }}
+                >
+                  <span
+                    onClick={() => setSelectedImg(imgUrl)}
+                    style={{ fontSize: 11, color: "#888", cursor: "pointer" }}
+                  >
+                    🔍 Phóng to
+                  </span>
+                  <span style={{ fontSize: 11, color: "#ccc" }}>•</span>
+                  <span
+                    onClick={() =>
+                      handleDownloadImage(imgUrl, `minh-hoa-${idx + 1}.jpg`)
+                    }
+                    style={{
+                      fontSize: 11,
+                      color: "#0284c7",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    💾 Tải về
+                  </span>
+                </div>
               </div>
             ))}
           </div>
@@ -506,7 +591,7 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🔍 MODAL PHÓNG TO ẢNH */}
+      {/* 🟢 2. MODAL PHÓNG TO ẢNH CÓ NÚT TẢI ẢNH VỀ MÁY */}
       {selectedImg && (
         <div
           onClick={() => setSelectedImg(null)}
@@ -516,10 +601,11 @@ function ErrorDetailPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
             backdropFilter: "blur(4px)",
             zIndex: 9999,
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
             padding: 20,
@@ -533,47 +619,70 @@ function ErrorDetailPage() {
               position: "relative",
               maxWidth: "90vw",
               maxHeight: "85vh",
-              display: "inline-block",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
               cursor: "default",
             }}
           >
-            <button
-              onClick={() => setSelectedImg(null)}
+            {/* 🚀 HÀNG NÚT THAO TÁC TRÊN BANNER ẢNH (TẢI VỀ + ĐÓNG) */}
+            <div
               style={{
-                position: "absolute",
-                top: -14,
-                right: -14,
-                width: 34,
-                height: 34,
-                borderRadius: "50%",
-                backgroundColor: "#ef4444",
-                color: "#ffffff",
-                border: "2px solid #ffffff",
-                fontSize: 16,
-                fontWeight: "bold",
-                cursor: "pointer",
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-                zIndex: 10000,
-                transition: "transform 0.15s ease",
+                gap: 10,
+                marginBottom: 12,
+                justifyContent: "flex-end",
+                width: "100%",
               }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "scale(1.1)")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-              title="Đóng (Bấm ra ngoài hoặc phím ESC để tắt)"
             >
-              ✕
-            </button>
+              <button
+                onClick={() =>
+                  handleDownloadImage(
+                    selectedImg,
+                    `ma-loi-${error.code || "huong-dan"}.jpg`,
+                  )
+                }
+                style={{
+                  background: "#0284c7",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  boxShadow: "0 4px 12px rgba(2, 132, 199, 0.4)",
+                }}
+              >
+                💾 Tải ảnh về máy
+              </button>
+
+              <button
+                onClick={() => setSelectedImg(null)}
+                style={{
+                  background: "#ef4444",
+                  color: "#ffffff",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: "pointer",
+                }}
+              >
+                ✕ Đóng (ESC)
+              </button>
+            </div>
 
             <img
               src={selectedImg}
               alt="Ảnh phóng to"
               style={{
                 maxWidth: "100%",
-                maxHeight: "80vh",
+                maxHeight: "75vh",
                 objectFit: "contain",
                 borderRadius: 12,
                 boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
@@ -648,7 +757,13 @@ function ErrorDetailPage() {
               gap: 12,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
               <span style={{ fontWeight: 700, fontSize: 16, color: "#0f172a" }}>
                 🔍 Tra cứu nhanh mã lỗi khác
               </span>
@@ -688,7 +803,15 @@ function ErrorDetailPage() {
             />
 
             {/* Danh sách kết quả gợi ý */}
-            <div style={{ maxHeight: "300px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
+            <div
+              style={{
+                maxHeight: "300px",
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
               {filteredQuickErrors.length > 0 ? (
                 filteredQuickErrors.map((item) => (
                   <div
@@ -696,7 +819,6 @@ function ErrorDetailPage() {
                     onClick={() => {
                       setShowQuickSearch(false);
                       setQuickSearchTerm("");
-                      // Sử dụng replace: true để đè trang hiện tại, bấm nút Back sẽ quay về danh sách 1 chạm
                       navigate(`/error-detail/${item.id}`, { replace: true });
                     }}
                     style={{
@@ -709,8 +831,12 @@ function ErrorDetailPage() {
                       alignItems: "center",
                       justifyContent: "space-between",
                     }}
-                    onMouseOver={(e) => (e.currentTarget.style.background = "#e0f2fe")}
-                    onMouseOut={(e) => (e.currentTarget.style.background = "#f8fafc")}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.background = "#e0f2fe")
+                    }
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.background = "#f8fafc")
+                    }
                   >
                     <div>
                       <span
@@ -727,12 +853,29 @@ function ErrorDetailPage() {
                         {item.title}
                       </span>
                     </div>
-                    <span style={{ fontSize: 12, color: "#0284c7", fontWeight: 600 }}>Xem →</span>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: "#0284c7",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Xem →
+                    </span>
                   </div>
                 ))
               ) : (
-                <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, margin: "12px 0" }}>
-                  {quickSearchTerm ? "Không tìm thấy mã lỗi khớp!" : "Gõ mã lỗi hoặc triệu chứng để tìm nhanh..."}
+                <p
+                  style={{
+                    textAlign: "center",
+                    color: "#94a3b8",
+                    fontSize: 13,
+                    margin: "12px 0",
+                  }}
+                >
+                  {quickSearchTerm
+                    ? "Không tìm thấy mã lỗi khớp!"
+                    : "Gõ mã lỗi hoặc triệu chứng để tìm nhanh..."}
                 </p>
               )}
             </div>
