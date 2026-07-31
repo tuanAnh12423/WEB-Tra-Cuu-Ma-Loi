@@ -1,12 +1,37 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { categories, errors } from "../data/errors";
+
+// Hàm loại bỏ dấu tiếng Việt giúp tìm kiếm chính xác
+function removeVietnameseTones(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+}
 
 function ErrorListPage() {
   const navigate = useNavigate();
   const { categoryId } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubtype, setSelectedSubtype] = useState("ALL"); // Lọc theo loại máy
+
+  // 🟢 State BẬT/TẮT BẢNG TÌM KIẾM NHANH BẰNG KÍNH LÚP NỔI
+  const [showQuickSearch, setShowQuickSearch] = useState(false);
+
+  // Lắng nghe phím ESC để đóng Popup tìm kiếm nhanh
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowQuickSearch(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const category = categories.find((c) => c.id === categoryId);
 
@@ -21,16 +46,12 @@ function ErrorListPage() {
     const uniqueSubtypesMap = new Map<string, string>();
 
     categoryErrors.forEach((e: any) => {
-      // 👈 Thêm : any ở đây hoặc ép kiểu bên dưới
       let rawList: string[] = [];
 
-      // Kiểm tra nếu là mảng
       if (Array.isArray(e.subtypes)) {
         rawList = e.subtypes;
-      }
-      // Nếu có giá trị subtype, ép kiểu về String an toàn 100% trước khi split
-      else if (e.subtype) {
-        rawList = String(e.subtype).split(","); // 👈 Đã fix lỗi 'split' ở đây
+      } else if (e.subtype) {
+        rawList = String(e.subtype).split(",");
       }
 
       rawList.forEach((sub) => {
@@ -53,7 +74,7 @@ function ErrorListPage() {
     ];
   }, [categoryId]);
 
-  // 2. Hàm lọc mã lỗi khi bấm vào từng nút
+  // 2. Hàm lọc mã lỗi (Tích hợp tìm kiếm Tiếng Việt Không Dấu)
   const filteredErrors = useMemo(() => {
     return errors.filter((e) => {
       // Lọc theo Category
@@ -61,13 +82,17 @@ function ErrorListPage() {
         !categoryId ||
         String(e.category).toLowerCase() === String(categoryId).toLowerCase();
 
-      // Lọc theo từ khóa ô Tìm kiếm
-      const keyword = searchTerm.trim().toLowerCase();
+      // Lọc theo từ khóa ô Tìm kiếm (Không dấu)
+      const cleanKeyword = removeVietnameseTones(searchTerm);
+      const cleanCode = e.code ? removeVietnameseTones(e.code) : "";
+      const cleanTitle = e.title ? removeVietnameseTones(e.title) : "";
+      const cleanDesc = e.description ? removeVietnameseTones(e.description) : "";
+
       const isSearchMatch =
-        keyword === "" ||
-        e.code.toLowerCase().includes(keyword) ||
-        e.title.toLowerCase().includes(keyword) ||
-        (e.description && e.description.toLowerCase().includes(keyword));
+        cleanKeyword === "" ||
+        cleanCode.includes(cleanKeyword) ||
+        cleanTitle.includes(cleanKeyword) ||
+        cleanDesc.includes(cleanKeyword);
 
       // Lọc theo nút Subtype đang chọn
       const selected = selectedSubtype.trim().toLowerCase();
@@ -75,18 +100,14 @@ function ErrorListPage() {
       let isSubtypeMatch = selected === "all";
 
       if (!isSubtypeMatch) {
-        // Kiểm tra trong mảng subtypes
         if (Array.isArray(e.subtypes)) {
           isSubtypeMatch = e.subtypes.some(
             (s) => String(s).trim().toLowerCase() === selected,
           );
-        }
-        // Kiểm tra trong chuỗi subtype (nếu dùng dạng "Lồng đứng, Lồng ngang")
-        else if (typeof e.subtype === "string") {
+        } else if (typeof e.subtype === "string") {
           isSubtypeMatch = e.subtype.toLowerCase().includes(selected);
         }
 
-        // Backup: Soi trực tiếp vào tiêu đề (title) nếu data chưa ghi subtype
         if (!isSubtypeMatch && e.title) {
           isSubtypeMatch = e.title.toLowerCase().includes(selected);
         }
@@ -101,43 +122,68 @@ function ErrorListPage() {
       style={{
         width: "100%",
         minHeight: "100vh",
-        backgroundColor: "#f8fafc", // Màu nền slate xám siêu sạch
+        backgroundColor: "#f8fafc",
         padding: "24px 16px",
         boxSizing: "border-box",
+        position: "relative",
       }}
     >
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        {/* Header & Nút Quay lại */}
+        {/* Header & Nút Điều Hướng */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 16,
+            justifyContent: "space-between",
             marginBottom: 20,
+            flexWrap: "wrap",
+            gap: 12,
           }}
         >
-          <button
-            onClick={() => navigate(-1)}
-            style={{
-              background: "#ffffff",
-              border: "1px solid #e2e8f0",
-              padding: "8px 16px",
-              borderRadius: 10,
-              cursor: "pointer",
-              fontWeight: 600,
-              color: "#475569",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              transition: "all 0.2s",
-            }}
-          >
-            ← Quay lại
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button
+              onClick={() => navigate(-1)}
+              style={{
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                padding: "8px 14px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontWeight: 600,
+                color: "#475569",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13,
+              }}
+            >
+              ← Quay lại
+            </button>
+
+            <button
+              onClick={() => navigate("/")}
+              style={{
+                background: "#0f172a",
+                color: "#ffffff",
+                border: "none",
+                padding: "8px 14px",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 13,
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              🏠 Trang chủ
+            </button>
+          </div>
+
           <h1
             style={{
-              fontSize: 22,
+              fontSize: 20,
               color: "#0f172a",
               margin: 0,
               fontWeight: 800,
@@ -148,7 +194,7 @@ function ErrorListPage() {
           </h1>
         </div>
 
-        {/* Ô Tìm Kiếm + Nút xóa nhanh */}
+        {/* Ô Tìm Kiếm Chính */}
         <div style={{ position: "relative", marginBottom: 14 }}>
           <span
             style={{
@@ -164,7 +210,7 @@ function ErrorListPage() {
           </span>
           <input
             type="text"
-            placeholder="Tìm mã lỗi (E1, E10...), Nguyên nhân (Rung lắc,...)..."
+            placeholder="Tìm mã lỗi (E1, E10...), Nguyên nhân (rung lac, cap nuoc...)..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -180,7 +226,6 @@ function ErrorListPage() {
               background: "#ffffff",
             }}
           />
-          {/* Nút ✕ xóa nhanh khi có text */}
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
@@ -282,7 +327,6 @@ function ErrorListPage() {
                   e.currentTarget.style.borderColor = "#e2e8f0";
                 }}
               >
-                {/* Dải màu trang trí ở mép trái thẻ */}
                 <div
                   style={{
                     position: "absolute",
@@ -295,7 +339,6 @@ function ErrorListPage() {
                 />
 
                 <div>
-                  {/* Hàng 1: Badge mã lỗi hoặc loại máy (Nhỏ gọn, tinh tế) */}
                   <div
                     style={{
                       display: "flex",
@@ -305,7 +348,6 @@ function ErrorListPage() {
                     }}
                   >
                     <div style={{ display: "flex", gap: 6 }}>
-                      {/* Badge Mã lỗi (Ví dụ: E1, E10 hoặc Vấn đề) */}
                       {error.code && (
                         <span
                           style={{
@@ -321,7 +363,6 @@ function ErrorListPage() {
                         </span>
                       )}
 
-                      {/* Badge Phân loại lồng máy (nếu có) */}
                       {error.subtype && (
                         <span
                           style={{
@@ -339,7 +380,6 @@ function ErrorListPage() {
                     </div>
                   </div>
 
-                  {/* Hàng 2: TIÊU ĐỀ CHÍNH (Chữ thường đậm, dễ đọc, không dùng khối xanh nữa) */}
                   <h3
                     style={{
                       margin: "0 0 8px 0",
@@ -347,15 +387,12 @@ function ErrorListPage() {
                       color: "#0f172a",
                       fontWeight: 700,
                       textAlign: "left",
-                      textTransform: "capitalize", // Tự động viết hoa chữ cái đầu, các chữ sau viết thường
                       lineHeight: 1.4,
                     }}
                   >
-                    {/* Tự động viết hoa chữ cái đầu, các chữ sau viết thường cho thanh lịch */}
                     {error.title}
                   </h3>
 
-                  {/* Hàng 3: Mô tả ngắn gọn */}
                   {error.description && (
                     <p
                       style={{
@@ -374,14 +411,12 @@ function ErrorListPage() {
                   )}
                 </div>
 
-                {/* Hàng 4: Nút xem chi tiết ở góc dưới */}
                 <div
                   style={{
                     marginTop: 14,
                     paddingTop: 10,
-                    borderTop: "1px stroke #f1f5f9",
                     display: "flex",
-                    alignItems: "flex-start",
+                    alignItems: "center",
                     justifyContent: "flex-end",
                     color: "#0284c7",
                     fontSize: 13,
@@ -393,7 +428,6 @@ function ErrorListPage() {
               </div>
             ))
           ) : (
-            /* Khi không có kết quả */
             <div
               style={{
                 gridColumn: "1 / -1",
@@ -416,6 +450,139 @@ function ErrorListPage() {
           )}
         </div>
       </div>
+
+      {/* 🔍 NÚT KÍNH LÚP NỔI BẤM TÌM KIẾM CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
+      <button
+        onClick={() => setShowQuickSearch(true)}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          width: 54,
+          height: 54,
+          borderRadius: "50%",
+          backgroundColor: "#0284c7",
+          color: "#ffffff",
+          border: "none",
+          fontSize: 22,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
+          zIndex: 999,
+          transition: "transform 0.2s ease",
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+        onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        title="Mở ô tìm kiếm nhanh"
+      >
+        🔍
+      </button>
+
+      {/* 🚀 POPUP BẢNG TÌM KIẾM NHANH KHI BẤM KÍNH LÚP */}
+      {showQuickSearch && (
+        <div
+          onClick={() => setShowQuickSearch(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(15, 23, 42, 0.6)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            paddingTop: "80px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: 550,
+              background: "#ffffff",
+              borderRadius: 16,
+              padding: "20px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span style={{ fontWeight: 700, fontSize: 16, color: "#0f172a" }}>
+                🔍 Tìm kiếm nhanh mã lỗi
+              </span>
+              <button
+                onClick={() => setShowQuickSearch(false)}
+                style={{
+                  background: "#f1f5f9",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 28,
+                  height: 28,
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  color: "#64748b",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Ô nhập từ khóa ngay tại chỗ */}
+            <input
+              type="text"
+              autoFocus
+              placeholder="Gõ mã lỗi hoặc nguyên nhân (VD: E10, cap nuoc...)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: 10,
+                border: "2px solid #0284c7",
+                outline: "none",
+                fontSize: 15,
+                boxSizing: "border-box",
+              }}
+            />
+
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+              <span style={{ fontSize: 13, color: "#64748b" }}>
+                Tìm thấy: <strong>{filteredErrors.length}</strong> mã lỗi
+              </span>
+              <button
+                onClick={() => setShowQuickSearch(false)}
+                style={{
+                  background: "#0284c7",
+                  color: "#fff",
+                  border: "none",
+                  padding: "6px 16px",
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                Xem kết quả ({filteredErrors.length})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

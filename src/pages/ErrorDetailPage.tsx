@@ -2,6 +2,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { errors } from "../data/errors";
 
+// Hàm hỗ trợ tìm kiếm không dấu chuẩn xác
+function removeVietnameseTones(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .trim();
+}
+
 function ErrorDetailPage() {
   const navigate = useNavigate();
   const { errorId } = useParams();
@@ -9,14 +20,19 @@ function ErrorDetailPage() {
   // State quản lý phóng to hình ảnh
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
-  // State quản lý trạng thái Nút Copy (Hiện thông báo "Đã copy!")
+  // State quản lý trạng thái Nút Copy
   const [copied, setCopied] = useState(false);
 
-  // Lắng nghe phím ESC để đóng ảnh
+  // 🟢 State BẬT/TẮT VÀ NHẬP TỪ KHÓA CHO KÍNH LÚP TÌM KIẾM NHANH
+  const [showQuickSearch, setShowQuickSearch] = useState(false);
+  const [quickSearchTerm, setQuickSearchTerm] = useState("");
+
+  // Lắng nghe phím ESC để đóng ảnh hoặc đóng ô tìm kiếm nhanh
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setSelectedImg(null);
+        setShowQuickSearch(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -48,12 +64,26 @@ function ErrorDetailPage() {
 
     text += `\nDạ anh/chị kiểm tra thử giúp bên em nhé. Nếu cần hỗ trợ thêm hãy báo lại cho trung tâm nhé!`;
 
-    // Sao chép vào bộ nhớ tạm (Clipboard)
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500); // Ẩn thông báo sau 2.5 giây
+      setTimeout(() => setCopied(false), 2500);
     });
   };
+
+  // 🔍 LỌC MÃ LỖI TRONG POPUP KÍNH LÚP (KHÔNG DẤU & NHIỀU TRƯỜNG)
+  const cleanKeyword = removeVietnameseTones(quickSearchTerm);
+  const filteredQuickErrors = cleanKeyword
+    ? errors.filter((e) => {
+        const cleanCode = e.code ? removeVietnameseTones(e.code) : "";
+        const cleanTitle = removeVietnameseTones(e.title);
+        const cleanDesc = e.description ? removeVietnameseTones(e.description) : "";
+        return (
+          cleanCode.includes(cleanKeyword) ||
+          cleanTitle.includes(cleanKeyword) ||
+          cleanDesc.includes(cleanKeyword)
+        );
+      })
+    : [];
 
   return (
     <div
@@ -65,7 +95,7 @@ function ErrorDetailPage() {
         textAlign: "left",
       }}
     >
-      {/* 🔙 HÀNG NÚT QUAY LẠI & NÚT COPY NHANH */}
+      {/* 🔙 HÀNG NÚT ĐIỀU HƯỚNG NHANH */}
       <div
         style={{
           display: "flex",
@@ -76,29 +106,52 @@ function ErrorDetailPage() {
           gap: 10,
         }}
       >
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            background: "#e4e6eb",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: 8,
-            cursor: "pointer",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-            fontWeight: 600,
-            color: "#333",
-          }}
-        >
-          ← Quay lại
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              background: "#e4e6eb",
+              border: "none",
+              padding: "8px 14px",
+              borderRadius: 8,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              fontWeight: 600,
+              color: "#333",
+              fontSize: 13,
+            }}
+          >
+            ← Quay lại
+          </button>
+
+          <button
+            onClick={() => navigate("/")}
+            style={{
+              background: "#0f172a",
+              color: "#ffffff",
+              border: "none",
+              padding: "8px 14px",
+              borderRadius: 8,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+              fontWeight: 600,
+              fontSize: 13,
+            }}
+            title="Về lại Trang chủ"
+          >
+            🏠 Trang chủ
+          </button>
+        </div>
 
         {/* 📋 NÚT COPY HƯỚNG DẪN CHO KHÁCH HÀNG */}
         <button
           onClick={handleCopyForCustomer}
           style={{
-            background: copied ? "#16a34a" : "#0284c7", // Đổi sang màu xanh lá khi đã Copy
+            background: copied ? "#16a34a" : "#0284c7",
             color: "#ffffff",
             border: "none",
             padding: "8px 16px",
@@ -179,7 +232,7 @@ function ErrorDetailPage() {
         </p>
       </div>
 
-      {/* 📋 Các Bước Xử Lý (Kèm ảnh theo từng bước) */}
+      {/* 📋 Các Bước Xử Lý */}
       <div
         style={{
           background: "#fff",
@@ -319,7 +372,7 @@ function ErrorDetailPage() {
         })}
       </div>
 
-      {/* 🖼️ Danh Sách Ảnh Chung / Sơ Đồ Mạch */}
+      {/* 🖼️ Danh Sách Ảnh Minh Hoạ */}
       {error.images && error.images.length > 0 && (
         <div
           style={{
@@ -378,7 +431,7 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🎬 KHỐI VIDEO HƯỚNG DẪN */}
+      {/* 🎬 Video Hướng Dẫn */}
       {error.videoUrls && error.videoUrls.length > 0 && (
         <div
           style={{
@@ -527,6 +580,162 @@ function ErrorDetailPage() {
                 display: "block",
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* 🔍 NÚT KÍNH LÚP NỔI CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
+      <button
+        onClick={() => setShowQuickSearch(true)}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          width: 54,
+          height: 54,
+          borderRadius: "50%",
+          backgroundColor: "#0284c7",
+          color: "#ffffff",
+          border: "none",
+          fontSize: 22,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
+          zIndex: 999,
+          transition: "transform 0.2s ease",
+        }}
+        onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+        onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        title="Tìm kiếm mã lỗi khác"
+      >
+        🔍
+      </button>
+
+      {/* 🚀 POPUP TÌM KIẾM NHANH KHI BẤM KÍNH LÚP */}
+      {showQuickSearch && (
+        <div
+          onClick={() => setShowQuickSearch(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(15, 23, 42, 0.6)",
+            backdropFilter: "blur(4px)",
+            zIndex: 9999,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            paddingTop: "80px",
+            paddingLeft: "16px",
+            paddingRight: "16px",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: 550,
+              background: "#ffffff",
+              borderRadius: 16,
+              padding: "20px",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontWeight: 700, fontSize: 16, color: "#0f172a" }}>
+                🔍 Tra cứu nhanh mã lỗi khác
+              </span>
+              <button
+                onClick={() => setShowQuickSearch(false)}
+                style={{
+                  background: "#f1f5f9",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 28,
+                  height: 28,
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  color: "#64748b",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Ô nhập tìm kiếm */}
+            <input
+              type="text"
+              autoFocus
+              placeholder="Gõ mã lỗi hoặc tên sự cố (VD: E10, cap nuoc...)"
+              value={quickSearchTerm}
+              onChange={(e) => setQuickSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px 16px",
+                borderRadius: 10,
+                border: "2px solid #0284c7",
+                outline: "none",
+                fontSize: 15,
+                boxSizing: "border-box",
+              }}
+            />
+
+            {/* Danh sách kết quả gợi ý */}
+            <div style={{ maxHeight: "300px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
+              {filteredQuickErrors.length > 0 ? (
+                filteredQuickErrors.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      setShowQuickSearch(false);
+                      setQuickSearchTerm("");
+                      // Sử dụng replace: true để đè trang hiện tại, bấm nút Back sẽ quay về danh sách 1 chạm
+                      navigate(`/error-detail/${item.id}`, { replace: true });
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      borderRadius: 8,
+                      background: "#f8fafc",
+                      border: "1px solid #e2e8f0",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.background = "#e0f2fe")}
+                    onMouseOut={(e) => (e.currentTarget.style.background = "#f8fafc")}
+                  >
+                    <div>
+                      <span
+                        style={{
+                          fontWeight: 700,
+                          color: "#0284c7",
+                          marginRight: 8,
+                          fontSize: 13,
+                        }}
+                      >
+                        {item.code || "LỖI"}
+                      </span>
+                      <span style={{ fontSize: 14, color: "#334155" }}>
+                        {item.title}
+                      </span>
+                    </div>
+                    <span style={{ fontSize: 12, color: "#0284c7", fontWeight: 600 }}>Xem →</span>
+                  </div>
+                ))
+              ) : (
+                <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, margin: "12px 0" }}>
+                  {quickSearchTerm ? "Không tìm thấy mã lỗi khớp!" : "Gõ mã lỗi hoặc triệu chứng để tìm nhanh..."}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       )}

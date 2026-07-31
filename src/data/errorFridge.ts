@@ -1144,4 +1144,102 @@ export const fridgeErrors: ErrorItem[] = [
     ],
     images: [],
   },
+  {
+    id: "F56",
+    category: "fridge",
+    code: "(RH01) Không làm đá tự động",
+    title: "Không làm đá tự động",
+    description: "Tủ lạnh không làm đá tự động.",
+    steps: [
+      {
+        text: "TDV tư vấn khách hàng kiểm tra đã bật ON tính năng làm đá tự động",
+      },
+      {
+        text: "Tư vấn khách hàng kiểm tra vị trí lắp đặt hộp nước + đổ đầy bình",
+      },
+      {
+        text: "Nếu đã làm 2 thao tác trên chờ khoảng 1 ngày. Nếu vẫn không có. Báo ASP kiểm tra cho KH.",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F57",
+    category: "fridge",
+    code: "(RH02) Tủ hiển thị cảnh báo EF",
+    title: "Tủ hiển thị cảnh báo EF",
+    description: "Tủ hiển thị cảnh báo EF. Model: GR-RS755WIA, GR-RF665WIA ",
+    steps: [
+      {
+        text: "Hộp nước đã được lắp đúng vị trí chưa ? ",
+      },
+      {
+        text: "Rút hộp nước và gắn lại",
+      },
+      {
+        text: "Nếu đã làm 2 thao tác trên chờ khoảng 1 ngày. Nếu vẫn không có. Báo ASP kiểm tra cho KH.",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F58",
+    category: "fridge",
+    code: "(RH03) Bàn phím không thể điều khiển",
+    title: "Bàn phím không thể điều khiển",
+    description: "Bàn phím không thể điều khiển",
+    steps: [
+      {
+        text: "Tư vấn khách hàng, bàn phím của tủ đang ở trạng thái khóa phím không?",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra cho KH.",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F59",
+    category: "fridge",
+    code: "(RH04) Màn hình không hiển thị",
+    title: "Màn hình không hiển thị",
+    description: "Màn hình không hiển thị",
+    steps: [
+      {
+        text: "Sau 30s không hoạt động tủ sẽ tự động tăt màn hình hiển thị",
+      },
+      {
+        text: "Kiểm tra ổ điện phích cắm, Kiểm tra tủ có đang hoạt động bình thường",
+      },
+      {
+        text: "Hướng dẫn KH chạm vào khu vực màn hình hiển thị để điều khiển.",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra cho KH.",
+      },
+    ],
+    images: [],
+  },
+  {
+    id: "F60",
+    category: "fridge",
+    code: "(RH04) Màn hình không hiển thị",
+    title: "Màn hình không hiển thị",
+    description: "Màn hình không hiển thị",
+    steps: [
+      {
+        text: "Sau 30s không hoạt động tủ sẽ tự động tăt màn hình hiển thị",
+      },
+      {
+        text: "Kiểm tra ổ điện phích cắm, Kiểm tra tủ có đang hoạt động bình thường",
+      },
+      {
+        text: "Hướng dẫn KH chạm vào khu vực màn hình hiển thị để điều khiển.",
+      },
+      {
+        text: "Nếu không khắc phục được. Báo ASP kiểm tra cho KH.",
+      },
+    ],
+    images: [],
+  },
 ];
