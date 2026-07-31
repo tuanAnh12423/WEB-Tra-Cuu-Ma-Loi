@@ -20,7 +20,7 @@ export const waterPurifierManuals: ManualItem[] = [
       "https://drive.google.com/file/d/1SMlFh7pwdPTAJdKsHZjTo7T1CUoCtqiD/preview",
   },
   {
-    id: "mwp2",
+    id: "mwp3",
     category: "waterPurifierError",
     brand: "TOSHIBA",
     model: "TWP-WA3SVN(K)",

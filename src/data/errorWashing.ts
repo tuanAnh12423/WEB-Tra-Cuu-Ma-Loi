@@ -504,6 +504,7 @@ export const washingErrors: ErrorItem[] = [
       "Bạn mở máy lên bấm giặt máy giảm thời gian, nhưng không giặt, không thấy nước cấp hoặc nước cấp vào rất yếu, hoặc giặt một lúc máy rung lắc sau đó ngưng không giặt nữa.",
     steps: [
       { text: "Kiểm tra van khoá nước cấp của máy. Nếu van bị khoá cần mở ra" },
+      { text: "Áp lực nước không đủ (Áp lực nước tiêu chuẩn: 0.1 - 0.4MPa" },
       {
         text: "Kiểm tra ổ điện cắm máy, nếu ổ điện kém chất lượng cần thay thế và thử lại chương trình khác",
         images: [
