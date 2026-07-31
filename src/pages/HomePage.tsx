@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { categories, errors } from "../data/errors";
 
 // 🔑 CẤU HÌNH MẬT KHẨU TRUY CẬP DÀNH CHO KỸ THUẬT VIÊN (Bạn có thể đổi mật khẩu tại đây)
-const TECHNICIAN_PASSWORD = "123456"; 
+const TECHNICIAN_PASSWORD = "123456";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -41,7 +41,6 @@ function HomePage() {
       }}
     >
       <div style={{ maxWidth: 960, width: "100%" }}>
-        
         {/* 🌟 BANNER CHÀO MỪNG CHUNG */}
         <div
           style={{
@@ -53,10 +52,24 @@ function HomePage() {
             boxShadow: "0 10px 25px rgba(15, 23, 42, 0.12)",
           }}
         >
-          <p style={{ color: "#94a3b8", fontSize: 13, margin: "0 0 6px 0", fontWeight: 500 }}>
+          <p
+            style={{
+              color: "#94a3b8",
+              fontSize: 13,
+              margin: "0 0 6px 0",
+              fontWeight: 500,
+            }}
+          >
             HỆ THỐNG TRA CỨU NỘI BỘ 🚀
           </p>
-          <h1 style={{ color: "#ffffff", fontSize: 24, fontWeight: 800, margin: 0 }}>
+          <h1
+            style={{
+              color: "#ffffff",
+              fontSize: 24,
+              fontWeight: 800,
+              margin: 0,
+            }}
+          >
             Hỗ Trợ Kỹ Thuật & Sửa Chữa
           </h1>
         </div>
@@ -65,9 +78,24 @@ function HomePage() {
         {/* 🎧 PHÂN VÙNG 1: DÀNH CHO TỔNG ĐÀI VIÊN (HỖ TRỢ KỸ THUẬT) */}
         {/* ========================================================= */}
         <div style={{ marginBottom: 32 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 14,
+            }}
+          >
             <span style={{ fontSize: 18 }}>🎧</span>
-            <h2 style={{ fontSize: 15, fontWeight: 800, color: "#0369a1", margin: 0, letterSpacing: "0.02em" }}>
+            <h2
+              style={{
+                fontSize: 15,
+                fontWeight: 800,
+                color: "#0369a1",
+                margin: 0,
+                letterSpacing: "0.02em",
+              }}
+            >
               DÀNH CHO TỔNG ĐÀI VIÊN (HỖ TRỢ KỸ THUẬT)
             </h2>
           </div>
@@ -90,8 +118,12 @@ function HomePage() {
               boxShadow: "0 4px 14px rgba(2, 132, 199, 0.25)",
               transition: "transform 0.2s ease",
             }}
-            onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-            onMouseOut={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.transform = "translateY(-2px)")
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.transform = "translateY(0)")
+            }
           >
             <h3 style={{ margin: "0 0 4px 0", fontSize: 16, fontWeight: 700 }}>
               📚 TRA CỨU SÁCH HDSD (PDF)
@@ -102,7 +134,14 @@ function HomePage() {
           </div>
 
           {/* Danh sách các Ngành hàng Tra cứu Mã lỗi */}
-          <p style={{ color: "#64748b", fontSize: 12, fontWeight: 700, marginBottom: 12 }}>
+          <p
+            style={{
+              color: "#64748b",
+              fontSize: 12,
+              fontWeight: 700,
+              marginBottom: 12,
+            }}
+          >
             CHỌN NGÀNH HÀNG TRA CỨU MÃ LỖI CHO KHÁCH HÀNG
           </p>
           <div
@@ -137,8 +176,18 @@ function HomePage() {
                   e.currentTarget.style.transform = "translateY(0)";
                 }}
               >
-                <div style={{ fontSize: 32, marginBottom: 8 }}>{cat.icon || "⚙️"}</div>
-                <p style={{ margin: "0 0 2px 0", fontSize: 14, fontWeight: 700, color: "#0f172a", textAlign: "center" }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>
+                  {cat.icon || "⚙️"}
+                </div>
+                <p
+                  style={{
+                    margin: "0 0 2px 0",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: "#0f172a",
+                    textAlign: "center",
+                  }}
+                >
                   {cat.name}
                 </p>
                 <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>
@@ -153,9 +202,24 @@ function HomePage() {
         {/* 🛠️ PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN (CÓ BẢO MẬT MẬT KHẨU) */}
         {/* ========================================================= */}
         <div style={{ paddingTop: 16, borderTop: "2px dashed #e2e8f0" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 14,
+            }}
+          >
             <span style={{ fontSize: 18 }}>🛠️</span>
-            <h2 style={{ fontSize: 15, fontWeight: 800, color: "#b91c1c", margin: 0, letterSpacing: "0.02em" }}>
+            <h2
+              style={{
+                fontSize: 15,
+                fontWeight: 800,
+                color: "#b91c1c",
+                margin: 0,
+                letterSpacing: "0.02em",
+              }}
+            >
               DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA - BẢO MẬT 🔒)
             </h2>
           </div>
@@ -181,20 +245,53 @@ function HomePage() {
                 transition: "all 0.2s ease",
                 position: "relative",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "translateY(-2px)")
+              }
               onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               {/* Biểu tượng 🔒 góc thẻ */}
-              <span style={{ position: "absolute", top: 16, right: 16, fontSize: 16 }}>🔒</span>
+              <span
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  fontSize: 16,
+                }}
+              >
+                🔒
+              </span>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  marginBottom: 8,
+                }}
+              >
                 <span style={{ fontSize: 24 }}>🧰</span>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#f8fafc" }}>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: "#f8fafc",
+                  }}
+                >
                   HỖ TRỢ SỬA CHỮA CHUYÊN SÂU
                 </h3>
               </div>
-              <p style={{ margin: 0, fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>
-                Tra cứu sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế & video hướng dẫn sửa bo mạch.
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 12,
+                  color: "#94a3b8",
+                  lineHeight: 1.5,
+                }}
+              >
+                Tra cứu sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
+                & video hướng dẫn sửa bo mạch.
               </p>
             </div>
 
@@ -212,12 +309,21 @@ function HomePage() {
                 gap: 14,
                 transition: "all 0.2s ease",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "#f0f9ff")}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.background = "#f0f9ff")
+              }
               onMouseOut={(e) => (e.currentTarget.style.background = "#ffffff")}
             >
               <div style={{ fontSize: 28, color: "#0284c7" }}>➕</div>
               <div>
-                <h3 style={{ margin: "0 0 2px 0", fontSize: 15, fontWeight: 700, color: "#0369a1" }}>
+                <h3
+                  style={{
+                    margin: "0 0 2px 0",
+                    fontSize: 15,
+                    fontWeight: 700,
+                    color: "#0369a1",
+                  }}
+                >
                   ĐÓNG GÓP PAN BỆNH MỚI
                 </h3>
                 <p style={{ margin: 0, fontSize: 12, color: "#0284c7" }}>
@@ -227,7 +333,6 @@ function HomePage() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* 🔒 MODAL / POPUP XÁC NHẬN MẬT KHẨU KỸ THUẬT VIÊN */}
@@ -266,18 +371,26 @@ function HomePage() {
             }}
           >
             <div style={{ fontSize: 36, marginBottom: 8 }}>🔒</div>
-            <h3 style={{ margin: "0 0 6px 0", fontSize: 18, fontWeight: 800, color: "#0f172a" }}>
+            <h3
+              style={{
+                margin: "0 0 6px 0",
+                fontSize: 18,
+                fontWeight: 800,
+                color: "#0f172a",
+              }}
+            >
               XÁC NHẬN KỸ THUẬT VIÊN
             </h3>
             <p style={{ margin: "0 0 16px 0", fontSize: 13, color: "#64748b" }}>
-              Vui lòng nhập mật khẩu được cấp để truy cập dữ liệu sửa chữa chuyên sâu.
+              Vui lòng nhập mật khẩu được cấp để truy cập dữ liệu sửa chữa
+              chuyên sâu.
             </p>
 
             <form onSubmit={handleVerifyPassword}>
               <input
                 type="password"
                 autoFocus
-                placeholder="Nhập mật khẩu (Mặc định: 123456)"
+                placeholder="Nhập mật khẩu"
                 value={inputPass}
                 onChange={(e) => setInputPass(e.target.value)}
                 style={{
@@ -294,7 +407,14 @@ function HomePage() {
               />
 
               {passError && (
-                <p style={{ margin: "0 0 12px 0", fontSize: 12, color: "#ef4444", fontWeight: 600 }}>
+                <p
+                  style={{
+                    margin: "0 0 12px 0",
+                    fontSize: 12,
+                    color: "#ef4444",
+                    fontWeight: 600,
+                  }}
+                >
                   {passError}
                 </p>
               )}
