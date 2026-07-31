@@ -19,7 +19,7 @@ function ErrorListPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubtype, setSelectedSubtype] = useState("ALL"); // Lọc theo loại máy
 
-  // 🟢 State BẬT/TẮT BẢNG TÌM KIẾM NHANH BẰNG KÍNH LÚP NỔI
+  // State BẬT/TẮT BẢNG TÌM KIẾM NHANH BẰNG KÍNH LÚP NỔI
   const [showQuickSearch, setShowQuickSearch] = useState(false);
 
   // Lắng nghe phím ESC để đóng Popup tìm kiếm nhanh
@@ -35,7 +35,7 @@ function ErrorListPage() {
 
   const category = categories.find((c) => c.id === categoryId);
 
-  // 1. Tự động trích xuất các subtype và tách riêng từng nút bấm
+  // Tự động trích xuất các subtype và tách riêng từng nút bấm
   const filterOptions = useMemo(() => {
     const categoryErrors = errors.filter(
       (e) =>
@@ -86,7 +86,9 @@ function ErrorListPage() {
       const cleanKeyword = removeVietnameseTones(searchTerm);
       const cleanCode = e.code ? removeVietnameseTones(e.code) : "";
       const cleanTitle = e.title ? removeVietnameseTones(e.title) : "";
-      const cleanDesc = e.description ? removeVietnameseTones(e.description) : "";
+      const cleanDesc = e.description
+        ? removeVietnameseTones(e.description)
+        : "";
 
       const isSearchMatch =
         cleanKeyword === "" ||
@@ -560,7 +562,14 @@ function ErrorListPage() {
               }}
             />
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginTop: 4,
+              }}
+            >
               <span style={{ fontSize: 13, color: "#64748b" }}>
                 Tìm thấy: <strong>{filteredErrors.length}</strong> mã lỗi
               </span>

@@ -6,28 +6,55 @@ export const washingRepairErrors: RepairErrorItem[] = [
     code: "Cảnh báo E10",
     title: "Lỗi Cấp Nước",
     category: "washing",
-    description:
-      "Máy báo E10 sau 5 phút, van cấp nước không đóng/mở hoặc vi xử lý không nhận tín hiệu phao.",
+    description: "Máy báo E10 nếu máy không đủ nước trong thời gian quy định.",
 
     checkPoints: [
       {
         partName: "Van cấp nước",
-        spec: "Vị trí van trên PCB (CN9: Trắng, Cam) | Điện áp cấp: 220VAC | Trị số cuộn dây: 10kΩ - 15kΩ",
-        images: [
-          "https://lh3.googleusercontent.com/d/17SPX_muDKTmUrFQ7RF4wYFMRw-l5PV5m",
-          "https://lh3.googleusercontent.com/d/1oO2MGj3tdxqXw8qEbngClFM2yfQeTEyr",
-          "https://lh3.googleusercontent.com/d/1U62Ky-fkx8dYPofWwy4Y-33VNK7gKTvd",
-        ],
+        pcbLocation: {
+          text: "Vị trí van trên PCB (CN9: Trắng, Cam) ",
+          images: [
+            "https://lh3.googleusercontent.com/d/1oO2MGj3tdxqXw8qEbngClFM2yfQeTEyr",
+          ],
+        },
+        resistance: {
+          text: "Trị số cuộn dây: 10kΩ - 15kΩ",
+          images: [
+            "https://lh3.googleusercontent.com/d/17SPX_muDKTmUrFQ7RF4wYFMRw-l5PV5m",
+          ],
+        },
+        voltage: {
+          text: "Điện áp cấp: 220VAC",
+          images: [
+            "https://lh3.googleusercontent.com/d/1U62Ky-fkx8dYPofWwy4Y-33VNK7gKTvd",
+          ],
+        },
       },
       {
         partName: "Cảm biến mực nước",
-        spec: "Vị trí van trên PCB (CN2: Cam, Xanh biển, Vàng) | Điện áp cấp: 5VDC | Trị số cuộn dây: 24kΩ - 28kΩ | Điện dung: C= 40 - 50nF",
-        images: [
-          "https://lh3.googleusercontent.com/d/13j2umxBtR7LngMY7rmKadXVpg6Goo5vW",
-          "https://lh3.googleusercontent.com/d/1l1nx74ea1E7kHoJ1Ak6gmBoLmq_YQZgo",
-          "https://lh3.googleusercontent.com/d/1u_6o4RIh2SL4hNUXaunwmN4hHJGiY_Ri",
-          "https://lh3.googleusercontent.com/d/176GG9D-zfuWO-kkmw7jayGyYvalbnXux",
-        ],
+        pcbLocation: {
+          text: "Vị trí van trên PCB (CN2: Cam, Xanh biển, Vàng)",
+          images: [],
+        },
+        resistance: {
+          text: "Trị số cuộn dây: 24kΩ - 28kΩ",
+          images: [
+            "https://lh3.googleusercontent.com/d/13j2umxBtR7LngMY7rmKadXVpg6Goo5vW",
+          ],
+        },
+        capacitance: {
+          text: "Điện dung: C= 40 - 50nF",
+          images: [
+            "https://lh3.googleusercontent.com/d/1l1nx74ea1E7kHoJ1Ak6gmBoLmq_YQZgo",
+          ],
+        },
+        voltage: {
+          text: "Điện áp cấp: 5VDC",
+          images: [
+            "https://lh3.googleusercontent.com/d/1u_6o4RIh2SL4hNUXaunwmN4hHJGiY_Ri",
+            "https://lh3.googleusercontent.com/d/176GG9D-zfuWO-kkmw7jayGyYvalbnXux",
+          ],
+        },
       },
     ],
 

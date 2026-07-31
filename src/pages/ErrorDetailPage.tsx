@@ -23,11 +23,11 @@ function ErrorDetailPage() {
   // State quản lý trạng thái Nút Copy
   const [copied, setCopied] = useState(false);
 
-  // 🟢 State BẬT/TẮT VÀ NHẬP TỪ KHÓA CHO KÍNH LÚP TÌM KIẾM NHANH
+  // State BẬT/TẮT VÀ NHẬP TỪ KHÓA CHO KÍNH LÚP TÌM KIẾM NHANH
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const [quickSearchTerm, setQuickSearchTerm] = useState("");
 
-  // 🟢 1. HÀM TẢI ẢNH VỀ MÁY AN TOÀN (Hoạt động tốt trên cả máy tính & điện thoại)
+  // HÀM TẢI ẢNH VỀ MÁY AN TOÀN
   const handleDownloadImage = async (
     imgUrl: string,
     fileName = "anh-huong-dan.jpg",
@@ -46,12 +46,12 @@ function ErrorDetailPage() {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Lỗi khi tải ảnh:", error);
-      // Phương án dự phòng: Mở ảnh ở tab mới nếu bị chặn CORS/blob
+      // Phương án dự phòng
       window.open(imgUrl, "_blank");
     }
   };
 
-  // Lắng nghe phím ESC để đóng ảnh hoặc đóng ô tìm kiếm nhanh
+  // Nhấn ESC để đóng ảnh hoặc đóng ô tìm kiếm nhanh
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {

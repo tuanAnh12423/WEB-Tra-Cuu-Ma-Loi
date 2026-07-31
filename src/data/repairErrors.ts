@@ -1,8 +1,16 @@
 // 1. Cấu trúc cho điểm kiểm tra linh kiện
 export interface CheckPoint {
   partName: string; // Tên linh kiện (VD: "Cảm biến nhiệt độ dàn lạnh")
-  spec: string; // Trị số / Điện áp chuẩn (VD: "5kOhm ở 25°C hoặc 2.5VDC")
-  images?: string[]; // Hình ảnh đo đạc riêng cho linh kiện này
+  partImages?: string[];
+  pcbLocation?: valueWithImage; // Vị trí LK trên PCB
+  voltage?: valueWithImage; // Điện áp của LK
+  resistance?: valueWithImage; // Trở kháng của LK
+  capacitance?: valueWithImage; // Điện dung
+}
+
+export interface valueWithImage {
+  text: string;
+  images?: string[];
 }
 
 export interface SubStep {
