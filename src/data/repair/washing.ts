@@ -11,18 +11,25 @@ export const washingRepairErrors: RepairErrorItem[] = [
     checkPoints: [
       {
         partName: "Van cấp nước",
+        partImages: [
+          "https://lh3.googleusercontent.com/d/1KY_HralzhW6MmSXuQLxbSTQ4_HGOyHX_",
+          "https://lh3.googleusercontent.com/d/1maOzeUPWbDfIDkk-hkKuoHz06eLdPVKw",
+          "https://lh3.googleusercontent.com/d/1d4bEYr83y1Yhi487ZUdqh69GgkXy5VYT",
+        ],
         pcbLocation: {
           text: "Vị trí van trên PCB (CN9: Trắng, Cam) ",
           images: [
             "https://lh3.googleusercontent.com/d/1oO2MGj3tdxqXw8qEbngClFM2yfQeTEyr",
           ],
         },
+
         resistance: {
           text: "Trị số cuộn dây: 10kΩ - 15kΩ",
           images: [
             "https://lh3.googleusercontent.com/d/17SPX_muDKTmUrFQ7RF4wYFMRw-l5PV5m",
           ],
         },
+
         voltage: {
           text: "Điện áp cấp: 220VAC",
           images: [
@@ -32,9 +39,15 @@ export const washingRepairErrors: RepairErrorItem[] = [
       },
       {
         partName: "Cảm biến mực nước",
+        partImages: [
+          "https://lh3.googleusercontent.com/d/1m7ZUyQiqjZ6ZSfpG_l_FrOAmJspwp1Xc",
+          "https://lh3.googleusercontent.com/d/19L5eunMsghgBTer7smlN05wQeF-DNiup",
+        ],
         pcbLocation: {
           text: "Vị trí van trên PCB (CN2: Cam, Xanh biển, Vàng)",
-          images: [],
+          images: [
+            "https://lh3.googleusercontent.com/d/1cUqje1j1DuLjsRZkf-4CbBGBnJs1rjax",
+          ],
         },
         resistance: {
           text: "Trị số cuộn dây: 24kΩ - 28kΩ",
