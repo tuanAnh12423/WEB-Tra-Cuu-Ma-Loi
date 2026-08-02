@@ -60,7 +60,7 @@ function HomePage() {
               fontWeight: 500,
             }}
           >
-            HỆ THỐNG TRA CỨU NỘI BỘ 🚀
+            HỆ THỐNG TRA CỨU NỘI BỘ
           </p>
           <h1
             style={{
@@ -74,9 +74,7 @@ function HomePage() {
           </h1>
         </div>
 
-        {/* ========================================================= */}
-        {/* 🎧 PHÂN VÙNG 1: DÀNH CHO TỔNG ĐÀI VIÊN (HỖ TRỢ KỸ THUẬT) */}
-        {/* ========================================================= */}
+        {/* PHÂN VÙNG 1: DÀNH CHO TỔNG ĐÀI VIÊN (HỖ TRỢ KỸ THUẬT) */}
         <div style={{ marginBottom: 32 }}>
           <div
             style={{
@@ -198,9 +196,8 @@ function HomePage() {
           </div>
         </div>
 
-        {/* ========================================================= */}
-        {/* 🛠️ PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN (CÓ BẢO MẬT MẬT KHẨU) */}
-        {/* ========================================================= */}
+        {/* PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN (CÓ BẢO MẬT MẬT KHẨU) */}
+
         <div style={{ paddingTop: 16, borderTop: "2px dashed #e2e8f0" }}>
           <div
             style={{
@@ -220,7 +217,7 @@ function HomePage() {
                 letterSpacing: "0.02em",
               }}
             >
-              DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA - BẢO MẬT 🔒)
+              DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA - BẢO MẬT)
             </h2>
           </div>
 
@@ -233,7 +230,7 @@ function HomePage() {
           >
             {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu (Bấm vào hỏi Mật Khẩu) */}
             <div
-              onClick={() => setShowPassModal(true)} // 🟢 MỞ DIALOG NHẬP MẬT KHẨU
+              onClick={() => setShowPassModal(true)} // MỞ DIALOG NHẬP MẬT KHẨU
               style={{
                 background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
                 borderRadius: 14,
@@ -250,18 +247,6 @@ function HomePage() {
               }
               onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              {/* Biểu tượng 🔒 góc thẻ */}
-              <span
-                style={{
-                  position: "absolute",
-                  top: 16,
-                  right: 16,
-                  fontSize: 16,
-                }}
-              >
-                🔒
-              </span>
-
               <div
                 style={{
                   display: "flex",
@@ -270,11 +255,10 @@ function HomePage() {
                   marginBottom: 8,
                 }}
               >
-                <span style={{ fontSize: 24 }}>🧰</span>
                 <h3
                   style={{
                     margin: 0,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: 700,
                     color: "#f8fafc",
                   }}
@@ -291,7 +275,6 @@ function HomePage() {
                 }}
               >
                 Tra cứu sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
-                & video hướng dẫn sửa bo mạch.
               </p>
             </div>
 

@@ -453,6 +453,43 @@ function ErrorListPage() {
         </div>
       </div>
 
+      {/* 🚀 NÚT NỔI "QUAY LẠI" CỐ ĐỊNH Ở GÓC DƯỚI TRÁI MÀN HÌNH */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          left: 24,
+          height: 48,
+          padding: "0 18px",
+          borderRadius: 24,
+          backgroundColor: "#334155",
+          color: "#ffffff",
+          border: "none",
+          fontSize: 14,
+          fontWeight: 700,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 6,
+          boxShadow: "0 4px 14px rgba(0, 0, 0, 0.25)",
+          zIndex: 999,
+          transition: "transform 0.2s ease, backgroundColor 0.2s ease",
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = "scale(1.05)";
+          e.currentTarget.style.backgroundColor = "#475569";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.backgroundColor = "#334155";
+        }}
+        title="Quay lại trang trước"
+      >
+        ← Quay lại
+      </button>
+
       {/* 🔍 NÚT KÍNH LÚP NỔI BẤM TÌM KIẾM CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
       <button
         onClick={() => setShowQuickSearch(true)}

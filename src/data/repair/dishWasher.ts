@@ -3,7 +3,7 @@ import type { RepairErrorItem } from "../repairErrors";
 export const dishWasherRepairErrors: RepairErrorItem[] = [
   {
     id: "rep_dish_e1",
-    code: "Các linh kiện trên máy rửa chén",
+    code: "Các linh kiện trên máy rửa chén DW-15F7, DW-15F8, DW-15F9",
     title: "Thông số linh kiện của máy rửa chén TOSHIBA",
     category: "dishWasher",
     description:

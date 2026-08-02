@@ -46,7 +46,6 @@ function ErrorDetailPage() {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Lỗi khi tải ảnh:", error);
-      // Phương án dự phòng
       window.open(imgUrl, "_blank");
     }
   };
@@ -83,7 +82,7 @@ function ErrorDetailPage() {
 
     error.steps.forEach((step: any, idx: number) => {
       const stepText = typeof step === "string" ? step : step.text;
-      text += `Bước ${idx + 1}: ${stepText}\n`;
+      text += `Bước ${idx + 1}:${stepText}\n`;
     });
 
     text += `\nDạ anh/chị kiểm tra thử giúp bên em nhé. Nếu cần hỗ trợ thêm hãy báo lại cho trung tâm nhé!`;
@@ -121,7 +120,7 @@ function ErrorDetailPage() {
         textAlign: "left",
       }}
     >
-      {/* 🔙 HÀNG NÚT ĐIỀU HƯỚNG NHANH */}
+      {/* 🔙 HÀNG NÚT ĐIỀU HƯỚNG NHANH Ở ĐỈNH TRANG */}
       <div
         style={{
           display: "flex",
@@ -376,7 +375,6 @@ function ErrorDetailPage() {
                               }}
                             />
                           </div>
-                          {/* 🟢 NÚT TẢI XUỐNG VỚI HÌNH ẢNH NHỎ TRONG BƯỚC */}
                           <div
                             style={{
                               display: "flex",
@@ -480,7 +478,6 @@ function ErrorDetailPage() {
                     }}
                   />
                 </div>
-                {/* 🟢 NÚT TẢI XUỐNG DƯỚI ẢNH MINH HỌA */}
                 <div
                   style={{
                     display: "flex",
@@ -591,7 +588,7 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🟢 2. MODAL PHÓNG TO ẢNH CÓ NÚT TẢI ẢNH VỀ MÁY */}
+      {/* 🖼️ MODAL PHÓNG TO ẢNH */}
       {selectedImg && (
         <div
           onClick={() => setSelectedImg(null)}
@@ -625,7 +622,6 @@ function ErrorDetailPage() {
               cursor: "default",
             }}
           >
-            {/* 🚀 HÀNG NÚT THAO TÁC TRÊN BANNER ẢNH (TẢI VỀ + ĐÓNG) */}
             <div
               style={{
                 display: "flex",
@@ -693,7 +689,44 @@ function ErrorDetailPage() {
         </div>
       )}
 
-      {/* 🔍 NÚT KÍNH LÚP NỔI CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
+      {/* 🚀 1. NÚT NỔI "QUAY LẠI" CỐ ĐỊNH Ở GÓC DƯỚI TRÁI MÀN HÌNH */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          position: "fixed",
+          bottom: 24,
+          left: 24,
+          height: 48,
+          padding: "0 18px",
+          borderRadius: 24,
+          backgroundColor: "#334155",
+          color: "#ffffff",
+          border: "none",
+          fontSize: 14,
+          fontWeight: 700,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 6,
+          boxShadow: "0 4px 14px rgba(0, 0, 0, 0.3)",
+          zIndex: 999,
+          transition: "transform 0.2s ease, backgroundColor 0.2s ease",
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.transform = "scale(1.05)";
+          e.currentTarget.style.backgroundColor = "#475569";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.backgroundColor = "#334155";
+        }}
+        title="Quay lại trang trước"
+      >
+        ← Quay lại
+      </button>
+
+      {/* 🚀 2. NÚT NỔI "KÍNH LÚP" CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
       <button
         onClick={() => setShowQuickSearch(true)}
         style={{
