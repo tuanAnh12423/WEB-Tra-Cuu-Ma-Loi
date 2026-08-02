@@ -197,75 +197,65 @@ function HomePage() {
           <div
             style={{
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              gap: 8,
               marginBottom: 14,
             }}
           >
-            <span style={{ fontSize: 18 }}>🛠️</span>
-            <h2
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 18 }}>🛠️</span>
+              <h2
+                style={{
+                  fontSize: 15,
+                  fontWeight: 800,
+                  color: "#b91c1c",
+                  margin: 0,
+                  letterSpacing: "0.02em",
+                }}
+              >
+                DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA)
+              </h2>
+            </div>
+
+            {/* 🧮 NÚT BỘ CÔNG CỤ TÍNH TOÁN DẠNG TẢI TRỌNG NHỎ VÀO CÙNG TIÊU ĐỀ */}
+            <button
+              onClick={() => navigate("/tools")}
               style={{
-                fontSize: 15,
-                fontWeight: 800,
-                color: "#b91c1c",
-                margin: 0,
-                letterSpacing: "0.02em",
+                background: "#0284c7",
+                color: "#ffffff",
+                border: "none",
+                padding: "6px 12px",
+                borderRadius: 8,
+                fontWeight: 700,
+                fontSize: 12,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                boxShadow: "0 2px 6px rgba(2, 132, 199, 0.2)",
+                transition: "all 0.2s ease",
               }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = "#0369a1")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "#0284c7")
+              }
             >
-              DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA)
-            </h2>
+              <span>🧮</span>
+              <span>Bộ công cụ tính toán</span>
+              <span style={{ fontSize: 10 }}>→</span>
+            </button>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
               gap: 12,
             }}
           >
-            {/* 🧮 1. THẺ BỘ CÔNG CỤ TÍNH TOÁN (MỚI CHUYỂN XUỐNG DÀNH CHO KTV) */}
-            <div
-              onClick={() => navigate("/tools")}
-              style={{
-                background: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
-                borderRadius: 14,
-                padding: "20px",
-                color: "#ffffff",
-                cursor: "pointer",
-                boxShadow: "0 4px 12px rgba(2, 132, 199, 0.25)",
-                transition: "all 0.2s ease",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "translateY(-2px)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "translateY(0)")
-              }
-            >
-              <div style={{ fontSize: 24, marginBottom: 6 }}>🧮</div>
-              <h3
-                style={{
-                  margin: "0 0 4px 0",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: "#ffffff",
-                }}
-              >
-                BỘ CÔNG CỤ TÍNH TOÁN
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 12,
-                  color: "#e0f2fe",
-                  lineHeight: 1.4,
-                }}
-              >
-                Tính trị số Sensor (NTC), mã màu điện trở, tra dây điện & CB
-              </p>
-            </div>
-
-            {/* 🔒 2. THẺ HỖ TRỢ SỬA CHỮA CHUYÊN SÂU (BẢO MẬT MẬT KHẨU) */}
+            {/* 🔒 1. THẺ HỖ TRỢ SỬA CHỮA CHUYÊN SÂU */}
             <div
               onClick={() => setShowPassModal(true)}
               style={{
@@ -308,7 +298,7 @@ function HomePage() {
               </p>
             </div>
 
-            {/* ➕ 3. THẺ ĐÓNG GÓP PAN BỆNH MỚI */}
+            {/* ➕ 2. THẺ ĐÓNG GÓP PAN BỆNH MỚI */}
             <div
               onClick={() => navigate("/report")}
               style={{

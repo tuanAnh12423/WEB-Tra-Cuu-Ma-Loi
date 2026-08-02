@@ -19,44 +19,57 @@ export default function ToolsPage() {
   const [selectedSensorIdx, setSelectedSensorIdx] = useState<number>(0); // Mặc định chọn 2k (Tủ lạnh)
   const [temp, setTemp] = useState<number>(25); // Mặc định 25°C
 
-  // Hàm tính toán trở kháng Sensor: Tra bảng chuẩn 100% cho 2k hoặc dùng công thức Beta cho loại khác
-  const calculateSensorResistance = (): string => {
+  // Hàm tính toán trở kháng chuẩn KÈM DẢI SAI SỐ ±10%
+  const calculateSensorData = () => {
     const sensor = SENSOR_OPTIONS[selectedSensorIdx];
+    let baseVal = 0; // Giá trị tính bằng kΩ
 
-    // 🟢 NẾU LÀ SENSOR 2K TỦ LẠNH -> TRA TRỰC TIẾP TỪ BẢNG HÃNG
+    // 🟢 1. NẾU LÀ SENSOR 2K TỦ LẠNH -> TRA TRỰC TIẾP BẢNG HÃNG
     if (sensor.isLookupTable) {
-      // 1. Nếu là số nhiệt độ nguyên có trong bảng
       if (SENSOR_2K_LOOKUP_TABLE[temp] !== undefined) {
-        return `${SENSOR_2K_LOOKUP_TABLE[temp]} kΩ`;
+        baseVal = SENSOR_2K_LOOKUP_TABLE[temp];
+      } else {
+        // Nội suy tuyến tính nếu nhiệt độ lẻ
+        const lowerTemp = Math.floor(temp);
+        const upperTemp = Math.ceil(temp);
+        const rLower = SENSOR_2K_LOOKUP_TABLE[lowerTemp];
+        const rUpper = SENSOR_2K_LOOKUP_TABLE[upperTemp];
+
+        if (rLower !== undefined && rUpper !== undefined) {
+          baseVal = rLower + (rUpper - rLower) * (temp - lowerTemp);
+        }
       }
+    } else {
+      // 🔵 2. CÁC CẢM BIẾN THÔNG THƯỜNG -> DÙNG CÔNG THỨC BETA NTC
+      const bConstant = sensor.bConstant || 3950;
+      const T1 = 25 + 273.15; // 25°C sang Kelvin
+      const T2 = temp + 273.15; // Nhiệt độ đo sang Kelvin
+      const R1 = sensor.value * 1000; // kOhm sang Ohm
 
-      // 2. Nếu là số nhiệt độ lẻ -> Nội suy tuyến tính giữa 2 mốc
-      const lowerTemp = Math.floor(temp);
-      const upperTemp = Math.ceil(temp);
-
-      const rLower = SENSOR_2K_LOOKUP_TABLE[lowerTemp];
-      const rUpper = SENSOR_2K_LOOKUP_TABLE[upperTemp];
-
-      if (rLower !== undefined && rUpper !== undefined) {
-        const interpolatedR = rLower + (rUpper - rLower) * (temp - lowerTemp);
-        return `${interpolatedR.toFixed(3)} kΩ`;
-      }
-
-      return "Ngoài khoảng tra cứu (-30°C ~ 44°C)";
+      const R2 = R1 * Math.exp(bConstant * (1 / T2 - 1 / T1));
+      baseVal = R2 / 1000;
     }
 
-    // 🔵 NẾU LÀ CÁC SENSOR THÔNG THƯỜNG -> DÙNG CÔNG THỨC BETA NTC
-    const bConstant = sensor.bConstant || 3950;
-    const T1 = 25 + 273.15; // 25°C sang Kelvin
-    const T2 = temp + 273.15; // Nhiệt độ đo sang Kelvin
-    const R1 = sensor.value * 1000; // kOhm sang Ohm
+    if (!baseVal || isNaN(baseVal) || baseVal <= 0) {
+      return { exactStr: "---", minStr: "---", maxStr: "---" };
+    }
 
-    const R2 = R1 * Math.exp(bConstant * (1 / T2 - 1 / T1));
-    const kOhm = R2 / 1000;
+    // 🟡 3. TÍNH DẢI BIẾN THIÊN TỰ DO ±10% CHO KTV ĐO THỰC TẾ
+    const minVal = baseVal * 0.95; // -5%
+    const maxVal = baseVal * 1.05; // +5%
 
-    if (isNaN(kOhm) || kOhm <= 0) return "---";
-    return kOhm >= 1 ? `${kOhm.toFixed(2)} kΩ` : `${R2.toFixed(0)} Ω`;
+    // Hàm định dạng hiển thị kΩ hoặc Ω
+    const formatValue = (val: number) =>
+      val >= 1 ? `${val.toFixed(2)} kΩ` : `${(val * 1000).toFixed(0)} Ω`;
+
+    return {
+      exactStr: formatValue(baseVal),
+      minStr: formatValue(minVal),
+      maxStr: formatValue(maxVal),
+    };
   };
+
+  const sensorData = calculateSensorData();
 
   // ==========================================
   // 2. STATE & LOGIC: MÃ MÀU ĐIỆN TRỞ (4 VẠCH)
@@ -289,7 +302,7 @@ export default function ToolsPage() {
               </div>
             </div>
 
-            {/* KẾT QUẢ ĐO VOM CHUẨN */}
+            {/* KẾT QUẢ ĐO VOM CHUẨN + KHOẢNG SAI SỐ THỰC TẾ ±10% */}
             <div
               style={{
                 background: "#0f172a",
@@ -307,11 +320,46 @@ export default function ToolsPage() {
                   marginBottom: 4,
                 }}
               >
-                Trị số trở kháng chuẩn khi đo VOM ở {temp}°C:
+                Trị số trở kháng lý thuyết ở {temp}°C:
               </span>
-              <span style={{ fontSize: 26, fontWeight: 800, color: "#4ade80" }}>
-                {calculateSensorResistance()}
+
+              {/* Giá trị lý thuyết chuẩn */}
+              <span
+                style={{
+                  fontSize: 24,
+                  fontWeight: 800,
+                  color: "#4ade80",
+                  display: "block",
+                  marginBottom: 10,
+                }}
+              >
+                {sensorData.exactStr}
               </span>
+
+              {/* Dải đo cho phép thực tế ±10% */}
+              <div
+                style={{
+                  borderTop: "1px dashed #334155",
+                  paddingTop: 10,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                }}
+              >
+                <span style={{ fontSize: 12, color: "#cbd5e1" }}>
+                  Dải đo VOM chấp nhận được thực tế (±5%):
+                </span>
+                <span
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    color: "#facc15",
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {sensorData.minStr} ~ {sensorData.maxStr}
+                </span>
+              </div>
             </div>
 
             <p
@@ -325,9 +373,10 @@ export default function ToolsPage() {
             >
               💡{" "}
               <em>
-                {SENSOR_OPTIONS[selectedSensorIdx].isLookupTable
-                  ? "Thông số là tham khảo vì cảm biến có thể biến thiên theo nhiệt độ thực tế. Sai số đo thực tế cho phép trong khoảng ±5% ~ ±10%."
-                  : "Sensor NTC có đặc tính trở kháng giảm khi nhiệt độ tăng. Sai số đo thực tế cho phép trong khoảng ±5% ~ ±10%."}
+                Lưu ý: Giá trị trở kháng cảm biến biến thiên theo nhiệt độ môi
+                trường. Khi đo bằng đồng hồ VOM, nếu kết quả nằm trong khoảng
+                dao động ±10% màu vàng ở trên thì cảm biến vẫn hoạt động bình
+                thường.
               </em>
             </p>
           </div>
