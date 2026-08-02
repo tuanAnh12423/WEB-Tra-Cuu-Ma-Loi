@@ -38,13 +38,15 @@ function RepairSupportPage() {
     );
   };
 
-  const handleCopySpec = (partName: string, spec: string, id: string) => {
+  {
+    /* const handleCopySpec = (partName: string, spec: string, id: string) => {
     const text = `[THÔNG SỐ ĐO ĐẠC] - ${partName}:\n${spec}`;
     navigator.clipboard.writeText(text).then(() => {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     });
-  };
+  };*/
+  }
 
   const handleDownloadImage = async (
     imgUrl: string,
