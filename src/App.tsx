@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ErrorListPage from "./pages/ErrorListPage";
 import ErrorDetailPage from "./pages/ErrorDetailPage";
@@ -51,7 +51,7 @@ function OfflineNotification() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       {/* Thanh thông báo hiển thị khi KTV bị đứt mạng/sóng yếu */}
       <OfflineNotification />
 
@@ -66,7 +66,7 @@ function App() {
           <Route path="*" element={<HomePage />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </Router>
   );
 }
 
