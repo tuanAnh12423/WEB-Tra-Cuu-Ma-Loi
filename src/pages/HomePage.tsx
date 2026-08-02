@@ -2,25 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories, errors } from "../data/errors";
 
-// 🔑 CẤU HÌNH MẬT KHẨU TRUY CẬP DÀNH CHO KỸ THUẬT VIÊN (Bạn có thể đổi mật khẩu tại đây)
 const TECHNICIAN_PASSWORD = "123456";
 
 function HomePage() {
   const navigate = useNavigate();
 
-  // State quản lý Bật/Tắt Modal nhập mật khẩu
   const [showPassModal, setShowPassModal] = useState(false);
   const [inputPass, setInputPass] = useState("");
   const [passError, setPassError] = useState("");
 
-  // Hàm kiểm tra mật khẩu
   const handleVerifyPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputPass === TECHNICIAN_PASSWORD) {
       setShowPassModal(false);
       setInputPass("");
       setPassError("");
-      // Đăng nhập thành công -> Chuyển hướng sang trang Sửa chữa
       navigate("/repair-support");
     } else {
       setPassError("❌ Mật khẩu không đúng! Vui lòng thử lại.");
@@ -196,8 +192,7 @@ function HomePage() {
           </div>
         </div>
 
-        {/* PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN (CÓ BẢO MẬT MẬT KHẨU) */}
-
+        {/* PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA) */}
         <div style={{ paddingTop: 16, borderTop: "2px dashed #e2e8f0" }}>
           <div
             style={{
@@ -217,20 +212,62 @@ function HomePage() {
                 letterSpacing: "0.02em",
               }}
             >
-              DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA - BẢO MẬT)
+              DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA)
             </h2>
           </div>
 
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
               gap: 12,
             }}
           >
-            {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu (Bấm vào hỏi Mật Khẩu) */}
+            {/* 🧮 1. THẺ BỘ CÔNG CỤ TÍNH TOÁN (MỚI CHUYỂN XUỐNG DÀNH CHO KTV) */}
             <div
-              onClick={() => setShowPassModal(true)} // MỞ DIALOG NHẬP MẬT KHẨU
+              onClick={() => navigate("/tools")}
+              style={{
+                background: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
+                borderRadius: 14,
+                padding: "20px",
+                color: "#ffffff",
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(2, 132, 199, 0.25)",
+                transition: "all 0.2s ease",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.transform = "translateY(-2px)")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.transform = "translateY(0)")
+              }
+            >
+              <div style={{ fontSize: 24, marginBottom: 6 }}>🧮</div>
+              <h3
+                style={{
+                  margin: "0 0 4px 0",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#ffffff",
+                }}
+              >
+                BỘ CÔNG CỤ TÍNH TOÁN
+              </h3>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 12,
+                  color: "#e0f2fe",
+                  lineHeight: 1.4,
+                }}
+              >
+                Tính trị số Sensor (NTC), mã màu điện trở, tra dây điện & CB
+              </p>
+            </div>
+
+            {/* 🔒 2. THẺ HỖ TRỢ SỬA CHỮA CHUYÊN SÂU (BẢO MẬT MẬT KHẨU) */}
+            <div
+              onClick={() => setShowPassModal(true)}
               style={{
                 background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
                 borderRadius: 14,
@@ -240,45 +277,38 @@ function HomePage() {
                 border: "1px solid #334155",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
                 transition: "all 0.2s ease",
-                position: "relative",
               }}
               onMouseOver={(e) =>
                 (e.currentTarget.style.transform = "translateY(-2px)")
               }
-              onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseOut={(e) =>
+                (e.currentTarget.style.transform = "translateY(0)")
+              }
             >
-              <div
+              <div style={{ fontSize: 24, marginBottom: 6 }}>🔒</div>
+              <h3
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 8,
+                  margin: "0 0 4px 0",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#f8fafc",
                 }}
               >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: 14,
-                    fontWeight: 700,
-                    color: "#f8fafc",
-                  }}
-                >
-                  HỖ TRỢ SỬA CHỮA CHUYÊN SÂU
-                </h3>
-              </div>
+                SỬA CHỮA CHUYÊN SÂU
+              </h3>
               <p
                 style={{
                   margin: 0,
                   fontSize: 12,
                   color: "#94a3b8",
-                  lineHeight: 1.5,
+                  lineHeight: 1.4,
                 }}
               >
                 Tra cứu sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
               </p>
             </div>
 
-            {/* Thẻ Đóng Góp Báo Lỗi / Pan Bệnh Mới */}
+            {/* ➕ 3. THẺ ĐÓNG GÓP PAN BỆNH MỚI */}
             <div
               onClick={() => navigate("/report")}
               style={{
@@ -287,9 +317,6 @@ function HomePage() {
                 padding: "20px",
                 cursor: "pointer",
                 border: "2px dashed #0284c7",
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
                 transition: "all 0.2s ease",
               }}
               onMouseOver={(e) =>
@@ -297,28 +324,35 @@ function HomePage() {
               }
               onMouseOut={(e) => (e.currentTarget.style.background = "#ffffff")}
             >
-              <div style={{ fontSize: 28, color: "#0284c7" }}>➕</div>
-              <div>
-                <h3
-                  style={{
-                    margin: "0 0 2px 0",
-                    fontSize: 15,
-                    fontWeight: 700,
-                    color: "#0369a1",
-                  }}
-                >
-                  ĐÓNG GÓP PAN BỆNH MỚI
-                </h3>
-                <p style={{ margin: 0, fontSize: 12, color: "#0284c7" }}>
-                  Kỹ thuật viên gửi mã lỗi hoặc kinh nghiệm sửa chữa mới
-                </p>
+              <div style={{ fontSize: 24, marginBottom: 6, color: "#0284c7" }}>
+                ➕
               </div>
+              <h3
+                style={{
+                  margin: "0 0 4px 0",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#0369a1",
+                }}
+              >
+                ĐÓNG GÓP PAN BỆNH MỚI
+              </h3>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: 12,
+                  color: "#0284c7",
+                  lineHeight: 1.4,
+                }}
+              >
+                Kỹ thuật viên gửi mã lỗi hoặc kinh nghiệm sửa chữa mới
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 🔒 MODAL / POPUP XÁC NHẬN MẬT KHẨU KỸ THUẬT VIÊN */}
+      {/* 🔒 MODAL XÁC NHẬN MẬT KHẨU */}
       {showPassModal && (
         <div
           onClick={() => {
@@ -365,8 +399,7 @@ function HomePage() {
               XÁC NHẬN KỸ THUẬT VIÊN
             </h3>
             <p style={{ margin: "0 0 16px 0", fontSize: 13, color: "#64748b" }}>
-              Vui lòng nhập mật khẩu được cấp để truy cập dữ liệu sửa chữa
-              chuyên sâu.
+              Vui lòng nhập mật khẩu được cấp để truy cập dữ liệu sửa chữa.
             </p>
 
             <form onSubmit={handleVerifyPassword}>
