@@ -1,13 +1,16 @@
+// =================================================================
 // 1. DỮ LIỆU CẤU HÌNH SENSOR (NTC)
 // =================================================================
 export interface SensorOption {
   label: string;
   value: number; // Trị số kOhm ở 25°C
-  bConstant?: number; // Hệ số Beta NTC (mặc định 3950 nếu không khai báo)
-  isLookupTable?: boolean; // Cờ đánh dấu nếu dùng Bảng tra cứu trực tiếp thay vì công thức
+  bConstant?: number; // Hệ số Beta NTC
+  isLookupTable?: boolean; // Cờ đánh dấu nếu dùng Bảng tra cứu trực tiếp
+  lookupTable?: Record<string | number, number>; // Bảng tra riêng
+  minMaxTable?: Record<string | number, { min: number; max: number }>;
 }
 
-// 🟢 BẢNG DỮ LIỆU TRA CỨU CHUẨN TỪ HÃNG CHO SENSOR 2K TỦ LẠNH (-30°C ĐẾN 44°C)
+// 🟢 1. BẢNG DỮ LIỆU TRA CỨU CHUẨN CHO SENSOR 2K TỦ LẠNH (-30°C ĐẾN 44°C)
 export const SENSOR_2K_LOOKUP_TABLE: Record<number, number> = {
   "-30": 33.81,
   "-29": 31.85,
@@ -86,9 +89,80 @@ export const SENSOR_2K_LOOKUP_TABLE: Record<number, number> = {
   "44": 0.914,
 };
 
+// 🧊 2. BẢNG CẢM BIẾN LÀM ĐÁ TỰ ĐỘNG CHUẨN ĐƯỜNG CONG TỪ ĐỒ THỊ HÃNG
+export const SENSOR_ICE_MAKER_LOOKUP_TABLE: Record<number, number> = {
+  "-25": 42.0,
+  "-24": 39.2,
+  "-23": 36.6,
+  "-22": 34.2,
+  "-21": 32.0,
+  "-20": 30.0,
+  "-19": 28.2,
+  "-18": 26.5,
+  "-17": 24.9,
+  "-16": 23.4,
+  "-15": 22.0,
+  "-14": 20.7,
+  "-13": 19.5,
+  "-12": 18.4,
+  "-11": 17.3,
+  "-10": 16.3,
+  "-9": 15.7,
+  "-8": 15.2,
+  "-7": 14.7,
+  "-6": 14.2,
+  "-5": 13.9,
+  "-4": 13.85,
+  "-3": 13.8,
+  "-2": 13.75,
+  "-1": 13.72,
+  "0": 13.7, // 🎯 Chuẩn mốc 0°C = 13.7 kΩ (Dải 13 ~ 14.5 kΩ)
+  "1": 13.1,
+  "2": 12.5,
+  "3": 11.9,
+  "4": 11.3,
+  "5": 10.8,
+  "6": 10.3,
+  "7": 9.8,
+  "8": 9.4,
+  "9": 9.0,
+  "10": 8.6,
+  "11": 8.2,
+  "12": 7.9,
+  "13": 7.6,
+  "14": 7.3,
+  "15": 7.0,
+  "16": 6.7,
+  "17": 6.4,
+  "18": 6.2, // 🎯 Đã sửa: 18°C = 6.2 kΩ (Nhiệt độ giảm -> Trở kháng tăng)
+  "19": 5.9,
+  "20": 5.7,
+  "21": 5.5,
+  "22": 5.3,
+  "23": 5.2,
+  "24": 5.1,
+  "25": 5.0, // 🎯 Chuẩn mốc 25°C = 5.0 kΩ (Dải 4.5 ~ 5.5 kΩ)
+  "26": 4.8,
+  "27": 4.6,
+  "28": 4.4,
+  "29": 4.2,
+  "30": 4.0,
+};
+
 // Danh sách các loại Sensor phổ biến trên thị trường
 export const SENSOR_OPTIONS: SensorOption[] = [
-  { label: "Cảm biến nhiệt độ tủ lạnh", value: 2, isLookupTable: true }, // Đã thêm loại Sensor 2k tra bảng
+  {
+    label: "Sensor Làm đá tự động (AG/RT/RB/RF)",
+    value: 5,
+    isLookupTable: true,
+    lookupTable: SENSOR_ICE_MAKER_LOOKUP_TABLE,
+  },
+  {
+    label: "Sensor tủ RT/RB/RS/RF",
+    value: 2,
+    isLookupTable: true,
+    lookupTable: SENSOR_2K_LOOKUP_TABLE,
+  },
 ];
 
 // =================================================================
@@ -122,15 +196,14 @@ export const COLOR_MAP: Record<string, ColorInfo> = {
 // =================================================================
 export interface PowerElectricalInfo {
   id: string;
-  hp: string; // Tên công suất (VD: "1.0 HP (9.000 BTU)")
-  kw: string; // Công suất tiêu thụ
-  current: string; // Dòng làm việc định mức
-  cb: string; // Khuyến nghị Aptomat (CB)
-  wire: string; // Tiết diện dây dẫn khuyến nghị
-  note?: string; // Ghi chú kỹ thuật bổ sung (nếu có)
+  hp: string;
+  kw: string;
+  current: string;
+  cb: string;
+  wire: string;
+  note?: string;
 }
 
-// Bảng thông số kỹ thuật lắp đặt điện lạnh
 export const POWER_ELECTRICAL_DATA: PowerElectricalInfo[] = [
   {
     id: "1.0hp",

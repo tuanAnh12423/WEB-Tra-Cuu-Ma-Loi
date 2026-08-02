@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   SENSOR_OPTIONS,
-  SENSOR_2K_LOOKUP_TABLE,
   COLOR_MAP,
   POWER_ELECTRICAL_DATA,
 } from "../data/toolsData";
@@ -16,35 +15,35 @@ export default function ToolsPage() {
   // ==========================================
   // 1. STATE & LOGIC: TÍNH SENSOR THEO NHIỆT ĐỘ
   // ==========================================
-  const [selectedSensorIdx, setSelectedSensorIdx] = useState<number>(0); // Mặc định chọn 2k (Tủ lạnh)
+  const [selectedSensorIdx, setSelectedSensorIdx] = useState<number>(0); // Mặc định Cảm biến làm đá tự động
   const [temp, setTemp] = useState<number>(25); // Mặc định 25°C
 
-  // Hàm tính toán trở kháng chuẩn KÈM DẢI SAI SỐ ±10%
+  // Hàm tính toán trở kháng chuẩn KÈM DẢI SAI SỐ CHUẨN
   const calculateSensorData = () => {
     const sensor = SENSOR_OPTIONS[selectedSensorIdx];
-    let baseVal = 0; // Giá trị tính bằng kΩ
+    let baseVal = 0;
 
-    // 🟢 1. NẾU LÀ SENSOR 2K TỦ LẠNH -> TRA TRỰC TIẾP BẢNG HÃNG
-    if (sensor.isLookupTable) {
-      if (SENSOR_2K_LOOKUP_TABLE[temp] !== undefined) {
-        baseVal = SENSOR_2K_LOOKUP_TABLE[temp];
+    // 🟢 1. TRUY CẤP LOOKUP TABLE
+    if (sensor.isLookupTable && sensor.lookupTable) {
+      const table = sensor.lookupTable as Record<string | number, number>;
+
+      if (table[temp] !== undefined) {
+        baseVal = table[temp];
       } else {
-        // Nội suy tuyến tính nếu nhiệt độ lẻ
         const lowerTemp = Math.floor(temp);
         const upperTemp = Math.ceil(temp);
-        const rLower = SENSOR_2K_LOOKUP_TABLE[lowerTemp];
-        const rUpper = SENSOR_2K_LOOKUP_TABLE[upperTemp];
+        const rLower = table[lowerTemp];
+        const rUpper = table[upperTemp];
 
         if (rLower !== undefined && rUpper !== undefined) {
           baseVal = rLower + (rUpper - rLower) * (temp - lowerTemp);
         }
       }
     } else {
-      // 🔵 2. CÁC CẢM BIẾN THÔNG THƯỜNG -> DÙNG CÔNG THỨC BETA NTC
       const bConstant = sensor.bConstant || 3950;
-      const T1 = 25 + 273.15; // 25°C sang Kelvin
-      const T2 = temp + 273.15; // Nhiệt độ đo sang Kelvin
-      const R1 = sensor.value * 1000; // kOhm sang Ohm
+      const T1 = 25 + 273.15;
+      const T2 = temp + 273.15;
+      const R1 = sensor.value * 1000;
 
       const R2 = R1 * Math.exp(bConstant * (1 / T2 - 1 / T1));
       baseVal = R2 / 1000;
@@ -54,11 +53,26 @@ export default function ToolsPage() {
       return { exactStr: "---", minStr: "---", maxStr: "---" };
     }
 
-    // 🟡 3. TÍNH DẢI BIẾN THIÊN TỰ DO ±10% CHO KTV ĐO THỰC TẾ
-    const minVal = baseVal * 0.95; // -5%
-    const maxVal = baseVal * 1.05; // +5%
+    let minVal = 0;
+    let maxVal = 0;
 
-    // Hàm định dạng hiển thị kΩ hoặc Ω
+    // 🟡 2. TRUY CẤP MIN MAX TABLE (Khắc phục triệt để tra cứu key)
+    const minMaxMap = sensor.minMaxTable as
+      | Record<string | number, { min: number; max: number }>
+      | undefined;
+
+    const exactMinMax = minMaxMap
+      ? (minMaxMap[temp] ?? minMaxMap[Number(temp)] ?? minMaxMap[String(temp)])
+      : undefined;
+
+    if (exactMinMax) {
+      minVal = exactMinMax.min;
+      maxVal = exactMinMax.max;
+    } else {
+      minVal = Math.round(baseVal * 0.95 * 100) / 100;
+      maxVal = Math.round(baseVal * 1.05 * 100) / 100;
+    }
+
     const formatValue = (val: number) =>
       val >= 1 ? `${val.toFixed(2)} kΩ` : `${(val * 1000).toFixed(0)} Ω`;
 
@@ -70,6 +84,11 @@ export default function ToolsPage() {
   };
 
   const sensorData = calculateSensorData();
+
+  // Tính phần trăm vị trí thanh kéo cho UI khớp 100% (-25°C -> 44°C)
+  const minTemp = -25;
+  const maxTemp = 44;
+  const sliderPercentage = ((temp - minTemp) / (maxTemp - minTemp)) * 100;
 
   // ==========================================
   // 2. STATE & LOGIC: MÃ MÀU ĐIỆN TRỞ (4 VẠCH)
@@ -279,30 +298,73 @@ export default function ToolsPage() {
                 </span>
               </div>
 
-              <input
-                type="range"
-                min="-30"
-                max="44"
-                value={temp}
-                onChange={(e) => setTemp(Number(e.target.value))}
-                style={{ width: "100%", accentColor: "#0284c7" }}
-              />
+              {/* THANH KÉO TỰ ĐỘNG KHỚP VỊ TRÍ NÚT THEO TEMP */}
+              <div style={{ position: "relative", width: "100%" }}>
+                <input
+                  type="range"
+                  min={minTemp}
+                  max={maxTemp}
+                  value={temp}
+                  onChange={(e) => setTemp(Number(e.target.value))}
+                  style={{
+                    width: "100%",
+                    height: "6px",
+                    borderRadius: "3px",
+                    outline: "none",
+                    accentColor: "#0284c7",
+                    cursor: "pointer",
+                    background: `linear-gradient(to right, #0284c7 0%, #0284c7 ${sliderPercentage}%, #334155 ${sliderPercentage}%, #334155 100%)`,
+                  }}
+                />
+              </div>
+
+              {/* 🟢 NHÃN MỐC NHIỆT ĐỘ ĐẶT THEO VỊ TRÍ PHẦN TRĂM TUYỆT ĐỐI CHÍNH XÁC */}
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "space-between",
+                  position: "relative",
+                  width: "100%",
+                  height: "18px",
                   fontSize: 10,
                   color: "#64748b",
+                  marginTop: 6,
                 }}
               >
-                <span>-30°C (Lạnh âm)</span>
-                <span>0°C (Đá tan)</span>
-                <span>25°C (Gốc)</span>
-                <span>44°C (Nóng)</span>
+                <span style={{ position: "absolute", left: "0%" }}>
+                  -25°C (Lạnh âm)
+                </span>
+
+                <span
+                  style={{
+                    position: "absolute",
+                    left: `${((0 - minTemp) / (maxTemp - minTemp)) * 100}%`,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  0°C (Đá tan)
+                </span>
+
+                <span
+                  style={{
+                    position: "absolute",
+                    left: `${((25 - minTemp) / (maxTemp - minTemp)) * 100}%`,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  25°C (Gốc)
+                </span>
+
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "0%",
+                  }}
+                >
+                  44°C (Nóng)
+                </span>
               </div>
             </div>
 
-            {/* KẾT QUẢ ĐO VOM CHUẨN + KHOẢNG SAI SỐ THỰC TẾ ±10% */}
+            {/* KẾT QUẢ ĐO VOM CHUẨN + KHOẢNG SAI SỐ THỰC TẾ */}
             <div
               style={{
                 background: "#0f172a",
@@ -336,7 +398,7 @@ export default function ToolsPage() {
                 {sensorData.exactStr}
               </span>
 
-              {/* Dải đo cho phép thực tế ±10% */}
+              {/* Dải đo cho phép thực tế */}
               <div
                 style={{
                   borderTop: "1px dashed #334155",
@@ -347,7 +409,7 @@ export default function ToolsPage() {
                 }}
               >
                 <span style={{ fontSize: 12, color: "#cbd5e1" }}>
-                  Dải đo VOM chấp nhận được thực tế (±5%):
+                  Dải đo VOM chấp nhận được thực tế:
                 </span>
                 <span
                   style={{
@@ -375,8 +437,7 @@ export default function ToolsPage() {
               <em>
                 Lưu ý: Giá trị trở kháng cảm biến biến thiên theo nhiệt độ môi
                 trường. Khi đo bằng đồng hồ VOM, nếu kết quả nằm trong khoảng
-                dao động ±10% màu vàng ở trên thì cảm biến vẫn hoạt động bình
-                thường.
+                dao động màu vàng ở trên thì cảm biến vẫn hoạt động bình thường.
               </em>
             </p>
           </div>
