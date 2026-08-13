@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories, errors } from "../data/errors";
 
-// 🔑 CẤU HÌNH MẬT KHẨU TRUY CẬP DÀNH CHO KỸ THUẬT VIÊN (Bạn có thể đổi mật khẩu tại đây)
+// 🔑 CẤU HÌNH MẬT KHẨU TRUY CẬP DÀNH CHO KỸ THUẬT VIÊN
 const TECHNICIAN_PASSWORD = "123456";
 
 function HomePage() {
@@ -231,9 +231,9 @@ function HomePage() {
               gap: 12,
             }}
           >
-            {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu (Bấm vào hỏi Mật Khẩu) */}
+            {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu */}
             <div
-              onClick={() => setShowPassModal(true)} // 🟢 MỞ DIALOG NHẬP MẬT KHẨU
+              onClick={() => setShowPassModal(true)}
               style={{
                 background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
                 borderRadius: 14,
@@ -250,7 +250,6 @@ function HomePage() {
               }
               onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              {/* Biểu tượng 🔒 góc thẻ */}
               <span
                 style={{
                   position: "absolute",
