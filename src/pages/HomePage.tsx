@@ -217,7 +217,7 @@ function HomePage() {
               </h2>
             </div>
 
-            {/* 🧮 NÚT BỘ CÔNG CỤ TÍNH TOÁN DẠNG TẢI TRỌNG NHỎ VÀO CÙNG TIÊU ĐỀ */}
+            {/* 🧮 NÚT BỘ CÔNG CỤ TÍNH TOÁN */}
             <button
               onClick={() => navigate("/tools")}
               style={{
@@ -255,7 +255,7 @@ function HomePage() {
               gap: 12,
             }}
           >
-            {/* 🔒 1. THẺ HỖ TRỢ SỬA CHỮA CHUYÊN SÂU */}
+            {/* 🔒 1. THẺ SỬA CHỮA CHUYÊN SÂU */}
             <div
               onClick={() => setShowPassModal(true)}
               style={{
