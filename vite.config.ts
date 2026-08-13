@@ -18,4 +18,5 @@ export default defineConfig({
       },
     },
   },
+  // 🟢 THÊM CẤU HÌNH KẾT NỐI SANG BACKEND TẠI ĐÂY
 });

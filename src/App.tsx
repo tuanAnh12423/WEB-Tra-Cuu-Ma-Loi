@@ -56,21 +56,15 @@ function App() {
       <OfflineNotification />
 
       <div style={{ minHeight: "100vh", background: "#f5f6fa" }}>
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px" }}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/error-list/:categoryId" element={<ErrorListPage />} />
-            <Route
-              path="/error-detail/:errorId"
-              element={<ErrorDetailPage />}
-            />
-            <Route path="/report" element={<ReportPage />} />
-            <Route path="/repair-support" element={<RepairSupportPage />} />
-            <Route path="/manuals" element={<ManualListPage />} />
-            <Route path="/tools" element={<ToolsPage />} />
-            <Route path="*" element={<HomePage />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/error-list/:categoryId" element={<ErrorListPage />} />
+          <Route path="/error-detail/:errorId" element={<ErrorDetailPage />} />
+          <Route path="/report" element={<ReportPage />} />
+          <Route path="/repair-support" element={<RepairSupportPage />} />
+          <Route path="/manuals" element={<ManualListPage />} />
+          <Route path="*" element={<HomePage />} />
+        </Routes>
       </div>
 
       {/* Chatbot luôn sẵn sàng điều hướng trực tiếp đến các trang */}

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories, errors } from "../data/errors";
 
+// 🔑 CẤU HÌNH MẬT KHẨU TRUY CẬP DÀNH CHO KỸ THUẬT VIÊN (Bạn có thể đổi mật khẩu tại đây)
 const TECHNICIAN_PASSWORD = "123456";
 
 export default function HomePage() {
@@ -248,8 +249,16 @@ export default function HomePage() {
               </h2>
             </div>
 
-            <button
-              onClick={() => navigate("/tools")}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+              gap: 12,
+            }}
+          >
+            {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu (Bấm vào hỏi Mật Khẩu) */}
+            <div
+              onClick={() => setShowPassModal(true)} // 🟢 MỞ DIALOG NHẬP MẬT KHẨU
               style={{
                 background: "#0284c7",
                 color: "#ffffff",
@@ -270,41 +279,27 @@ export default function HomePage() {
               }
               onMouseOut={(e) => (e.currentTarget.style.background = "#0284c7")}
             >
-              <span>🧮</span>
-              <span>Bộ công cụ tính toán →</span>
-            </button>
-          </div>
+              {/* Biểu tượng 🔒 góc thẻ */}
+              <span
+                style={{
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  fontSize: 16,
+                }}
+              >
+                🔒
+              </span>
 
-          {/* 2 Thẻ Kỹ thuật viên chia đôi 2 cột cân đối */}
-          <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
-          >
-            {/* Sửa chữa chuyên sâu */}
-            <div
-              onClick={() => setShowPassModal(true)}
-              style={{
-                background: "#ffffff",
-                borderRadius: 12,
-                padding: "18px 20px",
-                cursor: "pointer",
-                border: "1px solid #cbd5e1",
-                display: "flex",
-                alignItems: "center",
-                gap: 14,
-                boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
-                transition: "all 0.15s ease",
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "#b91c1c";
-                e.currentTarget.style.background = "#fef2f2";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = "#cbd5e1";
-                e.currentTarget.style.background = "#ffffff";
-              }}
-            >
-              <div style={{ fontSize: 28 }}>🔒</div>
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  marginBottom: 8,
+                }}
+              >
+                <span style={{ fontSize: 24 }}>🧰</span>
                 <h3
                   style={{
                     margin: "0 0 3px 0",
