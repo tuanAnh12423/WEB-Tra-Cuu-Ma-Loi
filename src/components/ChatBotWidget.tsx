@@ -194,7 +194,7 @@ export default function ChatBotWidget() {
     ]);
   };
 
-  // 🔍 XỬ LÝ TÌM KIẾM DỮ LIỆU CÓ TRAINING
+  // 🔍 XỬ LÝ TÌM KIẾM DỮ LIỆU CÓ TRAINING KHÁC NHAU
   const handleSend = (textToSend?: string) => {
     const queryText = textToSend || input;
     if (!queryText.trim()) return;
@@ -257,13 +257,48 @@ export default function ChatBotWidget() {
     let botResponseText = "";
     let botOptions: Option[] = [];
 
-    // Nếu khớp dữ liệu Training Q&A trong chatbotKnowledge.ts
+    // 🟢 XỬ LÝ NHIỀU MODEL TRONG KNOWLEDGE BASE
     if (matchedKnowledge.length > 0) {
-      botResponseText = matchedKnowledge[0].answer;
-      if (matchedKnowledge[0].link) {
-        botOptions.push({
-          label: "🔗 Xem chi tiết liên kết",
-          action: () => window.open(matchedKnowledge[0].link, "_blank"),
+      if (matchedKnowledge.length === 1) {
+        // Nếu chỉ có 1 kết quả duy nhất -> Hiển thị nội dung luôn
+        botResponseText = matchedKnowledge[0].answer;
+        if (matchedKnowledge[0].link) {
+          botOptions.push({
+            label: "🔗 Xem chi tiết liên kết",
+            action: () => window.open(matchedKnowledge[0].link, "_blank"),
+          });
+        }
+      } else {
+        // Nếu có nhiều kết quả trùng từ khóa -> Tạo danh sách các nút gợi ý bấm chọn
+        botResponseText = `🔍 Tìm thấy **${matchedKnowledge.length}** nội dung phù hợp với từ khóa "${queryText}".\nVui lòng chọn nội dung bạn muốn xem bên dưới:`;
+
+        matchedKnowledge.forEach((item) => {
+          botOptions.push({
+            label: `📌 ${item.title || "Xem chi tiết"}`,
+            action: () => {
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: Date.now().toString(),
+                  sender: "user",
+                  text: item.title || "Xem chi tiết",
+                },
+                {
+                  id: (Date.now() + 1).toString(),
+                  sender: "bot",
+                  text: item.answer,
+                  options: item.link
+                    ? [
+                        {
+                          label: "🔗 Xem chi tiết liên kết",
+                          action: () => window.open(item.link, "_blank"),
+                        },
+                      ]
+                    : [],
+                },
+              ]);
+            },
+          });
         });
       }
     } else {
@@ -447,18 +482,51 @@ export default function ChatBotWidget() {
                     backgroundColor:
                       msg.sender === "user" ? "#0284c7" : "#ffffff",
                     color: msg.sender === "user" ? "#ffffff" : "#0f172a",
-                    padding: "10px 12px",
+                    padding: msg.sender === "user" ? "10px 14px" : "12px 14px",
                     borderRadius:
                       msg.sender === "user"
                         ? "14px 14px 2px 14px"
                         : "14px 14px 14px 2px",
                     fontSize: 13,
-                    lineHeight: 1.5,
+                    lineHeight: 1.6,
                     border: msg.sender === "bot" ? "1px solid #e2e8f0" : "none",
-                    whiteSpace: "pre-line",
+                    boxShadow:
+                      msg.sender === "bot"
+                        ? "0 2px 6px rgba(0,0,0,0.03)"
+                        : "none",
                   }}
                 >
-                  {msg.text}
+                  {msg.sender === "bot" ? (
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: msg.text
+                          // 1. Biến ### Thành Header Card xanh siêu đẹp
+                          .replace(
+                            /###\s*(.*)/g,
+                            '<div style="color: #0369a1; font-size: 13px; font-weight: 800; background: #f0f9ff; padding: 6px 10px; borderRadius: 6px; border-left: 4px solid #0284c7; margin-bottom: 8px;">$1</div>',
+                          )
+                          // 2. Biến --- Thành đường kẻ ngang mỏng sang trọng
+                          .replace(
+                            /---/g,
+                            '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 8px 0;" />',
+                          )
+                          // 3. Xử lý **In đậm**
+                          .replace(
+                            /\*\*(.*?)\*\*/g,
+                            '<strong style="color: #0f172a; font-weight: 700;">$1</strong>',
+                          )
+                          // 4. Xử lý *In nghiêng*
+                          .replace(
+                            /\*(.*?)\*/g,
+                            '<em style="color: #0284c7;">$1</em>',
+                          )
+                          // 5. Xuống dòng tự nhiên
+                          .replace(/\n/g, "<br />"),
+                      }}
+                    />
+                  ) : (
+                    msg.text
+                  )}
                 </div>
 
                 {/* Tiện ích Nút Copy & Feedback cho câu trả lời của Bot */}
