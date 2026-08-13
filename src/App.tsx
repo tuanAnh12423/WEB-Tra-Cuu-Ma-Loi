@@ -7,6 +7,7 @@ import ReportPage from "./pages/ReportPage";
 import ManualListPage from "./pages/ManualListPage";
 import RepairSupportPage from "./pages/RepairSupportPage";
 import ToolsPage from "./pages/toolsPage";
+import ChatbotWidget from "./components/ChatBotWidget";
 
 // 📡 Component hiển thị thông báo trạng thái Ngoại tuyến
 function OfflineNotification() {
@@ -53,23 +54,11 @@ function OfflineNotification() {
 function App() {
   return (
     <Router>
-      {/* Thanh thông báo hiển thị khi KTV bị đứt mạng/sóng yếu */}
+      {/* Thanh thông báo hiển thị khi đứt mạng */}
       <OfflineNotification />
 
       <div style={{ minHeight: "100vh", background: "#f5f6fa" }}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/error-list/:categoryId" element={<ErrorListPage />} />
-          <Route path="/error-detail/:errorId" element={<ErrorDetailPage />} />
-          <Route path="/report" element={<ReportPage />} />
-          <Route path="/repair-support" element={<RepairSupportPage />} />
-          <Route path="/manuals" element={<ManualListPage />} />
-          <Route path="/tools" element={<ToolsPage />} />
-          <Route path="*" element={<HomePage />} />
-        </Routes>
-        {/* Container giới hạn chiều rộng để giao diện gọn gàng */}
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
-          {/* Các Route chuyển trang giữ nguyên */}
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px" }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/error-list/:categoryId" element={<ErrorListPage />} />
@@ -80,10 +69,14 @@ function App() {
             <Route path="/report" element={<ReportPage />} />
             <Route path="/repair-support" element={<RepairSupportPage />} />
             <Route path="/manuals" element={<ManualListPage />} />
+            <Route path="/tools" element={<ToolsPage />} />
             <Route path="*" element={<HomePage />} />
           </Routes>
         </div>
       </div>
+
+      {/* Chatbot nổi góc màn hình */}
+      <ChatbotWidget />
     </Router>
   );
 }
