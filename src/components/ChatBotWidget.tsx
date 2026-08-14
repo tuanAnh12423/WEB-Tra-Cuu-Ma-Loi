@@ -32,6 +32,7 @@ interface Message {
 export default function ChatBotWidget() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false); // 🌟 State quản lý Phóng to / Thu nhỏ
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -405,11 +406,13 @@ export default function ChatBotWidget() {
         <div
           style={{
             position: "fixed",
-            bottom: 86,
+            // 🌟 Tự động thay đổi kích thước theo State Phóng to / Mặc định
+            bottom: isMaximized ? 20 : 86,
             right: 20,
-            width: 380,
-            maxWidth: "92vw",
-            height: 520,
+            width: isMaximized ? "calc(100vw - 40px)" : 380,
+            maxWidth: isMaximized ? 1200 : "92vw",
+            height: isMaximized ? "calc(100vh - 100px)" : 520,
+            maxHeight: isMaximized ? "none" : "80vh",
             backgroundColor: "#ffffff",
             borderRadius: 16,
             boxShadow: "0 10px 25px rgba(0, 0, 0, 0.25)",
@@ -418,6 +421,7 @@ export default function ChatBotWidget() {
             overflow: "hidden",
             zIndex: 9999,
             border: "1px solid #e2e8f0",
+            transition: "all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)", // Hiệu ứng phóng to mượt mà
           }}
         >
           {/* Header */}
@@ -442,19 +446,47 @@ export default function ChatBotWidget() {
                 </span>
               </div>
             </div>
-            <button
-              onClick={handleClearHistory}
-              title="Xóa lịch sử"
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#94a3b8",
-                cursor: "pointer",
-                fontSize: 12,
-              }}
-            >
-              🗑️ Xóa
-            </button>
+
+            {/* Cụm nút công cụ trên Header */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {/* Nút Phóng to / Thu nhỏ khung Chatbot */}
+              <button
+                onClick={() => setIsMaximized(!isMaximized)}
+                title={
+                  isMaximized ? "Thu nhỏ về góc" : "Phóng to toàn màn hình"
+                }
+                style={{
+                  background: "rgba(255, 255, 255, 0.1)",
+                  border: "none",
+                  color: "#cbd5e1",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {isMaximized ? "🗗 Thu nhỏ" : "🗖 Phóng to"}
+              </button>
+
+              {/* Nút Xóa lịch sử */}
+              <button
+                onClick={handleClearHistory}
+                title="Xóa lịch sử"
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#94a3b8",
+                  cursor: "pointer",
+                  fontSize: 12,
+                  padding: "4px 6px",
+                }}
+              >
+                🗑️ Xóa
+              </button>
+            </div>
           </div>
 
           {/* Lịch sử Tin nhắn */}
@@ -474,7 +506,7 @@ export default function ChatBotWidget() {
                 key={msg.id}
                 style={{
                   alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-                  maxWidth: "88%",
+                  maxWidth: isMaximized ? "75%" : "88%", // Rộng rãi hơn khi phóng to
                 }}
               >
                 <div

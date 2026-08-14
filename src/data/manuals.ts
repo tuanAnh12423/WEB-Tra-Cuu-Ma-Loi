@@ -2,6 +2,7 @@
 import { washingManuals } from "./washingManual";
 import { fridgeManuals } from "./fridgeManual";
 import { waterPurifierManuals } from "./waterPurifierManual";
+import { dishWasherManuals } from "./dishWasherManual";
 
 // 2. Khai báo kiểu dữ liệu
 export interface ManualItem {
@@ -18,4 +19,5 @@ export const manuals: ManualItem[] = [
   ...washingManuals,
   ...fridgeManuals,
   ...waterPurifierManuals,
+  ...dishWasherManuals,
 ];
