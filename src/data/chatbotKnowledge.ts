@@ -1416,4 +1416,112 @@ export const chatbotKnowledge: KnowledgeItem[] = [
     answer:
       "### 📏 THÔNG SỐ KỸ THUẬT TỦ LẠNH GR-RF611WI-PGV\n---\n📌 **1. KÍCH THƯỚC & TRỌNG LƯỢNG:**\n* **Kiểu dáng:** Multi Door (4 cửa).\n* **Chiều Rộng x Chiều Sâu x Chiều Cao:** 833 mm x 648 mm x 1898 mm.\n\n⚡ **2. THÔNG SỐ VẬN HÀNH:**\n* **Điện áp định mức:** 220V - 240V / 50Hz.\n* **Môi chất lạnh (Gas):** R600a / Cyclopentane.\n* **Công nghệ:** Inverter tiết kiệm điện, Xả đông tự động (No Frost).\n* **Hệ thống điều khiển:** Màn hình cảm ứng bên ngoài tủ.",
   },
+  {
+    id: "k93",
+    title: "Hướng dẫn & Trợ giúp chung cho Tổng đài viên",
+    keywords: [
+      "giup toi",
+      "toi can giup",
+      "giup",
+      "help",
+      "ho tro",
+      "tro giup",
+      "can ho tro",
+      "huong dan su dung bot",
+      "menu",
+      "bat dau",
+    ],
+    answer:
+      "### 🤖 TRỢ LÝ TRA CỨU HỖ TRỢ TỔNG ĐÀI\n---\nBạn có thể tra cứu nhanh thông tin bằng các cú pháp sau:\n\n* **1. Tra cứu Mã lỗi:** Gõ trực tiếp mã lỗi (VD: `E1`, `E3`, `E4`, `E10`, `E21`, `E95`...).\n* **2. Tra cứu theo Model máy:** Gõ model (VD: `DW-15F9`, `DW-15F8`, `DW-15F7`, `RF611`...).\n* **3. Tra cứu theo Tính năng:** Gõ tên chức năng (VD: `khi nong`, `bao quan`, `tu he cua`, `go mo cua`, `ve sinh bo loc`, `khoa tre em`...).\n* **4. Tra cứu Sách HDSD & Sơ đồ:** Gõ `HDSD` hoặc chọn ngành hàng để lọc tài liệu PDF.",
+  },
+  {
+    id: "k94",
+    title: "Hướng dẫn Quy trình Xử lý khi Khách báo Mã lỗi",
+    keywords: [
+      "khach bao loi",
+      "quy trinh bao loi",
+      "huong dan khach xu ly loi",
+      "khach bao ma loi",
+      "cach xu ly khi gap ma loi",
+    ],
+    answer:
+      "### 🎧 QUY TRÌNH HỖ TRỢ KHÁCH BÁO MÃ LỖI\n---\n📌 **3 BƯỚC XỬ LÝ NHANH:**\n* **Bước 1 (Xác nhận):** Hỏi khách hàng Model máy chính xác và Mã lỗi đang nhấp nháy trên màn hình (hoặc số lần chớp đèn LED).\n* **Bước 2 (Tra cứu & Hướng dẫn sơ bộ):** Gõ mã lỗi vào Chatbot để hướng dẫn khách kiểm tra các lỗi cơ bản (như chưa mở van nước, ống xả tắc, phích cắm lỏng, kẹt cửa).\n* **Bước 3 (Tiếp nhận Kỹ thuật):** Nếu là lỗi phần cứng bo mạch/cảm biến/bơm, tạo phiếu yêu cầu Kỹ thuật viên đến kiểm tra tận nhà.",
+  },
+  {
+    id: "k95",
+    title: "Hướng dẫn Tra cứu Thông tin & Chính sách Bảo hành",
+    keywords: [
+      "chinh sach bao hanh",
+      "dieu kien bao hanh",
+      "kiem tra bao hanh",
+      "thoi han bao hanh",
+      "bao hanh mien phi",
+    ],
+    answer:
+      "### 📋 CHÍNH SÁCH BẢO HÀNH CHÍNH HÃNG TOSHIBA\n---\n* **Thời hạn tiêu chuẩn:** **36 tháng** tính từ ngày mua (không quá 42 tháng từ ngày xuất kho).\n* **Đăng ký bảo hành:** Khách hàng cần đăng ký trong vòng **14 ngày** sau khi mua máy qua website hoặc Zalo Official *Toshiba Lifestyle VN*.\n* **Điều kiện miễn phí:** Sản phẩm còn hạn bảo hành, lỗi do linh kiện/nhà sản xuất, tem niêm phong còn nguyên vẹn.\n* **Tổng đài tiếp nhận:** **1800 1529** (Miễn phí cước, 8:00 - 20:00 hàng ngày).",
+  },
+  {
+    id: "k96",
+    title: "Xử lý khi Không tìm thấy Mã lỗi hoặc Không có kết quả",
+    keywords: [
+      "khong tim thay",
+      "khong co ket qua",
+      "ma loi la",
+      "khong co trong he thong",
+      "khong ra ket qua",
+    ],
+    answer:
+      "### 🔍 MẸO TÌM KIẾM KHI KHÔNG RA KẾT QUẢ\n---\n* **Rút gọn từ khóa:** Chỉ gõ ký tự cốt lõi (VD: thay vì gõ `máy rửa bát bị tràn nước` hãy gõ `E4` hoặc `tran nuoc`).\n* **Kiểm tra bộ lọc Model:** Bấm nút **[ 🌐 Tất cả ]** trên thanh lọc Model để mở rộng phạm vi tìm kiếm toàn bộ hệ thống.\n* **Tìm theo danh mục:** Gõ `tro giup tung buoc` để duyệt thủ công theo Ngành hàng ➔ Loại thiết bị ➔ Danh sách tài liệu.",
+  },
+  {
+    id: "k97",
+    title: "Hướng dẫn Reset / Khởi động lại thiết bị cơ bản",
+    keywords: [
+      "reset",
+      "khoi dong lai may",
+      "xoa loi tam thoi",
+      "reset may",
+      "cach reset",
+    ],
+    answer:
+      "### 🔄 HƯỚNG DẪN RESET / XÓA LỖI TẠM THỜI\n---\nKhi thiết bị bị đơ bảng điều khiển hoặc hiển thị lỗi ảo do xung điện nguồn:\n\n* **Bước 1:** Nhấn nút Nguồn tắt máy.\n* **Bước 2:** Rút phích cắm điện nguồn ra khỏi ổ cắm hoàn toàn.\n* **Bước 3:** Đợi khoảng **5 - 10 phút** để tụ điện trên bo mạch xả hết điện tích.\n* **Bước 4:** Cắm chặt lại phích cắm, bật nguồn và chọn lại chương trình chạy thử.",
+  },
+  {
+    id: "k98",
+    title: "Kênh Đăng ký Bảo hành & Tra cứu Trực tuyến Toshiba",
+    keywords: [
+      "zalo toshiba",
+      "website toshiba",
+      "kenh bao hanh",
+      "dang ky bao hanh online",
+      "link bao hanh",
+    ],
+    answer:
+      "### 🌐 CÁC KÊNH LIÊN HỆ & BẢO HÀNH CHÍNH THỨC\n---\n* **Tổng đài Hotline:** **1800 1529** (Miễn cước cuộc gọi).\n* **Zalo Official Account:** Tìm kiếm *Toshiba Lifestyle VN* (Có dấu tích xác thực).\n* **Website chính thức:** `https://www.toshiba-lifestyle.com/vn`\n* **Giờ làm việc tổng đài:** 8h00 đến 20h00 (Từ Thứ Hai đến Chủ Nhật).",
+  },
+  {
+    id: "k99",
+    title: "Hướng dẫn Tra cứu Sách Hướng Dẫn Sử Dụng (PDF)",
+    keywords: [
+      "sach hdsd",
+      "huong dan su dung pdf",
+      "tai sach hdsd",
+      "file pdf",
+      "xem sach hdsd",
+    ],
+    answer:
+      "### 📚 TRA CỨU SÁCH HDSD (TÀI LIỆU PDF)\n---\nĐể xem hoặc tải file PDF tài liệu hướng dẫn sử dụng gốc của hãng:\n\n* **Cách 1:** Gõ mã model máy vào ô chat (VD: `TW-BK115`, `DW-15F9`, `GR-RF611`...) và bấm vào nút **[ 📖 SÁCH HDSD ]** xuất hiện bên dưới câu trả lời.\n* **Cách 2:** Bấm vào mục **TRA CỨU SÁCH HDSD (PDF)** màu xanh ở đầu trang chủ để duyệt danh mục theo từng model.",
+  },
+  {
+    id: "k100",
+    title: "Hướng dẫn Đóng góp & Báo cáo Pan bệnh mới",
+    keywords: [
+      "dong gop pan benh",
+      "them ma loi moi",
+      "bao cao pan benh",
+      "kinh nghiem sua chua",
+    ],
+    answer:
+      "### ➕ ĐÓNG GÓP PAN BỆNH & MÃ LỖI MỚI\n---\nNếu bạn phát hiện mã lỗi mới hoặc có kinh nghiệm xử lý thực tế từ kỹ thuật viên:\n\n* **Thao tác:** Bấm vào ô **[ + ĐÓNG GÓP PAN BỆNH MỚI ]** trên trang chủ hệ thống.\n* **Thông tin cần nhập:** Ngành hàng, Model máy, Hiện tượng, Nguyên nhân thực tế và Cách xử lý chi tiết.\n* **Duyệt bài:** Bộ phận kỹ thuật chuyên môn sẽ thẩm định và cập nhật vào kho dữ liệu Chatbot nội bộ.",
+  },
 ];

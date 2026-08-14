@@ -1,9 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+// 📦 1. IMPORT DỮ LIỆU
 import { errors, categories } from "../data/errors";
 import { manuals } from "../data/manuals";
 import { chatbotKnowledge } from "../data/chatbotKnowledge";
+import { diagnosisTree } from "../data/diagnosisTree";
+import type { DiagnosisNode } from "../data/diagnosisTree";
+import { deviceImages, type DeviceImageItem } from "../data/deviceImages";
+import { modelComparisons } from "../data/modelComparisons";
 
+// 🧹 2. HÀM LÀM SẠCH CHUỖI TÌM KIẾM
 function cleanString(str: string): string {
   if (!str) return "";
   return str
@@ -16,6 +23,7 @@ function cleanString(str: string): string {
     .trim();
 }
 
+// 🏷️ 3. INTERFACES
 interface Option {
   label: string;
   action: () => void;
@@ -25,18 +33,47 @@ interface Message {
   id: string;
   sender: "bot" | "user";
   text: string;
+  images?: string[];
   options?: Option[];
   feedback?: "like" | "dislike";
+  isPinned?: boolean;
+}
+
+interface SuggestionItem {
+  type: "ERROR" | "MANUAL" | "KNOWLEDGE" | "IMAGE";
+  label: string;
+  subLabel?: string;
+  query: string;
+  icon: string;
 }
 
 export default function ChatBotWidget() {
   const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // ⚙️ 4. STATES
   const [isOpen, setIsOpen] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [input, setInput] = useState("");
   const [selectedModelFilter, setSelectedModelFilter] = useState<string>("ALL");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  // Modals mở rộng: PINNED | UNRESOLVED | CALC | COMPARE
+  const [activeModal, setActiveModal] = useState<"PINNED" | "UNRESOLVED" | "CALC" | "COMPARE" | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  // State bộ so sánh thông số nhiều ngành hàng
+  const [compareCategory, setCompareCategory] = useState<string>("dishwasher");
+  const [selectedCompareModels, setSelectedCompareModels] = useState<string[]>(["DW-15F9(B)-VN", "DW-15F8(B)-VN", "DW-15F7(G)-VN"]);
+
+  // State bộ tính toán độ cứng nước
+  const [calcDhInput, setCalcDhInput] = useState<string>("");
+
+  // State đồng hồ đếm ngược thao tác
+  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+
+  // Quản lý lịch sử tin nhắn
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem("chat_history");
     if (saved) {
@@ -50,7 +87,7 @@ export default function ChatBotWidget() {
       {
         id: "1",
         sender: "bot",
-        text: "Xin chào! Tôi là Trợ lý Tra cứu Hỗ trợ Tổng đài Toshiba. Bạn có thể chọn Bộ lọc Model bên trên hoặc gõ Mã lỗi/Model máy để tìm kiếm tức thì!",
+        text: "Xin chào! Tôi là Trợ lý Tra cứu Nghiệp vụ Call Center Toshiba. Bạn có thể tra cứu Mã lỗi, Sách HDSD, xem sơ đồ ảnh, hoặc dùng các công cụ hỗ trợ tư vấn bên trên!",
       },
     ];
   });
@@ -62,7 +99,46 @@ export default function ChatBotWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Các model phục vụ Filter nhanh ở Header
+  // Phím tắt bàn phím (Ctrl+K, Esc)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsOpen(true);
+        setTimeout(() => inputRef.current?.focus(), 150);
+      } else if (e.key === "Escape" && isOpen) {
+        if (previewImage) setPreviewImage(null);
+        else if (activeModal) setActiveModal(null);
+        else setIsOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, previewImage, activeModal]);
+
+  // Đếm ngược thời gian
+  useEffect(() => {
+    let interval: any = null;
+    if (isTimerRunning && timerSeconds !== null && timerSeconds > 0) {
+      interval = setInterval(() => setTimerSeconds((prev) => (prev !== null ? prev - 1 : 0)), 1000);
+    } else if (timerSeconds === 0) {
+      setIsTimerRunning(false);
+      alert("⏱️ Hết thời gian thao tác!");
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, timerSeconds]);
+
+  const startTimer = (secs: number) => {
+    setTimerSeconds(secs);
+    setIsTimerRunning(true);
+  };
+
+  const stopTimer = () => {
+    setIsTimerRunning(false);
+    setTimerSeconds(null);
+  };
+
+  // Bộ lọc Model
   const modelFilters = [
     { id: "ALL", label: "🌐 Tất cả" },
     { id: "RF611", label: "🧊 Tủ lạnh RF611" },
@@ -71,27 +147,97 @@ export default function ChatBotWidget() {
     { id: "15F7", label: "🍽️ Máy rửa 15F7" },
   ];
 
-  // Gợi ý từ khóa tự động (Auto-suggest)
-  const autoSuggestions =
-    input.trim().length >= 2
-      ? [
-          ...chatbotKnowledge.flatMap((k) => k.keywords),
-          ...errors.map((e) => e.code || ""),
-          ...manuals.map((m) => m.model || ""),
-        ]
-          .filter(
-            (item, index, self) =>
-              item &&
-              cleanString(item).includes(cleanString(input)) &&
-              self.indexOf(item) === index,
-          )
-          .slice(0, 5)
-      : [];
+  // Gợi ý thông minh khi gõ
+  const smartSuggestions: SuggestionItem[] = (() => {
+    const q = cleanString(input);
+    if (q.length < 2) return [];
 
-  // Copy dành cho Khách hàng (Thêm lời chào lịch sự)
+    const results: SuggestionItem[] = [];
+
+    deviceImages.forEach((img) => {
+      const title = cleanString(img.title);
+      const matchKw = img.keywords.some((kw) => cleanString(kw).includes(q));
+      if (title.includes(q) || matchKw) {
+        results.push({
+          type: "IMAGE",
+          icon: "🖼️",
+          label: `[Ảnh (${img.images.length})] ${img.title}`,
+          subLabel: img.description,
+          query: img.keywords[0] || img.title,
+        });
+      }
+    });
+
+    errors.forEach((e) => {
+      const code = cleanString(e.code || "");
+      const title = cleanString(e.title || "");
+      if (code.includes(q) || title.includes(q)) {
+        results.push({
+          type: "ERROR",
+          icon: "⚡",
+          label: `[Mã Lỗi ${e.code}] ${e.title}`,
+          subLabel: e.description?.slice(0, 45) + "...",
+          query: e.code || e.title,
+        });
+      }
+    });
+
+    (manuals || []).forEach((m: any) => {
+      const model = cleanString(m.model || m.code || "");
+      const title = cleanString(m.title || "");
+      if (model.includes(q) || title.includes(q)) {
+        results.push({
+          type: "MANUAL",
+          icon: "📖",
+          label: `[Model] ${m.model || ""}`,
+          subLabel: m.title,
+          query: m.model || m.title,
+        });
+      }
+    });
+
+    chatbotKnowledge.forEach((k) => {
+      const title = cleanString(k.title || "");
+      const matchKeyword = k.keywords.some((kw) => cleanString(kw).includes(q));
+      if (title.includes(q) || matchKeyword) {
+        results.push({
+          type: "KNOWLEDGE",
+          icon: "💡",
+          label: k.title || "Hướng dẫn xử lý",
+          subLabel: "Mẹo & Tính năng Q&A",
+          query: k.keywords[0] || k.title || "",
+        });
+      }
+    });
+
+    return results.slice(0, 5);
+  })();
+
+  const togglePinMessage = (msgId: string) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === msgId ? { ...m, isPinned: !m.isPinned } : m))
+    );
+  };
+
+  const logUnresolvedQuery = (query: string) => {
+    if (!query.trim()) return;
+    try {
+      const existing = JSON.parse(localStorage.getItem("unresolved_queries") || "[]");
+      if (!existing.some((item: any) => item.query.toLowerCase() === query.trim().toLowerCase())) {
+        existing.unshift({
+          query: query.trim(),
+          time: new Date().toLocaleString("vi-VN"),
+        });
+        localStorage.setItem("unresolved_queries", JSON.stringify(existing.slice(0, 50)));
+      }
+    } catch (e) {
+      /* ignore */
+    }
+  };
+
   const handleCopyForCustomer = (text: string, msgId: string) => {
     const cleanText = text
-      .replace(/<[^>]*>/g, "") // Loại bỏ các thẻ HTML nếu có
+      .replace(/<[^>]*>/g, "")
       .replace(/###\s*/g, "")
       .replace(/---/g, "")
       .replace(/\*\*/g, "")
@@ -104,7 +250,6 @@ export default function ChatBotWidget() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Copy Kỹ thuật (Giữ thuần túy thông số)
   const handleCopyTechnical = (text: string, msgId: string) => {
     const cleanText = text
       .replace(/<[^>]*>/g, "")
@@ -118,17 +263,67 @@ export default function ChatBotWidget() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
+  const handleCopyCrmTicket = (text: string, msgId: string) => {
+    const cleanText = text
+      .replace(/<[^>]*>/g, "")
+      .replace(/###\s*/g, "")
+      .replace(/---/g, "")
+      .replace(/\*\*/g, "")
+      .replace(/\*/g, "")
+      .slice(0, 150);
+
+    const ticketTemplate = `[TOSHIBA SVC TICKET - ${new Date().toLocaleDateString("vi-VN")}]\n- Nội dung tiếp nhận: Khách cần hỗ trợ kỹ thuật / Báo lỗi thiết bị\n- Tóm tắt hướng dẫn: ${cleanText}...\n- Kết quả xử lý: Đã hướng dẫn KH thao tác / Theo dõi thêm.\n- Hotline liên hệ lại: 1800 1529`;
+
+    navigator.clipboard.writeText(ticketTemplate);
+    setCopiedId(`crm_${msgId}`);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   const handleFeedback = (msgId: string, type: "like" | "dislike") => {
     setMessages((prev) =>
-      prev.map((m) => (m.id === msgId ? { ...m, feedback: type } : m)),
+      prev.map((m) => (m.id === msgId ? { ...m, feedback: type } : m))
     );
   };
 
-  // 🌳 BƯỚC 1: CHỌN NGÀNH HÀNG
-  const startStepByStepDiagnosis = () => {
-    const categoryOptions: Option[] = categories.map((cat) => ({
-      label: `${cat.icon || "⚙️"} ${cat.name}`,
-      action: () => handleSelectCategory(cat.id, cat.name),
+  // Cây chẩn đoán pan bệnh
+  const handleDiagnosisStep = (node: DiagnosisNode, userSelectedLabel: string) => {
+    const nextOptions: Option[] = [];
+
+    if (node.children && node.children.length > 0) {
+      node.children.forEach((child) => {
+        nextOptions.push({
+          label: child.label,
+          action: () => handleDiagnosisStep(child, child.label),
+        });
+      });
+
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now().toString(), sender: "user", text: userSelectedLabel },
+        {
+          id: (Date.now() + 1).toString(),
+          sender: "bot",
+          text: `### 🧭 ${node.title || node.label.toUpperCase()}\n---\n${node.guide || "Vui lòng chọn hiện tượng chi tiết bên dưới:"}`,
+          options: nextOptions,
+        },
+      ]);
+    } else if (node.result) {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now().toString(), sender: "user", text: userSelectedLabel },
+        {
+          id: (Date.now() + 1).toString(),
+          sender: "bot",
+          text: `### 🛠️ ${node.title ? node.title.toUpperCase() : "HƯỚNG DẪN XỬ LÝ"}\n---\n${node.result}`,
+        },
+      ]);
+    }
+  };
+
+  const startDecisionTree = () => {
+    const rootOptions: Option[] = diagnosisTree.map((device) => ({
+      label: device.label,
+      action: () => handleDiagnosisStep(device, device.label),
     }));
 
     setMessages((prev) => [
@@ -136,102 +331,88 @@ export default function ChatBotWidget() {
       {
         id: Date.now().toString(),
         sender: "bot",
-        text: "🔍 **Tra cứu theo danh mục**\n\n**Bước 1:** Vui lòng chọn ngành hàng bạn cần tìm:",
-        options: categoryOptions,
+        text: "### 🌳 CHẨN ĐOÁN PAN BỆNH THEO HIỆN TƯỢNG\n---\nVui lòng chọn thiết bị đang gặp sự cố để bắt đầu kiểm tra từng bước:",
+        options: rootOptions,
       },
     ]);
   };
 
-  // 🌳 BƯỚC 2: CHỌN LOẠI THÔNG TIN
-  const handleSelectCategory = (categoryId: string, categoryName: string) => {
+  // Tra cứu hình ảnh 2 tầng
+  const showImageCatalog = () => {
+    const categoryMap: { [key: string]: { label: string; icon: string } } = {
+      washing: { label: "Máy giặt & Máy sấy", icon: "🧺" },
+      fridge: { label: "Tủ lạnh", icon: "🧊" },
+      dishwasher: { label: "Máy rửa chén", icon: "🍽️" },
+      waterPurifier: { label: "Máy lọc nước", icon: "💧" },
+    };
+
+    const options: Option[] = Object.keys(categoryMap).map((catKey) => {
+      const count = deviceImages.filter((img) => img.category === catKey).length;
+      return {
+        label: `${categoryMap[catKey].icon} ${categoryMap[catKey].label} (${count} model)`,
+        action: () => showImageModelsByCategory(catKey, categoryMap[catKey].label),
+      };
+    });
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        sender: "bot",
+        text: "### 🖼️ THƯ VIỆN HÌNH ẢNH & SƠ ĐỒ THIẾT BỊ\n---\n**Bước 1:** Vui lòng chọn ngành hàng bạn muốn tra cứu hình ảnh sơ đồ:",
+        options,
+      },
+    ]);
+  };
+
+  const showImageModelsByCategory = (categoryId: string, categoryName: string) => {
+    const filteredImages = deviceImages.filter((img) => img.category === categoryId);
+
+    const options: Option[] = filteredImages.map((img) => ({
+      label: `📌 [${img.model}] ${img.title} (${img.images.length} ảnh)`,
+      action: () => displayImageResult(img),
+    }));
+
+    options.push({
+      label: "⬅️ Chọn ngành hàng khác",
+      action: () => showImageCatalog(),
+    });
+
     setMessages((prev) => [
       ...prev,
       { id: Date.now().toString(), sender: "user", text: categoryName },
       {
         id: (Date.now() + 1).toString(),
         sender: "bot",
-        text: `📌 **Bước 2 (${categoryName}):** Bạn cần tra cứu thông tin nào?`,
+        text: `### 🖼️ SƠ ĐỒ HÌNH ẢNH (${categoryName.toUpperCase()})\n---\n**Bước 2:** Chọn Model máy cần xem chi tiết sơ đồ:`,
+        options,
+      },
+    ]);
+  };
+
+  const displayImageResult = (img: DeviceImageItem) => {
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now().toString(), sender: "user", text: img.title },
+      {
+        id: (Date.now() + 1).toString(),
+        sender: "bot",
+        text: `### 🖼️ ${img.title.toUpperCase()}\n---\n**Mô tả:** ${img.description}\n*(Tìm thấy ${img.images.length} hình ảnh, bấm vào ảnh để phóng to)*`,
+        images: img.images,
         options: [
           {
-            label: "🎧 Tra cứu Mã lỗi Call Center",
-            action: () => handleListCategoryErrors(categoryId, categoryName),
-          },
-          {
-            label: "📚 Tra cứu Sách HDSD (PDF)",
-            action: () => handleListCategoryManuals(categoryId, categoryName),
+            label: "⬅️ Xem model khác cùng danh mục",
+            action: () => showImageModelsByCategory(img.category, img.category),
           },
         ],
       },
     ]);
   };
 
-  // 🌳 BƯỚC 3A: HIỂN THỊ MÃ LỖI CALL CENTER
-  const handleListCategoryErrors = (
-    categoryId: string,
-    categoryName: string,
-  ) => {
-    const filtered = errors.filter((e) => e.category === categoryId);
-    let options: Option[] = filtered.map((item) => ({
-      label: `🎧 [${item.code || "LỖI"}] ${item.title}`,
-      action: () => {
-        navigate(`/error-detail/${item.id}`);
-        setIsOpen(false);
-      },
-    }));
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        sender: "bot",
-        text: `✅ Tìm thấy ${filtered.length} mã lỗi dành cho **${categoryName}**. Bấm vào lỗi bên dưới để xem:`,
-        options,
-      },
-    ]);
-  };
-
-  // 🌳 BƯỚC 3B: HIỂN THỊ SÁCH HDSD (PDF)
-  const handleListCategoryManuals = (
-    categoryId: string,
-    categoryName: string,
-  ) => {
-    const filtered = (manuals || []).filter(
-      (m: any) => m.category === categoryId,
-    );
-    let options: Option[] = filtered.map((item: any) => ({
-      label: `📖 ${item.model || ""} - ${item.title}`,
-      action: () => {
-        const pdfLink = item.pdfUrl || item.link || item.url || item.file;
-        if (pdfLink) {
-          window.open(pdfLink, "_blank");
-        } else {
-          navigate("/manuals");
-        }
-        setIsOpen(false);
-      },
-    }));
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now().toString(),
-        sender: "bot",
-        text: `✅ Tìm thấy ${filtered.length} tài liệu HDSD thuộc **${categoryName}**:`,
-        options,
-      },
-    ]);
-  };
-
-  // 🔍 XỬ LÝ TÌM KIẾM DỮ LIỆU
+  // Tìm kiếm trung tâm
   const handleSend = (textToSend?: string) => {
     const queryText = textToSend || input;
     if (!queryText.trim()) return;
-
-    if (queryText === "tro giup tung buoc") {
-      startStepByStepDiagnosis();
-      setInput("");
-      return;
-    }
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -243,21 +424,66 @@ export default function ChatBotWidget() {
 
     const cleanKeyword = cleanString(queryText);
 
+    // Khớp hình ảnh
+    const matchedImg = deviceImages.find(
+      (img) =>
+        cleanString(img.title).includes(cleanKeyword) ||
+        img.keywords.some((kw) => cleanString(kw).includes(cleanKeyword) || cleanKeyword.includes(cleanString(kw)))
+    );
+
+    if (matchedImg) {
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "bot",
+            text: `### 🖼️ ${matchedImg.title.toUpperCase()}\n---\n**Mô tả:** ${matchedImg.description}\n*(Tìm thấy ${matchedImg.images.length} hình ảnh, bấm vào ảnh để phóng to)*`,
+            images: matchedImg.images,
+          },
+        ]);
+      }, 200);
+      return;
+    }
+
+    // Trợ giúp chung
+    const helpKeywords = ["giuptoi", "toicangiup", "help", "hotro", "trogiup", "menu", "batdau", "canhotro", "huongdan", "hinh"];
+    const isHelpIntent = helpKeywords.some((kw) => cleanKeyword.includes(kw) || kw.includes(cleanKeyword));
+
+    if (isHelpIntent) {
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "bot",
+            text: "### 🧭 TRUNG TÂM HỖ TRỢ TRA CỨU NHANH\n---\nChào bạn, vui lòng **chọn Ngành hàng hoặc Công cụ tra cứu** bên dưới:",
+            options: [
+              { label: "🖼️ Tra cứu Hình ảnh Bảng điều khiển & Sơ đồ", action: () => showImageCatalog() },
+              { label: "🌳 Cây Chẩn đoán Pan bệnh (Theo hiện tượng)", action: () => startDecisionTree() },
+              { label: "⚖️ Đối chiếu So sánh Thông số Model", action: () => setActiveModal("COMPARE") },
+              { label: "🧺 Tra cứu Máy giặt & Máy sấy", action: () => handleSend("TW-BK115") },
+              { label: "🧊 Tra cứu Tủ lạnh Toshiba", action: () => handleSend("GR-RF611WI-PGV") },
+              { label: "🍽️ Tra cứu Máy rửa chén Toshiba", action: () => handleSend("DW-15F9(B)-VN") },
+            ],
+          },
+        ]);
+      }, 200);
+      return;
+    }
+
     let matchedKnowledge = chatbotKnowledge.filter((k) =>
       k.keywords.some((kw) => {
         const cleanKw = cleanString(kw);
         return cleanKw.includes(cleanKeyword) || cleanKeyword.includes(cleanKw);
-      }),
+      })
     );
 
-    // Áp dụng bộ lọc Model nếu đang chọn Filter
     if (selectedModelFilter !== "ALL") {
       matchedKnowledge = matchedKnowledge.filter(
         (k) =>
           cleanString(k.title || "").includes(cleanString(selectedModelFilter)) ||
-          k.keywords.some((kw) =>
-            cleanString(kw).includes(cleanString(selectedModelFilter)),
-          ),
+          k.keywords.some((kw) => cleanString(kw).includes(cleanString(selectedModelFilter)))
       );
     }
 
@@ -265,26 +491,15 @@ export default function ChatBotWidget() {
       const code = cleanString(item.code || "");
       const title = cleanString(item.title || "");
       const desc = cleanString(item.description || "");
-      return (
-        code.includes(cleanKeyword) ||
-        title.includes(cleanKeyword) ||
-        desc.includes(cleanKeyword)
-      );
+      return code.includes(cleanKeyword) || title.includes(cleanKeyword) || desc.includes(cleanKeyword);
     });
 
     const matchedManuals = (manuals || []).filter((item: any) => {
-      const model = cleanString(
-        item.model || item.modelName || item.code || "",
-      );
+      const model = cleanString(item.model || item.modelName || item.code || "");
       const title = cleanString(item.title || item.name || "");
       const category = cleanString(item.category || "");
       const id = cleanString(item.id || "");
-      return (
-        model.includes(cleanKeyword) ||
-        title.includes(cleanKeyword) ||
-        category.includes(cleanKeyword) ||
-        id.includes(cleanKeyword)
-      );
+      return model.includes(cleanKeyword) || title.includes(cleanKeyword) || category.includes(cleanKeyword) || id.includes(cleanKeyword);
     });
 
     let botResponseText = "";
@@ -314,22 +529,13 @@ export default function ChatBotWidget() {
             action: () => {
               setMessages((prev) => [
                 ...prev,
-                {
-                  id: Date.now().toString(),
-                  sender: "user",
-                  text: item.title || "Xem chi tiết",
-                },
+                { id: Date.now().toString(), sender: "user", text: item.title || "Xem chi tiết" },
                 {
                   id: (Date.now() + 1).toString(),
                   sender: "bot",
                   text: item.answer,
                   options: item.link
-                    ? [
-                        {
-                          label: "🔗 Xem chi tiết liên kết",
-                          action: () => window.open(item.link, "_blank"),
-                        },
-                      ]
+                    ? [{ label: "🔗 Xem chi tiết liên kết", action: () => window.open(item.link, "_blank") }]
                     : [],
                 },
               ]);
@@ -354,11 +560,7 @@ export default function ChatBotWidget() {
               if (pdfLink) {
                 window.open(pdfLink, "_blank");
               } else {
-                navigate(
-                  `/manuals?search=${encodeURIComponent(
-                    displayModel || displayTitle,
-                  )}`,
-                );
+                navigate(`/manuals?search=${encodeURIComponent(displayModel || displayTitle)}`);
               }
               setIsOpen(false);
             },
@@ -375,12 +577,18 @@ export default function ChatBotWidget() {
           });
         });
       } else {
-        botResponseText = `❌ Không tìm thấy thông tin cho từ khóa "${queryText}".\n\n👉 Bạn hãy chọn ngành hàng bên dưới để tra cứu:`;
+        logUnresolvedQuery(queryText);
 
-        botOptions = categories.map((cat) => ({
-          label: `${cat.icon || "⚙️"} ${cat.name}`,
-          action: () => handleSelectCategory(cat.id, cat.name),
-        }));
+        botResponseText = `❌ Chưa tìm thấy dữ liệu chính xác cho từ khóa "${queryText}".\n\n👉 Bạn hãy chọn công cụ tra cứu bên dưới:`;
+
+        botOptions = [
+          { label: "🖼️ Xem thư viện hình ảnh", action: () => showImageCatalog() },
+          { label: "🌳 Chẩn đoán theo hiện tượng", action: () => startDecisionTree() },
+          ...categories.map((cat) => ({
+            label: `${cat.icon || "⚙️"} ${cat.name}`,
+            action: () => handleSelectCategory(cat.id, cat.name),
+          })),
+        ];
       }
     }
 
@@ -397,6 +605,28 @@ export default function ChatBotWidget() {
     }, 200);
   };
 
+  const handleSelectCategory = (categoryId: string, categoryName: string) => {
+    const filtered = errors.filter((e) => e.category === categoryId);
+    let options: Option[] = filtered.slice(0, 6).map((item) => ({
+      label: `🎧 [${item.code || "LỖI"}] ${item.title}`,
+      action: () => {
+        navigate(`/error-detail/${item.id}`);
+        setIsOpen(false);
+      },
+    }));
+
+    setMessages((prev) => [
+      ...prev,
+      { id: Date.now().toString(), sender: "user", text: categoryName },
+      {
+        id: (Date.now() + 1).toString(),
+        sender: "bot",
+        text: `✅ Danh sách mã lỗi tiêu biểu của **${categoryName}**:`,
+        options,
+      },
+    ]);
+  };
+
   const handleClearHistory = () => {
     localStorage.removeItem("chat_history");
     setMessages([
@@ -408,52 +638,68 @@ export default function ChatBotWidget() {
     ]);
   };
 
-  // 🌟 Hàm Format & Render văn bản chuẩn (Loại bỏ <br /> thừa xung quanh Table)
+  // Format văn bản
   const renderFormattedText = (text: string) => {
     let formatted = text
-      // 1. Biến ### Thành Header Card xanh
       .replace(
         /###\s*(.*)/g,
-        '<div style="color: #0369a1; font-size: 13px; font-weight: 800; background: #f0f9ff; padding: 6px 10px; border-radius: 6px; border-left: 4px solid #0284c7; margin-bottom: 8px;">$1</div>',
+        '<div style="color: #0369a1; font-size: 13px; font-weight: 800; background: #f0f9ff; padding: 6px 10px; border-radius: 6px; border-left: 4px solid #0284c7; margin-bottom: 8px;">$1</div>'
       )
-      // 2. Biến --- Thành đường kẻ ngang
-      .replace(
-        /---/g,
-        '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 8px 0;" />',
-      )
-      // 3. In đậm & In nghiêng
-      .replace(
-        /\*\*(.*?)\*\*/g,
-        '<strong style="color: #0f172a; font-weight: 700;">$1</strong>',
-      )
+      .replace(/---/g, '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 8px 0;" />')
+      .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 700;">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em style="color: #0284c7;">$1</em>')
-      
-      // 4. Xuống dòng tự nhiên
       .replace(/\n/g, "<br />")
-
-      // 🌟 Xóa bỏ toàn bộ <br /> thừa xung quanh các thẻ HTML Bảng
       .replace(/<br\s*\/?>\s*(?=<table|<thead|<tbody|<tr|<th|<td|<\/table|<\/thead|<\/tbody|<\/tr|<\/th|<\/td)/gi, "")
       .replace(/(<\/table>|<\/thead>|<\/tbody>|<\/tr>|<\/th>|<\/td>)\s*<br\s*\/?>/gi, "$1");
 
-    // 5. Highlight từ khóa đang nhập
     if (input.trim().length >= 2) {
       try {
         const reg = new RegExp(`(${input.trim()})`, "gi");
         formatted = formatted.replace(
           reg,
-          '<mark style="background: #fef08a; padding: 0 2px; border-radius: 2px; color: #854d0e;">$1</mark>',
+          '<mark style="background: #fef08a; padding: 0 2px; border-radius: 2px; color: #854d0e;">$1</mark>'
         );
       } catch (e) {
-        /* ignore regex error */
+        /* ignore */
       }
     }
 
     return formatted;
   };
 
+  const calculateWaterHardness = (valStr: string) => {
+    const val = parseFloat(valStr);
+    if (isNaN(val)) return "Vui lòng nhập số hợp lệ (°dH)";
+    if (val <= 5) return "Mức H1 (0 - 5 °dH): Không cần tái sinh muối (0g/chu kỳ)";
+    if (val <= 11) return "Mức H2 (6 - 11 °dH): Tái tạo sau mỗi 10 chu trình (9g muối)";
+    if (val <= 17) return "Mức H3 ⭐ (12 - 17 °dH): Mặc định nhà máy. Tái tạo sau 5 chu trình (12g muối)";
+    if (val <= 22) return "Mức H4 (18 - 22 °dH): Tái tạo sau mỗi 3 chu trình (20g muối)";
+    if (val <= 34) return "Mức H5 (23 - 34 °dH): Tái tạo sau mỗi 2 chu trình (30g muối)";
+    return "Mức H6 (35 - 55 °dH): Nước rất cứng! Tái tạo sau mỗi 1 chu trình (60g muối)";
+  };
+
+  // Toggle chọn model để so sánh
+  const toggleCompareModel = (modelName: string) => {
+    if (selectedCompareModels.includes(modelName)) {
+      if (selectedCompareModels.length > 1) {
+        setSelectedCompareModels(selectedCompareModels.filter((m) => m !== modelName));
+      }
+    } else {
+      setSelectedCompareModels([...selectedCompareModels, modelName]);
+    }
+  };
+
+  const currentCategoryCompareData = modelComparisons.find((c) => c.category === compareCategory);
+  const activeCompareModels = (currentCategoryCompareData?.models || []).filter((m) =>
+    selectedCompareModels.includes(m.model)
+  );
+
+  const pinnedMessages = messages.filter((m) => m.isPinned);
+  const unresolvedList = JSON.parse(localStorage.getItem("unresolved_queries") || "[]");
+
   return (
     <>
-      {/* Nút Toggle mở Chatbot ở góc màn hình */}
+      {/* 🔘 Nút Toggle mở Chatbot */}
       <button
         type="button"
         onClick={(e) => {
@@ -461,6 +707,7 @@ export default function ChatBotWidget() {
           e.stopPropagation();
           setIsOpen((prev) => !prev);
         }}
+        title="Bấm để mở trợ lý (Ctrl + K)"
         style={{
           position: "fixed",
           bottom: 20,
@@ -483,6 +730,7 @@ export default function ChatBotWidget() {
         {isOpen ? "✕" : "💬"}
       </button>
 
+      {/* 💬 Khung Chatbot */}
       {isOpen && (
         <div
           onClick={(e) => e.stopPropagation()}
@@ -490,9 +738,9 @@ export default function ChatBotWidget() {
             position: "fixed",
             bottom: isMaximized ? 20 : 86,
             right: 20,
-            width: isMaximized ? "calc(100vw - 40px)" : 430,
+            width: isMaximized ? "calc(100vw - 40px)" : 460,
             maxWidth: isMaximized ? 1200 : "94vw",
-            height: isMaximized ? "calc(100vh - 100px)" : 600,
+            height: isMaximized ? "calc(100vh - 100px)" : 620,
             maxHeight: isMaximized ? "none" : "85vh",
             backgroundColor: "#ffffff",
             borderRadius: 16,
@@ -510,78 +758,179 @@ export default function ChatBotWidget() {
             style={{
               backgroundColor: "#0f172a",
               color: "#ffffff",
-              padding: "12px 16px",
+              padding: "10px 14px",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 22 }}>🤖</span>
+              <span style={{ fontSize: 20 }}>🤖</span>
               <div>
-                <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700 }}>
-                  Trợ Lý Tra Cứu Hỗ Trợ
-                </h3>
-                <span style={{ fontSize: 11, color: "#4ade80" }}>
-                  ● Call Center & Training Q&A
+                <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700 }}>Trợ Lý Call Center Toshiba</h3>
+                <span style={{ fontSize: 10, color: "#4ade80" }}>
+                  ● SVC Station (Ctrl+K)
+                  {timerSeconds !== null && ` | ⏱️ ${timerSeconds}s`}
                 </span>
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              {/* Nút Xem Đã Ghim */}
               <button
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsMaximized(!isMaximized);
+                onClick={() => setActiveModal(activeModal === "PINNED" ? null : "PINNED")}
+                title="Xem câu trả lời đã ghim"
+                style={{
+                  background: pinnedMessages.length > 0 ? "#f59e0b" : "rgba(255,255,255,0.12)",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 6,
+                  padding: "4px 6px",
+                  fontSize: 11,
+                  cursor: "pointer",
+                  fontWeight: 600,
                 }}
-                title={isMaximized ? "Thu nhỏ" : "Phóng to toàn màn hình"}
+              >
+                ⭐ ({pinnedMessages.length})
+              </button>
+
+              {/* Nút So sánh Model Nâng Cao */}
+              <button
+                type="button"
+                onClick={() => setActiveModal(activeModal === "COMPARE" ? null : "COMPARE")}
+                title="Bảng đối chiếu thông số Model theo ngành hàng"
+                style={{
+                  background: activeModal === "COMPARE" ? "#0284c7" : "rgba(255,255,255,0.12)",
+                  color: "#cbd5e1",
+                  border: "none",
+                  borderRadius: 6,
+                  padding: "4px 6px",
+                  fontSize: 11,
+                  cursor: "pointer",
+                }}
+              >
+                ⚖️
+              </button>
+
+              {/* Nút Tính Toán & Đếm giờ */}
+              <button
+                type="button"
+                onClick={() => setActiveModal(activeModal === "CALC" ? null : "CALC")}
+                title="Tiện ích quy đổi muối & hẹn giờ"
+                style={{
+                  background: activeModal === "CALC" ? "#0284c7" : "rgba(255,255,255,0.12)",
+                  color: "#cbd5e1",
+                  border: "none",
+                  borderRadius: 6,
+                  padding: "4px 6px",
+                  fontSize: 11,
+                  cursor: "pointer",
+                }}
+              >
+                🧮
+              </button>
+
+              {/* Nút Từ khóa chưa có dữ liệu */}
+              <button
+                type="button"
+                onClick={() => setActiveModal(activeModal === "UNRESOLVED" ? null : "UNRESOLVED")}
+                title="Từ khóa chưa có kết quả"
+                style={{
+                  background: "rgba(255,255,255,0.12)",
+                  color: "#cbd5e1",
+                  border: "none",
+                  borderRadius: 6,
+                  padding: "4px 6px",
+                  fontSize: 11,
+                  cursor: "pointer",
+                }}
+              >
+                📊
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsMaximized(!isMaximized)}
                 style={{
                   background: "rgba(255, 255, 255, 0.12)",
                   border: "none",
                   color: "#cbd5e1",
                   cursor: "pointer",
-                  fontSize: 12,
-                  padding: "4px 8px",
+                  fontSize: 11,
+                  padding: "4px 6px",
                   borderRadius: 6,
-                  fontWeight: 600,
                 }}
               >
-                {isMaximized ? "🗗 Thu nhỏ" : "🗖 Phóng to"}
+                {isMaximized ? "🗗" : "🗖"}
               </button>
 
               <button
                 type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleClearHistory();
-                }}
+                onClick={handleClearHistory}
                 title="Xóa lịch sử"
                 style={{
                   background: "transparent",
                   border: "none",
                   color: "#94a3b8",
                   cursor: "pointer",
-                  fontSize: 12,
-                  padding: "4px 6px",
+                  fontSize: 11,
+                  padding: "4px",
                 }}
               >
-                🗑️ Xóa
+                🗑️
               </button>
             </div>
           </div>
 
-          {/* Thanh Filter Model gọn gàng */}
+          {/* Thanh Filter & Nút Chức Năng Nhanh */}
           <div
             style={{
               display: "flex",
               gap: 6,
-              padding: "8px 12px",
+              padding: "6px 10px",
               backgroundColor: "#1e293b",
               borderBottom: "1px solid #334155",
               overflowX: "auto",
+              alignItems: "center",
             }}
           >
+            <button
+              type="button"
+              onClick={showImageCatalog}
+              style={{
+                background: "#0891b2",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 12,
+                padding: "3px 8px",
+                fontSize: 11,
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
+            >
+              🖼️ Tra cứu Ảnh
+            </button>
+
+            <button
+              type="button"
+              onClick={startDecisionTree}
+              style={{
+                background: "#0284c7",
+                color: "#ffffff",
+                border: "none",
+                borderRadius: 12,
+                padding: "3px 8px",
+                fontSize: 11,
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+              }}
+            >
+              🌳 Chẩn đoán bệnh
+            </button>
+
             {modelFilters.map((filter) => (
               <button
                 key={filter.id}
@@ -591,12 +940,11 @@ export default function ChatBotWidget() {
                   setSelectedModelFilter(filter.id);
                 }}
                 style={{
-                  background:
-                    selectedModelFilter === filter.id ? "#0284c7" : "#334155",
+                  background: selectedModelFilter === filter.id ? "#0284c7" : "#334155",
                   color: "#ffffff",
                   border: "none",
                   borderRadius: 12,
-                  padding: "4px 10px",
+                  padding: "3px 8px",
                   fontSize: 11,
                   fontWeight: 600,
                   whiteSpace: "nowrap",
@@ -608,7 +956,165 @@ export default function ChatBotWidget() {
             ))}
           </div>
 
-          {/* Màn hình Lịch sử Tin nhắn */}
+          {/* 🌟 MODALS PANEL */}
+          {/* MODAL 1: PINNED */}
+          {activeModal === "PINNED" && (
+            <div style={{ backgroundColor: "#fef3c7", padding: "10px", borderBottom: "1px solid #fde68a", maxHeight: 180, overflowY: "auto" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e" }}>⭐ Danh sách câu trả lời đã ghim ({pinnedMessages.length}):</span>
+                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+              </div>
+              {pinnedMessages.length === 0 ? (
+                <span style={{ fontSize: 11, color: "#b45309" }}>Chưa có tin nhắn nào được ghim. Bấm nút ⭐ dưới mỗi câu trả lời của Bot để lưu lại!</span>
+              ) : (
+                pinnedMessages.map((p) => (
+                  <div key={p.id} style={{ background: "#ffffff", padding: "6px 8px", borderRadius: 6, marginBottom: 4, fontSize: 11, border: "1px solid #fde68a" }}>
+                    <div style={{ fontWeight: 600, color: "#0f172a", marginBottom: 2 }}>{p.text.slice(0, 60)}...</div>
+                    <button type="button" onClick={() => handleCopyForCustomer(p.text, p.id)} style={{ color: "#0284c7", background: "none", border: "none", cursor: "pointer", fontSize: 10, padding: 0 }}>📋 Copy cho khách</button>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* 🌟 MODAL 2: BẢNG SO SÁNH MODEL ĐA NGÀNH HÀNG LINH HOẠT */}
+          {activeModal === "COMPARE" && (
+            <div style={{ backgroundColor: "#f8fafc", padding: "10px", borderBottom: "1px solid #cbd5e1", maxHeight: 250, overflowY: "auto", fontSize: 11 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, alignItems: "center" }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#0369a1" }}>⚖️ SO SÁNH THÔNG SỐ MODEL THEO NGÀNH HÀNG:</span>
+                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+              </div>
+
+              {/* Bước 1: Chọn Ngành hàng cần so sánh */}
+              <div style={{ display: "flex", gap: 4, marginBottom: 8, overflowX: "auto" }}>
+                {modelComparisons.map((cat) => (
+                  <button
+                    key={cat.category}
+                    type="button"
+                    onClick={() => {
+                      setCompareCategory(cat.category);
+                      setSelectedCompareModels(cat.models.map((m) => m.model).slice(0, 3));
+                    }}
+                    style={{
+                      background: compareCategory === cat.category ? "#0284c7" : "#e2e8f0",
+                      color: compareCategory === cat.category ? "#fff" : "#334155",
+                      border: "none",
+                      padding: "3px 8px",
+                      borderRadius: 12,
+                      fontSize: 10,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {cat.icon} {cat.categoryName}
+                  </button>
+                ))}
+              </div>
+
+              {/* Bước 2: Checkbox chọn các Model trong ngành hàng */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center", flexWrap: "wrap", background: "#f1f5f9", padding: "4px 8px", borderRadius: 6 }}>
+                <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600 }}>Chọn model đối chiếu:</span>
+                {currentCategoryCompareData?.models.map((m) => (
+                  <label key={m.model} style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer", fontSize: 10 }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedCompareModels.includes(m.model)}
+                      onChange={() => toggleCompareModel(m.model)}
+                    />
+                    {m.model}
+                  </label>
+                ))}
+              </div>
+
+              {/* Bảng so sánh các model đã chọn */}
+              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center", fontSize: 10, background: "#fff" }}>
+                <thead>
+                  <tr style={{ background: "#e0f2fe", color: "#0369a1" }}>
+                    <th style={{ border: "1px solid #bae6fd", padding: 4, textAlign: "left" }}>Tính năng / Model</th>
+                    {activeCompareModels.map((m) => (
+                      <th key={m.model} style={{ border: "1px solid #bae6fd", padding: 4 }}>
+                        {m.model}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentCategoryCompareData?.attributes.map((attr) => (
+                    <tr key={attr}>
+                      <td style={{ border: "1px solid #e2e8f0", padding: 3, textAlign: "left", fontWeight: 600, color: "#475569" }}>
+                        {attr}
+                      </td>
+                      {activeCompareModels.map((m) => (
+                        <td key={m.model} style={{ border: "1px solid #e2e8f0", padding: 3 }}>
+                          {m.specs[attr] || "—"}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* MODAL 3: CALC & OPERATION TIMERS */}
+          {activeModal === "CALC" && (
+            <div style={{ backgroundColor: "#f0fdf4", padding: "10px", borderBottom: "1px solid #bbf7d0", fontSize: 11 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#166534" }}>🧮 Tiện ích Quy đổi & Đếm giờ thao tác:</span>
+                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+              </div>
+
+              <div style={{ display: "flex", gap: 4, alignItems: "center", marginBottom: 8, flexWrap: "wrap" }}>
+                <span style={{ fontWeight: 600 }}>⏱️ Hẹn giờ thao tác:</span>
+                <button type="button" onClick={() => startTimer(3)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Giữ 3s</button>
+                <button type="button" onClick={() => startTimer(5)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Giữ 5s</button>
+                <button type="button" onClick={() => startTimer(300)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Xả tụ 5p</button>
+                <button type="button" onClick={() => startTimer(900)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Nguội bát 15p</button>
+                {timerSeconds !== null && (
+                  <button type="button" onClick={stopTimer} style={{ background: "#fee2e2", border: "1px solid #fca5a5", color: "#b91c1c", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Dừng</button>
+                )}
+              </div>
+
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <span>Độ cứng nước (°dH):</span>
+                <input
+                  type="number"
+                  placeholder="VD: 15"
+                  value={calcDhInput}
+                  onChange={(e) => setCalcDhInput(e.target.value)}
+                  style={{ width: 60, padding: "2px 4px", borderRadius: 4, border: "1px solid #cbd5e1", fontSize: 11 }}
+                />
+              </div>
+              {calcDhInput && (
+                <div style={{ background: "#ffffff", padding: "4px 8px", borderRadius: 4, color: "#15803d", fontWeight: 600, marginTop: 4 }}>
+                  ➔ {calculateWaterHardness(calcDhInput)}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* MODAL 4: UNRESOLVED */}
+          {activeModal === "UNRESOLVED" && (
+            <div style={{ backgroundColor: "#f1f5f9", padding: "10px", borderBottom: "1px solid #cbd5e1", maxHeight: 180, overflowY: "auto" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#334155" }}>📊 Nhật ký câu hỏi chưa có dữ liệu ({unresolvedList.length}):</span>
+                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+              </div>
+              {unresolvedList.length === 0 ? (
+                <span style={{ fontSize: 11, color: "#64748b" }}>Tất cả các câu hỏi đều đã được phản hồi đầy đủ!</span>
+              ) : (
+                unresolvedList.map((item: any, idx: number) => (
+                  <div key={idx} style={{ background: "#fff", padding: "4px 6px", borderRadius: 4, marginBottom: 4, fontSize: 11, display: "flex", justifyContent: "space-between" }}>
+                    <span style={{ color: "#b91c1c", fontWeight: 600 }}>"{item.query}"</span>
+                    <span style={{ color: "#94a3b8", fontSize: 10 }}>{item.time}</span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* 📜 Màn hình Tin nhắn */}
           <div
             style={{
               flex: 1,
@@ -630,135 +1136,128 @@ export default function ChatBotWidget() {
               >
                 <div
                   style={{
-                    backgroundColor:
-                      msg.sender === "user" ? "#0284c7" : "#ffffff",
+                    backgroundColor: msg.sender === "user" ? "#0284c7" : "#ffffff",
                     color: msg.sender === "user" ? "#ffffff" : "#0f172a",
                     padding: msg.sender === "user" ? "10px 14px" : "12px 14px",
-                    borderRadius:
-                      msg.sender === "user"
-                        ? "14px 14px 2px 14px"
-                        : "14px 14px 14px 2px",
+                    borderRadius: msg.sender === "user" ? "14px 14px 2px 14px" : "14px 14px 14px 2px",
                     fontSize: 13,
                     lineHeight: 1.6,
                     border: msg.sender === "bot" ? "1px solid #e2e8f0" : "none",
-                    boxShadow:
-                      msg.sender === "bot"
-                        ? "0 2px 6px rgba(0,0,0,0.03)"
-                        : "none",
+                    boxShadow: msg.sender === "bot" ? "0 2px 6px rgba(0,0,0,0.03)" : "none",
                   }}
                 >
                   {msg.sender === "bot" ? (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: renderFormattedText(msg.text),
-                      }}
-                    />
+                    <>
+                      <div dangerouslySetInnerHTML={{ __html: renderFormattedText(msg.text) }} />
+
+                      {/* LƯỚI HIỂN THỊ NHIỀU ẢNH */}
+                      {msg.images && msg.images.length > 0 && (
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: msg.images.length === 1 ? "1fr" : "repeat(auto-fit, minmax(130px, 1fr))",
+                            gap: 6,
+                            marginTop: 10,
+                          }}
+                        >
+                          {msg.images.map((imgUrl, imgIdx) => (
+                            <div
+                              key={imgIdx}
+                              style={{
+                                position: "relative",
+                                overflow: "hidden",
+                                borderRadius: 8,
+                                border: "1px solid #cbd5e1",
+                                cursor: "pointer",
+                                height: 110,
+                                background: "#000",
+                              }}
+                              onClick={() => setPreviewImage(imgUrl)}
+                            >
+                              <img
+                                src={imgUrl}
+                                alt={`Ảnh ${imgIdx + 1}`}
+                                style={{
+                                  width: "100%",
+                                  height: "100%",
+                                  objectFit: "cover",
+                                  transition: "transform 0.2s",
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.06)")}
+                                onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                                title="Bấm để phóng to"
+                              />
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  bottom: 4,
+                                  right: 4,
+                                  background: "rgba(0, 0, 0, 0.65)",
+                                  color: "#fff",
+                                  fontSize: 9,
+                                  padding: "2px 5px",
+                                  borderRadius: 4,
+                                  fontWeight: 600,
+                                }}
+                              >
+                                🔍 Ảnh {imgIdx + 1}/{msg.images?.length}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   ) : (
                     msg.text
                   )}
                 </div>
 
-                {/* Tiện ích 2 Nút Copy & Feedback */}
+                {/* Tiện ích dưới câu trả lời */}
                 {msg.sender === "bot" && (
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 8,
-                      marginTop: 4,
-                      alignItems: "center",
-                      fontSize: 11,
-                      color: "#64748b",
-                      flexWrap: "wrap",
-                    }}
-                  >
+                  <div style={{ display: "flex", gap: 4, marginTop: 4, alignItems: "center", fontSize: 11, color: "#64748b", flexWrap: "wrap" }}>
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleCopyForCustomer(msg.text, msg.id);
-                      }}
-                      style={{
-                        background: "#e0f2fe",
-                        border: "1px solid #bae6fd",
-                        color: "#0369a1",
-                        cursor: "pointer",
-                        padding: "2px 6px",
-                        borderRadius: 4,
-                        fontSize: 11,
-                        fontWeight: 600,
-                      }}
+                      onClick={() => handleCopyForCustomer(msg.text, msg.id)}
+                      style={{ background: "#e0f2fe", border: "1px solid #bae6fd", color: "#0369a1", cursor: "pointer", padding: "2px 5px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}
                     >
-                      {copiedId === `cust_${msg.id}`
-                        ? "✓ Đã copy gửi Khách"
-                        : "📋 Copy gửi Khách"}
+                      {copiedId === `cust_${msg.id}` ? "✓ Đã copy" : "📋 Cho khách"}
                     </button>
 
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleCopyTechnical(msg.text, msg.id);
-                      }}
-                      style={{
-                        background: "#f1f5f9",
-                        border: "1px solid #cbd5e1",
-                        color: "#334155",
-                        cursor: "pointer",
-                        padding: "2px 6px",
-                        borderRadius: 4,
-                        fontSize: 11,
-                        fontWeight: 600,
-                      }}
+                      onClick={() => handleCopyTechnical(msg.text, msg.id)}
+                      style={{ background: "#f1f5f9", border: "1px solid #cbd5e1", color: "#334155", cursor: "pointer", padding: "2px 5px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}
                     >
-                      {copiedId === `tech_${msg.id}`
-                        ? "✓ Đã copy Kỹ thuật"
-                        : "🛠️ Copy Kỹ thuật"}
+                      {copiedId === `tech_${msg.id}` ? "✓ Đã copy" : "🛠️ Kỹ thuật"}
+                    </button>
+
+                    {/* Nút Tạo Ticket CRM */}
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCrmTicket(msg.text, msg.id)}
+                      style={{ background: "#fef3c7", border: "1px solid #fde68a", color: "#92400e", cursor: "pointer", padding: "2px 5px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}
+                    >
+                      {copiedId === `crm_${msg.id}` ? "✓ Đã copy Ticket" : "📝 Tạo Ticket"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => togglePinMessage(msg.id)}
+                      title={msg.isPinned ? "Bỏ ghim" : "Ghim câu trả lời"}
+                      style={{ background: "none", border: "none", cursor: "pointer", opacity: msg.isPinned ? 1 : 0.4 }}
+                    >
+                      {msg.isPinned ? "⭐" : "☆"}
                     </button>
 
                     <span>•</span>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleFeedback(msg.id, "like");
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        opacity: msg.feedback === "like" ? 1 : 0.4,
-                      }}
-                    >
-                      👍
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleFeedback(msg.id, "dislike");
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        opacity: msg.feedback === "dislike" ? 1 : 0.4,
-                      }}
-                    >
-                      👎
-                    </button>
+                    <button type="button" onClick={() => handleFeedback(msg.id, "like")} style={{ background: "none", border: "none", cursor: "pointer", opacity: msg.feedback === "like" ? 1 : 0.4 }}>👍</button>
+                    <button type="button" onClick={() => handleFeedback(msg.id, "dislike")} style={{ background: "none", border: "none", cursor: "pointer", opacity: msg.feedback === "dislike" ? 1 : 0.4 }}>👎</button>
                   </div>
                 )}
 
-                {/* Danh sách các nút lựa chọn */}
+                {/* Danh sách nút phân nhánh */}
                 {msg.options && msg.options.length > 0 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                      marginTop: 8,
-                    }}
-                  >
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
                     {msg.options.map((opt, idx) => (
                       <button
                         key={idx}
@@ -791,41 +1290,31 @@ export default function ChatBotWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Gợi ý Auto-Suggest khi gõ từ 2 ký tự */}
-          {autoSuggestions.length > 0 && (
-            <div
-              style={{
-                backgroundColor: "#ffffff",
-                borderTop: "1px solid #e2e8f0",
-                padding: "6px 10px",
-                display: "flex",
-                gap: 6,
-                flexWrap: "wrap",
-              }}
-            >
-              <span style={{ fontSize: 11, color: "#64748b", width: "100%" }}>
-                💡 Gợi ý tìm nhanh:
-              </span>
-              {autoSuggestions.map((sug, idx) => (
+          {/* Gợi ý Đa chiều */}
+          {smartSuggestions.length > 0 && (
+            <div style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e2e8f0", padding: "6px 8px", display: "flex", flexDirection: "column", gap: 4, maxHeight: 220, overflowY: "auto", boxShadow: "0 -4px 12px rgba(0,0,0,0.05)" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: "#64748b", padding: "2px 6px", display: "flex", justifyContent: "space-between" }}>
+                <span>💡 Gợi ý tra cứu nhanh:</span>
+                <span style={{ fontSize: 10, color: "#0284c7" }}>Bấm để xem kết quả</span>
+              </div>
+              {smartSuggestions.map((item, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleSend(sug);
+                    handleSend(item.query);
                   }}
-                  style={{
-                    background: "#e0f2fe",
-                    color: "#0369a1",
-                    border: "none",
-                    borderRadius: 12,
-                    padding: "4px 10px",
-                    fontSize: 11,
-                    cursor: "pointer",
-                    fontWeight: 600,
-                  }}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "6px 10px", cursor: "pointer", textAlign: "left" }}
                 >
-                  {sug}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
+                    <span style={{ fontSize: 14 }}>{item.icon}</span>
+                    <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#0f172a", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>{item.label}</span>
+                      {item.subLabel && <span style={{ fontSize: 10, color: "#64748b", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>{item.subLabel}</span>}
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 12, color: "#0284c7", fontWeight: 700, marginLeft: 6 }}>→</span>
                 </button>
               ))}
             </div>
@@ -837,44 +1326,82 @@ export default function ChatBotWidget() {
               e.preventDefault();
               handleSend();
             }}
-            style={{
-              display: "flex",
-              padding: "8px 10px",
-              borderTop: "1px solid #e2e8f0",
-              backgroundColor: "#ffffff",
-              gap: 6,
-            }}
+            style={{ display: "flex", padding: "8px 10px", borderTop: "1px solid #e2e8f0", backgroundColor: "#ffffff", gap: 6 }}
           >
             <input
+              ref={inputRef}
               type="text"
-              placeholder="Nhập từ khóa, Model máy hoặc Mã lỗi..."
+              placeholder="Nhập Mã lỗi, Model, Hiện tượng hoặc gõ 'ảnh'..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              style={{
-                flex: 1,
-                padding: "8px 12px",
-                borderRadius: 8,
-                border: "1px solid #cbd5e1",
-                outline: "none",
-                fontSize: 13,
-              }}
+              style={{ flex: 1, padding: "8px 12px", borderRadius: 8, border: "1px solid #cbd5e1", outline: "none", fontSize: 13 }}
             />
             <button
               type="submit"
-              style={{
-                backgroundColor: "#0284c7",
-                color: "#ffffff",
-                border: "none",
-                padding: "8px 16px",
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 13,
-                cursor: "pointer",
-              }}
+              style={{ backgroundColor: "#0284c7", color: "#ffffff", border: "none", padding: "8px 16px", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}
             >
               Gửi
             </button>
           </form>
+        </div>
+      )}
+
+      {/* MODAL PHÓNG TO ẢNH (LIGHTBOX) */}
+      {previewImage && (
+        <div
+          onClick={() => setPreviewImage(null)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            cursor: "zoom-out",
+            padding: 20,
+          }}
+        >
+          <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "90vh" }}>
+            <img
+              src={previewImage}
+              alt="Phóng to sơ đồ"
+              style={{
+                width: "100%",
+                height: "100%",
+                maxHeight: "85vh",
+                objectFit: "contain",
+                borderRadius: 8,
+                boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setPreviewImage(null)}
+              style={{
+                position: "absolute",
+                top: -12,
+                right: -12,
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                backgroundColor: "#ef4444",
+                color: "#ffffff",
+                border: "none",
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
     </>
