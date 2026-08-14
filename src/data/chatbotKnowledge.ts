@@ -12,7 +12,7 @@ export const chatbotKnowledge: KnowledgeItem[] = [
     id: "k1",
     keywords: ["bao hanh", "tong dai", "so dien thoại", "hotline", "lien he"],
     answer:
-      "📞 **Số tổng đài hỗ trợ bảo hành:** 1800.XXXX (Miễn phí).\n⏰ **Thời gian làm việc:** 8h00 - 17h30 (Từ Thứ 2 đến Thứ 7).",
+      "📞 **Số tổng đài hỗ trợ bảo hành:** 1800 1529 (Miễn phí).\n⏰ **Thời gian làm việc:** 8h00 - 20h00 (Từ Thứ 2 đến Chủ Nhật).",
   },
   {
     id: "k2",
@@ -181,8 +181,77 @@ export const chatbotKnowledge: KnowledgeItem[] = [
       "rua trai cay",
       "DW-15F9(B)-VN",
     ],
-    answer:
-      "### 📊 BẢNG THÔNG SỐ CÁC CHƯƠNG TRÌNH RỬA\n---\nChi tiết thời gian, nhiệt độ và mức tiêu thụ điện nước cho từng chương trình:\n\n* **[ eco ] Tiết kiệm:** 50°C | 215 phút | 1,2 kWh | 15,0 L | 5/28,8g (1-2 viên)\n* **[ Ⓐ ] Tự động AI:** 45~55°C | 140-195 phút | 1,15-1,45 kWh | 11-14,8 L | 5/28,8g (1-2 viên)\n* **[ 🍳 ] Chuyên sâu:** 65°C | 195 phút | 1,44 kWh | 14,9 L | 30g (1-2 viên)\n* **[ 🕒90' ] 90 phút:** 60°C | 90 phút | 0,89 kWh | 12,1 L | 30g (1-2 viên)\n* **[ ✨ ] Vệ sinh:** 60°C | 175 phút | 1,4 kWh | 15,2 L | 30g (1-2 viên)\n* **[ 📲🍷 ] Đồ thủy tinh:** 50°C | 140 phút | 1,0 kWh | 14,5 L | 5/28,8g (1-2 viên)\n* **[ 📲⏩ ] Rửa nhanh:** 40°C | 30 phút | 0,75 kWh | 11,4 L | 20g (Không cần trợ xả)\n* **[ 📲🚿 ] Ngâm:** Không gia nhiệt | 15 phút | 0,015 kWh | 4,1 L (Không hóa chất)\n* **[ 📲♨️ ] Khử trùng:** 72°C | 208 phút | 1,65 kWh | 14,9 L | 30g (1-2 viên)\n* **[ 📲🦞 ] Rửa hải sản:** 36°C / 0°C | 25/15 phút | 0,025 kWh | 11,3 L (Không hóa chất/không cần trợ xả)\n* **[ 📲🍎 ] Rửa trái cây:** 36°C / 0°C | 15/10 phút | 0,025 kWh | 7,6 L (Không hóa chất/không cần trợ xả)",
+    answer: `### 📊 BẢNG THÔNG SỐ CHƯƠNG TRÌNH RỬA
+---
+<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; background: #fff; text-align: center;">
+  <thead>
+    <tr style="background: #e0f2fe; color: #0369a1; font-weight: bold;">
+      <th style="border: 1px solid #bae6fd; padding: 5px 3px; text-align: left;">Chương trình</th>
+      <th style="border: 1px solid #bae6fd; padding: 5px 3px;">Nhiệt độ</th>
+      <th style="border: 1px solid #bae6fd; padding: 5px 3px;">Thời gian</th>
+      <th style="border: 1px solid #bae6fd; padding: 5px 3px;">Điện (kWh)</th>
+      <th style="border: 1px solid #bae6fd; padding: 5px 3px;">Nước (L)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ eco ] Tiết kiệm</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">50°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">215 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.225</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">15.0</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold; color: #0284c7;">[ Ⓐ ] Tự động AI</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">45-55°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">140-195 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.15-1.45</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">11-14.8</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ 🍳 ] Chuyên sâu</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">65°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">195 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.460</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">14.9</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ 🕒90' ] 90 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">60°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">90 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.015</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">12.1</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ ✨ ] Vệ sinh</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">60°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">175 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.400</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">15.2</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ 📲🍷 ] Đồ thủy tinh</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">50°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">140 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.000</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">14.5</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ 📲⏩ ] Rửa nhanh</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">40°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">30 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">0.750</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">11.4</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 4px; text-align: left; font-weight: bold;">[ 📲♨️ ] Khử trùng</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">72°C</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">208 phút</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">1.650</td>
+      <td style="border: 1px solid #e2e8f0; padding: 4px;">14.9</td>
+    </tr>
+  </tbody>
+</table>`,
   },
   {
     id: "k13",
@@ -302,12 +371,71 @@ export const chatbotKnowledge: KnowledgeItem[] = [
       "fh",
       "clarke",
       "mmol/l",
-      "luong muoi tiêu thu",
+      "luong muoi tieu thu",
       "chu trinh tai tao",
       "DW-15F9(B)-VN",
     ],
-    answer:
-      "### 🧪 BẢNG TRA CỨU ĐỘ CỨNG NƯỚC & CẤP ĐỘ H1 - H6\n---\nChi tiết tra cứu độ cứng của nước, cấp độ thiết lập tương ứng và lượng muối tiêu thụ:\n\n* **[ H1 ] (0-5 °dH | 0-0,94 Mmol/l):** Không tái sinh | **0g** muối/chu kỳ\n* **[ H2 ] (6-11 °dH | 1,0-2,0 Mmol/l):** Tái tạo sau mỗi 10 chương trình | **9g** muối/chu kỳ\n* **[ H3 ] (12-17 °dH | 2,1-3,0 Mmol/l):** Tái tạo sau mỗi 5 chương trình | **12g** muối/chu kỳ *(Cài đặt mặc định)*\n* **[ H4 ] (18-22 °dH | 3,1-4,0 Mmol/l):** Tái tạo sau mỗi 3 chương trình | **20g** muối/chu kỳ\n* **[ H5 ] (23-34 °dH | 4,1-6,0 Mmol/l):** Tái tạo sau mỗi 2 chương trình | **30g** muối/chu kỳ\n* **[ H6 ] (35-55 °dH | 6,1-9,8 Mmol/l):** Tái tạo sau mỗi 1 chương trình | **60g** muối/chu kỳ\n\n📌 **QUY ĐỔI & LƯU Ý KỸ THUẬT:**\n* **Công thức quy đổi:** 1°dH = 1,25 °Clarke = 1,78 °fH = 0,178 mmol/l\n* **Cài đặt mặc định của nhà máy:** **H3**\n* **Tác động chu trình tái tạo:** Mỗi chu trình tái tạo tiêu thụ thêm **2,0 lít nước**, điện năng tăng thêm **0,02 kWh** và thời gian kéo dài thêm **4 phút**.",
+    answer: `### 🧪 BẢNG TRA CỨU ĐỘ CỨNG NƯỚC & MỨC MUỐI (H1 - H6)
+---
+<table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; background: #fff; text-align: center;">
+  <thead>
+    <tr style="background: #e0f2fe; color: #0369a1; font-weight: bold;">
+      <th style="border: 1px solid #bae6fd; padding: 6px 4px;">Mức H</th>
+      <th style="border: 1px solid #bae6fd; padding: 6px 4px;">Độ cứng (°dH)</th>
+      <th style="border: 1px solid #bae6fd; padding: 6px 4px;">Mmol/l</th>
+      <th style="border: 1px solid #bae6fd; padding: 6px 4px;">Chu kỳ tái tạo</th>
+      <th style="border: 1px solid #bae6fd; padding: 6px 4px;">Tiêu thụ/Lần</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 5px; font-weight: bold; color: #0284c7;">H1</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">0 - 5</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">0 - 0.94</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">Không tái sinh</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">0g</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 5px; font-weight: bold; color: #0284c7;">H2</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">6 - 11</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">1.0 - 2.0</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">Sau 10 lần rửa</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">9g</td>
+    </tr>
+    <tr style="background: #f0f9ff;">
+      <td style="border: 1px solid #bae6fd; padding: 5px; font-weight: bold; color: #0369a1;">H3 ⭐</td>
+      <td style="border: 1px solid #bae6fd; padding: 5px; font-weight: bold;">12 - 17</td>
+      <td style="border: 1px solid #bae6fd; padding: 5px; font-weight: bold;">2.1 - 3.0</td>
+      <td style="border: 1px solid #bae6fd; padding: 5px; font-weight: bold;">Sau 5 lần rửa</td>
+      <td style="border: 1px solid #bae6fd; padding: 5px; font-weight: bold; color: #0284c7;">12g (Mặc định)</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 5px; font-weight: bold; color: #0284c7;">H4</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">18 - 22</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">3.1 - 4.0</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">Sau 3 lần rửa</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">20g</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 5px; font-weight: bold; color: #0284c7;">H5</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">23 - 34</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">4.1 - 6.0</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">Sau 2 lần rửa</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">30g</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #e2e8f0; padding: 5px; font-weight: bold; color: #0284c7;">H6</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">35 - 55</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">6.1 - 9.8</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">Sau mỗi 1 lần rửa</td>
+      <td style="border: 1px solid #e2e8f0; padding: 5px;">60g</td>
+    </tr>
+  </tbody>
+</table>
+
+📌 **QUY ĐỔI & LƯU Ý KĨ THUẬT:**
+* **Công thức:** 1°dH = 1,25 °Clarke = 1,78 °fH = 0,178 mmol/l
+* **Tác động chu trình:** Tái tạo tiêu thụ thêm **2.0L nước**, **0.02 kWh điện** và tăng thêm **4 phút**.`,
   },
   {
     id: "k20",
@@ -380,7 +508,7 @@ export const chatbotKnowledge: KnowledgeItem[] = [
       "DW-15F9(B)-VN",
     ],
     answer:
-      "### 🍽️ XẾP CHÉN ĐĨA VÀO GIỎ & PHÂN LOẠI VẬT DỤNG\n---\n💡 **GỢI Ý TỔNG QUAN:**\n* Nên chọn mua loại chén đĩa được chứng nhận dùng được cho máy rửa chén.\n* Sử dụng loại viên rửa chén nhẹ phù hợp (tham khảo thêm thông tin nhà sản xuất).\n* Đối với các thiết bị/đồ dùng đặc biệt, hãy ưu tiên chọn chương trình rửa với nhiệt độ thấp hơn.\n* Không lấy ngay các vật dụng bằng thủy tinh ra ngoài khi chu trình vừa kết thúc để tránh hư hỏng do sốc nhiệt.\n\n⚠️ **SỬ DỤNG MÁY RỬA CHÉN MỘT CÁCH HỢP LÝ:**\n\n❌ **1. Không phù hợp cho máy rửa chén (Tránh rửa):**\n* Dụng cụ bằng gỗ, sừng, sứ hoặc cán ngọc trai.\n* Sản phẩm nhựa không chịu nhiệt.\n* Dao cắt không chịu nhiệt hoặc có các bộ phận dính bằng keo không chịu nhiệt.\n* Dao hoặc chén đĩa bị gắn với nhau theo khối.\n* Dụng cụ bằng thiếc hoặc đồng.\n* Thủy tinh pha lê.\n* Sản phẩm thép dễ bị rỉ sét.\n* Dụng cụ bằng gỗ và các sản phẩm làm từ sợi tổng hợp.\n\n⚠️ **2. Hạn chế sử dụng (Cần lưu ý):**\n* **Đồ thủy tinh:** Sau vài lần rửa, một số đồ thủy tinh có thể trở nên mờ đục.\n* **Đồ bạc / Nhôm:** Sản phẩm bằng bạc hoặc nhôm thường bị đổi màu trong quá trình rửa.\n* **Hoa văn trang trí:** Màu sắc hoa văn của chén đĩa có thể bị phai đi nếu rửa thường xuyên.",
+      "### 🍽️ XẾP CHÉN ĐĨA VÀO GIỎ & PHÂN LOẠI VẬT DỤNG\n---\n💡 **GỢI Ý TỔNG QUAN:**\n* Nên chọn mua loại chén đĩa được chứng nhận dùng được cho máy rửa chén.\n* Sử dụng loại viên rửa chén nhẹ phù hợp (tham khảo thêm thông tin nhà sản xuất).\n* Đối với các thiết bị/đồ dùng đặc biệt, hãy ưu tiên chọn chương trình rửa với nhiệt độ thấp hơn.\n* Không lấy ngay các vật dụng bằng thủy tinh ra ngoài khi chu trình vừa kết thúc để tránh hư hỏng do sốc nhiệt.\n\n⚠️ **SỬ DỤNG MÁY RỬA CHÉN MỘT CÁCH HỢP LÝ:**\n\n❌ **1. Không phù hợp cho máy rửa chén (Tránh rửa):**\n* Dụng cụ bằng gỗ, sừng, sứ hoặc cán ngọc trai.\n* Sản phẩm nhựa không chịu nhiệt.\n* Dao cắt không chịu nhiệt hoặc có các bộ phận dính bằng keo không chịu được nhiệt.\n* Dao hoặc chén đĩa bị gắn với nhau theo khối.\n* Dụng cụ bằng thiếc hoặc đồng.\n* Thủy tinh pha lê.\n* Sản phẩm thép dễ bị rỉ sét.\n* Dụng cụ bằng gỗ và các sản phẩm làm từ sợi tổng hợp.\n\n⚠️ **2. Hạn chế sử dụng (Cần lưu ý):**\n* **Đồ thủy tinh:** Sau vài lần rửa, một số đồ thủy tinh có thể trở nên mờ đục.\n* **Đồ bạc / Nhôm:** Sản phẩm bằng bạc hoặc nhôm thường bị đổi màu trong quá trình rửa.\n* **Hoa văn trang trí:** Màu sắc hoa văn của chén đĩa có thể bị phai đi nếu rửa thường xuyên.",
   },
   {
     id: "k24",
@@ -436,17 +564,856 @@ export const chatbotKnowledge: KnowledgeItem[] = [
       "### 🛠️ BẢO DƯỠNG VÀ BẢO TRÌ MÁY RỬA CHÉN\n---\n📌 **1. CỬA VÀ RON CỬA:**\n* Vệ sinh ron cửa thường xuyên bằng vải mềm ẩm để loại bỏ cặn thức ăn.\n* Cặn thức ăn/đồ uống rơi xuống hai bên cửa nằm ngoài khoang rửa nên cánh phun nước không thể làm sạch tới. Cần lau sạch mọi cặn bẩn trước khi đóng cửa.\n\n📌 **2. BẢNG ĐIỀU KHIỂN:**\n* Lau bằng khăn hơi ẩm và đảm bảo bảng điều khiển khô hoàn toàn sau khi vệ sinh.\n* Không dùng dụng cụ sắc nhọn, miếng chùi xước hoặc chất tẩy rửa mạnh ở bất kỳ đâu trong máy.\n\n⚠️ **CẢNH BÁO BẢO TRÌ BỀ MẶT:**\n* **Cửa máy:** Không dùng chất tẩy rửa dạng phun để làm sạch cửa vì có thể làm hỏng khóa cửa và các linh kiện điện.\n* **Bề mặt inox:** Không dùng chất mài mòn hoặc khăn giấy thô vì dễ để lại vết xước trên bề mặt thép không gỉ.\n\n💡 **3. ĐÈN CHIẾU SÁNG:**\n* Đèn chiếu sáng không cần vệ sinh thêm.\n* Nếu đèn bị vỡ trong quá trình sử dụng, hãy **ngắt nguồn điện** ngay lập tức và liên hệ kỹ thuật viên có chuyên môn để làm sạch và thay thế.",
   },
   {
-    id: "mã_định_danh_duy_nhất",
-    keywords: ["từ khóa 1", "từ khóa 2", "câu hỏi mẫu"],
+    id: "k27",
+    title: "Cảnh báo An toàn về Điện & Trẻ em DW-15F7(G)-VN",
+    keywords: [
+      "an toan",
+      "dien giat",
+      "tre em",
+      "rut phich cam",
+      "phich cam",
+      "DW-15F7(G)-VN",
+    ],
     answer:
-      "### 📌 [TÊN NỘI DUNG / TIÊU ĐỀ IN HOA]\n---\n[Đoạn mô tả ngắn gọn nội dung tổng quan...]\n\n* **[Thông số / Ý 1]:** Nội dung chi tiết ý 1.\n* **[Thông số / Ý 2]:** Nội dung chi tiết ý 2.\n* **Lưu ý:** [Các ghi chú quan trọng nếu có].",
+      "### ⚠️ AN TOÀN ĐIỆN & TRẺ EM\n---\n* **Trẻ em:** Không để trẻ chơi đùa với máy. Vật liệu đóng gói có thể gây nguy hiểm cho trẻ.\n* **Nguồn điện:** Dùng đúng công suất ghi trên nhãn. Rút phích cắm trước khi vệ sinh/bảo dưỡng.\n* **Chống giật:** Không chạm phích cắm bằng tay ướt. Không dùng dây nguồn/ổ cắm bị hỏng.",
   },
   {
-    id: "mã_định_danh_duy_nhất",
-    keywords: ["từ khóa 1", "từ khóa 2", "câu hỏi mẫu"],
+    id: "k28",
+    title: "Cảnh báo An toàn về Nhiệt & Bỏng DW-15F7(G)-VN",
+    keywords: [
+      "nguy co bong",
+      "nuoc nong",
+      "khi nong",
+      "nhiet do",
+      "DW-15F7(G)-VN",
+    ],
     answer:
-      "### 📌 [TÊN NỘI DUNG / TIÊU ĐỀ IN HOA]\n---\n[Đoạn mô tả ngắn gọn nội dung tổng quan...]\n\n* **[Thông số / Ý 1]:** Nội dung chi tiết ý 1.\n* **[Thông số / Ý 2]:** Nội dung chi tiết ý 2.\n* **Lưu ý:** [Các ghi chú quan trọng nếu có].",
+      "### ⚠️ CẢNH BÁO NGUY CƠ BỎNG\n---\n* **Bên trong khoang:** Không chạm vào khoang máy hoặc cánh phun trong và sau 30 phút vận hành.\n* **Mở cửa:** Mở cửa khi máy đang chạy rất nguy hiểm vì nước nóng có thể gây bỏng nghiêm trọng.\n* **Khí nóng:** Không lại gần khu vực ống xả vì hơi nước/không khí nóng thoát ra có thể gây bỏng.",
   },
-
-  // ➕ Bạn chỉ cần copy thêm các khối tương tự ở đây để "huấn luyện" thêm cho Bot
+  {
+    id: "k29",
+    title: "Lưu ý Lắp đặt & Nối đất an toàn DW-15F7(G)-VN",
+    keywords: [
+      "lap dat",
+      "noi dat",
+      "vi tri đặt máy",
+      "nguon nhiet",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🛠️ LƯU Ý LẮP ĐẶT & NỐI ĐẤT\n---\n* **Nối đất:** Bắt buộc nối đất đúng cách. Nếu gặp lỗi **E3**, rút phích cắm và gọi thợ điện/KTV.\n* **Vị trí:** Đặt máy trên bề mặt chắc chắn, bằng phẳng, dễ thoát nước và cách bếp gas/nguồn nhiệt ít nhất 15cm.\n* **Không chất đồ:** Không đặt vật nặng, vật nóng hay đồ điện lên trên máy.",
+  },
+  {
+    id: "k30",
+    title: "Danh sách Phụ kiện & Chất liệu Bao bì DW-15F7(G)-VN",
+    keywords: ["bo phan", "phu kien", "bao bi", "tai che", "DW-15F7(G)-VN"],
+    answer:
+      "### 📦 CÁC BỘ PHẬN & BAO BÌ\n---\n* **Cấu tạo:** Đèn UV, giỏ trên, giỏ dưới, giỏ dao kéo, giỏ trái cây, 3 cánh phun (trên/giữa/dưới), bộ lọc, ngăn muối, ngăn rửa.\n* **Bao bì tái chế:** PE (túi), PS (xốp), POM (kẹp), ABS (bảng điều khiển), PP (khoang trong). Hãy gửi đến trung tâm tái chế.",
+  },
+  {
+    id: "k31",
+    title:
+      "Bảng điều khiển: Nút Nguồn, Chọn chương trình & Hẹn giờ DW-15F7(G)-VN",
+    keywords: [
+      "nut nguon",
+      "chon chuong trinh",
+      "hen gio",
+      "bat may",
+      "tat may",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🎛️ NÚT NGUỒN, CHƯƠNG TRÌNH & HẸN GIỜ\n---\n* **[ Nguồn ]:** Nhấn để bật hoặc tắt máy.\n* **[ Chương trình (< / >) ]:** Nhấn `<` hoặc `>` để chọn chương trình rửa.\n* **[ Hẹn giờ ]:** Đặt thời gian lùi khởi động lên đến 24 giờ (mỗi lần nhấn tăng 1 giờ).",
+  },
+  {
+    id: "k32",
+    title: "Bảng điều khiển: Bắt đầu/Hủy & Chọn giàn rửa DW-15F7(G)-VN",
+    keywords: [
+      "bat dau",
+      "huy chuong trinh",
+      "chon gian rua",
+      "gio tren",
+      "gio duoi",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🎛️ NÚT BẮT ĐẦU, HỦY & CHỌN GIÀN RỬA\n---\n* **[ Bắt đầu/Hủy ]:** Nhấn để bắt đầu. Nhấn giữ **3 giây** để hủy chương trình đang chọn.\n* **[ Chọn giàn rửa ]:** Tùy chọn chỉ rửa giỏ trên hoặc chỉ rửa giỏ dưới để tiết kiệm điện nước khi rửa ít đồ.",
+  },
+  {
+    id: "k33",
+    title: "Tính năng Sấy Khí nóng & Bảo quản 168h DW-15F7(G)-VN",
+    keywords: [
+      "khi nong",
+      "say khi nong",
+      "bao quan",
+      "168h",
+      "khong khi trong lanh",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### ♨️ TÍNH NĂNG KHÍ NÓNG & BẢO QUẢN\n---\n* **Khí nóng:** 3 tùy chọn sấy khô sau rửa (Làm mới 60p, Làm ấm 120p, Rửa tráng & Sấy 100p).\n* **Bảo quản:** Quạt chạy giữ không khí tươi mới tối đa 168 giờ (màn hình hiện `--H`). Giữ 3s để bật độc lập. Không dùng chung với Tự hé cửa.",
+  },
+  {
+    id: "k34",
+    title: "Tính năng Tăng tốc & Tự động Mở cửa (Auto Open) DW-15F7(G)-VN",
+    keywords: [
+      "tang toc",
+      "tu he cua",
+      "auto open",
+      "mo cua tu dong",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### ⚡ TÍNH NĂNG TĂNG TỐC & TỰ HÉ CỬA\n---\n* **Tăng tốc:** Nhấn để rút ngắn thời gian rửa (áp dụng cho Chuyên sâu, Eco, 90 phút, Đồ thủy tinh, Khử trùng, Yên tĩnh).\n* **Tự hé cửa:** Nhấn giữ **3 giây** để kích hoạt; cửa tự hé sau khi rửa xong giúp tăng hiệu quả sấy khô. Tránh vật cản trước cửa.",
+  },
+  {
+    id: "k35",
+    title: "Tính năng Gõ mở cửa (Knock to Open) DW-15F7(G)-VN",
+    keywords: [
+      "go mo cua",
+      "knock to open",
+      "go 2 lan",
+      "mo cua tu dong",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🚪 TÍNH NĂNG GÕ MỞ CỬA\n---\n* **Cách dùng:** Gõ 2 lần liên tiếp vào phần trên cửa để mở máy.\n* **Khi đang chạy:** Gõ 2 lần máy sẽ tạm dừng. Gõ tiếp 2 lần nữa trong 10s máy sẽ mở cửa.\n* **Nhịp gõ:** Khoảng cách giữa 2 lần gõ từ 0.1s đến 0.8s (gõ quá nhanh hoặc quá chậm máy sẽ không nhận).",
+  },
+  {
+    id: "k36",
+    title: "Cài đặt Độ nhạy Gõ mở cửa DW-15F7(G)-VN",
+    keywords: [
+      "do nhay go mo cua",
+      "cai dat do nhay",
+      "muc 01 den 09",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### ⚙️ CÀI ĐẶT ĐỘ NHẠY GÕ MỞ CỬA\n---\n* **Bước 1:** Bật nguồn, trong 5 - 60s sau đó, giữ nút **Chọn giàn rửa** trong **5 giây**.\n* **Bước 2:** Nhấn `<` và `>` để chỉnh độ nhạy từ mức **01** (Thấp) đến **09** (Cao). Mặc định là **05**.\n* **Bước 3:** Không thao tác trong 5s để lưu. Rút và cắm lại phích cắm điện để hoàn tất.",
+  },
+  {
+    id: "k37",
+    title: "Các Chương trình rửa Tiêu chuẩn DW-15F7(G)-VN",
+    keywords: [
+      "eco",
+      "tiet kiem",
+      "tu dong ai",
+      "chuyen sau",
+      "90 phut",
+      "ve sinh",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🧼 CHƯƠNG TRÌNH RỬA TIÊU CHUẨN\n---\n* **Tiết kiệm (Eco):** 50°C | 215 phút | 1.225 kWh | 15.0L (Chương trình chuẩn).\n* **Tự động AI:** 45~55°C | 140-195 phút | Tự nhận diện độ bẩn.\n* **Chuyên sâu:** 65°C | 195 phút | Dành cho nồi chảo, vết dầu mỡ nặng.\n* **90 phút:** 60°C | 90 phút | Dành cho bát đĩa bẩn thông thường.\n* **Vệ sinh:** 60°C | 175 phút | Dùng để làm sạch lòng máy rửa chén.",
+  },
+  {
+    id: "k38",
+    title: "Các Chương trình Rửa tải xuống & Chuyên biệt DW-15F7(G)-VN",
+    keywords: [
+      "thuy tinh",
+      "rua nhanh",
+      "ngam",
+      "khu trung",
+      "yen tinh",
+      "hai san",
+      "trai cay",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 📱 CHƯƠNG TRÌNH TẢI XUỐNG & CHUYÊN BIỆT\n---\n* **Đồ thủy tinh (50°C - 140p) / Rửa nhanh (40°C - 30p) / Ngâm (15p)**.\n* **Khử trùng (72°C - 208p):** Nhiệt độ cao tiêu diệt vi khuẩn.\n* **Yên tĩnh (55°C - 245p):** Giảm tiếng ồn thích hợp rửa ban đêm.\n* **Rửa hải sản (25/15p) & Rửa trái cây (15/10p):** Làm sạch rau củ, hải sản tươi.",
+  },
+  {
+    id: "k39",
+    title: "Thay đổi chương trình & Thêm chén đĩa giữa chu trình DW-15F7(G)-VN",
+    keywords: [
+      "thay doi chuong trinh",
+      "them do",
+      "mo cua giua chung",
+      "huy chuong trinh",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🔄 ĐỔI CHƯƠNG TRÌNH & THÊM CHÉN ĐĨA\n---\n* **Đổi chương trình:** Mở hé cửa cho tay phun dừng hẳn ➔ Mở hoàn toàn ➔ Giữ **Bắt đầu/Hủy** hơn 3s để về chế độ chờ ➔ Chọn lại chương trình ➔ Đóng cửa nhấn Bắt đầu.\n* **Thêm chén đĩa:** Mở hé cửa chờ tay phun dừng ➔ Mở cửa bỏ đồ vào ➔ Đóng cửa lại, máy tự chạy tiếp sau 10 giây.",
+  },
+  {
+    id: "k40",
+    title: "Màn hình Hiển thị Biểu tượng & Mã thông báo DW-15F7(G)-VN",
+    keywords: [
+      "den bao nuoc",
+      "den bao muoi",
+      "bieu tuong h",
+      "man hinh",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      '### 🖥️ CÁC ĐÈN BÁO TRÊN MÀN HÌNH\n---\n* **Đèn [ ☀️ ]:** Báo sắp hết nước trợ xả, cần bổ sung thêm.\n* **Đèn [ 🔀 / S ]:** Báo sắp hết muối làm mềm nước, cần đổ thêm.\n* **Màn hình hiện "--H":** Báo chức năng Bảo quản đang được kích hoạt.\n* **Màn hình hiện "End":** Báo chu trình rửa đã hoàn tất.',
+  },
+  {
+    id: "k41",
+    title: "Mẹo Điều chỉnh Giỏ trên & Giỏ dao kéo DW-15F7(G)-VN",
+    keywords: [
+      "dieu chinh gio tren",
+      "nang gio",
+      "ha gio",
+      "gio dao keo",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🧺 MẸO ĐIỀU CHỈNH GIỎ ĐỰNG\n---\n* **Nâng giỏ trên:** Nâng nhẹ hai bên giỏ lên cho đến khi nghe tiếng khớp khóa.\n* **Hạ giỏ trên:** Nâng tay cầm điều chỉnh ở hai bên để nhả khóa và hạ giỏ xuống.\n* **Giỏ dao kéo:** Thiết kế thanh trượt giúp lấy dao nĩa dễ dàng, có thể tháo rời/chồng gọn.",
+  },
+  {
+    id: "k42",
+    title: "Vệ sinh Cánh phun nước phía Trên & Dưới DW-15F7(G)-VN",
+    keywords: [
+      "ve sinh tay phun",
+      "canh phun nuoc",
+      "tac lo phun",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🧽 VỆ SINH CÁNH PHUN NƯỚC\n---\n* **Cánh phun trên:** Giữ chặt đai ốc ở giữa và xoay ngược chiều kim đồng hồ để tháo ra.\n* **Cánh phun dưới:** Kéo thẳng cánh phun lên trên để tháo.\n* **Làm sạch:** Rửa bằng nước ấm pha xà phòng, dùng bàn chải mềm thông các lỗ phun bị cặn bám.",
+  },
+  {
+    id: "k43",
+    title: "Cửa, Ron cửa & Đèn chiếu sáng UV DW-15F7(G)-VN",
+    keywords: [
+      "ron cua",
+      "ve sinh cua",
+      "den uv",
+      "khi vo den",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🧽 BẢO TRÌ CỬA & ĐÈN UV\n---\n* **Ron cửa:** Lau thường xuyên bằng vải mềm ẩm. Cần lau sạch cặn bẩn rơi vãi ở 2 bên mép cửa ngoài tầm phun của nước.\n* **Đèn UV:** Không cần vệ sinh. Nếu bóng đèn bị vỡ, ngắt điện máy ngay lập tức và gọi kỹ thuật viên thay thế.",
+  },
+  {
+    id: "k44",
+    title: "Hướng dẫn Kết nối Yêu cầu Nguồn nước & Ống xả DW-15F7(G)-VN",
+    keywords: [
+      "ap luc nuoc",
+      "ong cap nuoc",
+      "ong thoat nuoc",
+      "chieu cao ong xa",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🚰 YÊU CẦU NƯỚC CẤP & THOÁT\n---\n* **Áp lực nước:** Tối thiểu 0,04 MPa - Tối đa 1,0 MPa. Dùng ống cấp nước mới đi kèm.\n* **Ống thoát nước:** Đường kính tối thiểu 4cm, chiều cao đường xả phải **thấp hơn 1000mm (1m)**. Không ngập đầu ống xả trong nước. Độ dài nối thêm tối đa **4 mét**.",
+  },
+  {
+    id: "k45",
+    title: "Sự cố: Máy không khởi động hoặc Không bơm thoát nước DW-15F7(G)-VN",
+    keywords: [
+      "may khong chay",
+      "khong khoi dong",
+      "khong xam nuoc",
+      "khong bom nuoc",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🔴 SỰ CỐ: KHÔNG KHỞI ĐỘNG / KHÔNG BƠM\n---\n* **Máy không khởi động:** Kiểm tra phích cắm, cầu dao/cầu chì; đảm bảo đã đóng chặt cửa máy.\n* **Máy không bơm thoát nước:** Kiểm tra xem ống thoát nước có bị gấp khúc/tắc nghẽn không; kiểm tra bộ lọc thô ở đáy máy hoặc kiểm tra đường thoát nước bồn rửa.",
+  },
+  {
+    id: "k46",
+    title:
+      "Sự cố: Bọt trào trong khoang & Vết rỉ sét trên dao kéo DW-15F7(G)-VN",
+    keywords: ["trao bot", "nhieu bot", "ri set", "vet trang", "DW-15F7(G)-VN"],
+    answer:
+      "### 🔴 SỰ CỐ: TRÀO BỌT / RỈ SÉT\n---\n* **Bọt trào trong máy:** Do dùng sai loại nước rửa chén hoặc trào nước trợ xả. Mở cửa cho bọt tan bớt, lau sạch nước trợ xả tràn, sau đó bật 1 chương trình rửa bất kỳ để xả sạch.\n* **Rỉ sét dao kéo:** Do vật dụng không có khả năng chống ăn mòn. Tránh rửa đồ dễ ăn mòn.",
+  },
+  {
+    id: "k47",
+    title: "Sự cố: Chén đĩa rửa xong vẫn bị bẩn hoặc Chưa khô DW-15F7(G)-VN",
+    keywords: [
+      "chen dia van ban",
+      "con dính ban",
+      "khong kho",
+      "dieu chinh tro xa",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🔴 SỰ CỐ: CHÉN ĐĨA BẨN / CHƯA KHÔ\n---\n* **Chén đĩa vẫn bẩn:** Xếp đồ cản tay phun xoay; bộ lọc bẩn; dùng thiếu viên rửa hoặc chọn chương trình rửa quá nhẹ.\n* **Chén đĩa chưa khô:** Do lấy ra quá sớm (nên chờ 15 phút); chọn chương trình rửa ngắn nhiệt độ thấp; hoặc xếp đồ bị đọng nước.",
+  },
+  {
+    id: "k48",
+    title: "Cách kết nối Wifi App TSmartLife cơ bản DW-15F7(G)-VN",
+    keywords: [
+      "ket noi tsmartlife",
+      "wifi 2.4ghz",
+      "app tsmartlife",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 📱 KẾT NỐI APP TSMARTLIFE\n---\n* **Đăng ký:** Tải app TSmartLife ➔ Đăng ký bằng Email ➔ Bật Bluetooth & Wifi 2.4GHz trên điện thoại.\n* **Thao tác trên máy:** Giữ nút **Điều khiển từ xa** trên máy **3 giây** đến khi đèn Wifi nhấp nháy.\n* **Thao tác trên App:** Chọn *Thêm thiết bị > Máy rửa chén* ➔ Nhập mật khẩu Wifi nhà ➔ Hoàn tất.",
+  },
+  {
+    id: "k49",
+    title: "Xử lý lỗi Không kết nối được Wifi App TSmartLife DW-15F7(G)-VN",
+    keywords: [
+      "loi wifi tsmartlife",
+      "khong thay ssid",
+      "sai mat khau wifi",
+      "DW-15F7(G)-VN",
+    ],
+    answer:
+      "### 🛠️ KHẮC PHỤC LỖI KẾT NỐI APP\n---\n* **Tín hiệu yếu:** Đặt bộ định tuyến gần máy hoặc dùng bộ kích sóng.\n* **Mạng cấm:** Không dùng Wifi công cộng/khách sạn (yêu cầu đăng nhập web).\n* **Tên/Mật khẩu:** Tên Wifi chỉ dùng chữ/số (không đặt ký tự đặc biệt). Mật khẩu tối đa 32 ký tự. Tắt tính năng *Trợ lý WLAN / WLAN+* trên điện thoại rồi thử lại.",
+  },
+  {
+    id: "k51",
+    title: "An toàn Điện & Trẻ em DW-15F8(B)-VN",
+    keywords: [
+      "an toan",
+      "dien giat",
+      "tre em",
+      "rut phich cam",
+      "phich cam",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### ⚠️ AN TOÀN ĐIỆN & TRẺ EM\n---\n* **Trẻ em:** Không để trẻ chơi đùa với máy rửa chén. Bao bì có thể gây nguy hiểm cho trẻ.\n* **Nguồn điện:** Dùng đúng nguồn điện theo nhãn máy. Rút phích cắm trước khi vệ sinh/bảo dưỡng.\n* **Chống giật:** Không chạm phích cắm bằng tay ướt. Không dùng dây nguồn/ổ cắm bị hỏng.",
+  },
+  {
+    id: "k52",
+    title: "An toàn về Nhiệt & Nguy cơ bỏng DW-15F8(B)-VN",
+    keywords: [
+      "nguy co bong",
+      "nuoc nong",
+      "khi nong",
+      "nhiet do",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### ⚠️ CẢNH BÁO NGUY CƠ BỎNG\n---\n* **Bên trong khoang:** Không chạm vào khoang máy hoặc cánh phun trong và sau 30 phút vận hành.\n* **Mở cửa:** Mở cửa khi máy đang chạy cực kỳ nguy hiểm do nước nóng xả ra gây bỏng.\n* **Khí nóng:** Tránh xa khu vực ống xả vì hơi nước và không khí nóng có thể gây bỏng.",
+  },
+  {
+    id: "k53",
+    title: "Lưu ý Lắp đặt & Nối đất an toàn DW-15F8(B)-VN",
+    keywords: [
+      "lap dat",
+      "noi dat",
+      "vi tri dat may",
+      "nguon nhiet",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🛠️ LƯU Ý LẮP ĐẶT & NỐI ĐẤT\n---\n* **Nối đất:** Bắt buộc nối đất đúng cách. Nếu gặp lỗi **E3**, rút phích cắm và gọi thợ điện/KTV.\n* **Vị trí:** Đặt máy trên bề mặt chắc chắn, bằng phẳng, dễ thoát nước và cách nguồn nhiệt ít nhất 15cm.\n* **Không chất đồ:** Không đặt vật nặng, vật nóng hay thiết bị điện lên trên máy.",
+  },
+  {
+    id: "k54",
+    title: "Cấu tạo Bộ phận & Chất liệu Bao bì DW-15F8(B)-VN",
+    keywords: ["bo phan", "phu kien", "bao bi", "tai che", "DW-15F8(B)-VN"],
+    answer:
+      "### 📦 CÁC BỘ PHẬN & BAO BÌ\n---\n* **Cấu tạo:** Đèn chiếu sáng, giỏ trên, giỏ dưới, giỏ dao kéo, giỏ trái cây, 3 cánh phun (trên/giữa/dưới), bộ lọc, ngăn muối, ngăn rửa.\n* **Bao bì tái chế:** PE (túi), PS (xốp), POM (kẹp), ABS (bảng điều khiển), PP (khoang trong). Hãy gửi đến trung tâm tái chế.",
+  },
+  {
+    id: "k55",
+    title: "Bảng điều khiển: Nút Nguồn, Chương trình & Hẹn giờ DW-15F8(B)-VN",
+    keywords: [
+      "nut nguon",
+      "chon chuong trinh",
+      "hen gio",
+      "bat may",
+      "tat may",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🎛️ NÚT NGUỒN, CHƯƠNG TRÌNH & HẸN GIỜ\n---\n* **[ Nguồn ]:** Nhấn để bật hoặc tắt máy.\n* **[ Chương trình (< / >) ]:** Nhấn `<` hoặc `>` để chọn chương trình rửa.\n* **[ Hẹn giờ ]:** Đặt thời gian lùi khởi động lên đến 24 giờ (mỗi lần nhấn tăng 1 giờ).",
+  },
+  {
+    id: "k56",
+    title: "Bảng điều khiển: Bắt đầu/Hủy & Chọn giàn rửa DW-15F8(B)-VN",
+    keywords: [
+      "bat dau",
+      "huy chuong trinh",
+      "chon gian rua",
+      "gio tren",
+      "gio duoi",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🎛️ NÚT BẮT ĐẦU, HỦY & CHỌN GIÀN RỬA\n---\n* **[ Bắt đầu/Hủy ]:** Nhấn để bắt đầu. Nhấn giữ **3 giây** để hủy chương trình đang chọn.\n* **[ Chọn giàn rửa ]:** Tùy chọn chỉ rửa giỏ trên hoặc chỉ rửa giỏ dưới giúp tiết kiệm điện nước khi rửa ít chén đĩa.",
+  },
+  {
+    id: "k57",
+    title: "Tính năng Sấy Khí nóng & Bảo quản 168h DW-15F8(B)-VN",
+    keywords: [
+      "khi nong",
+      "say khi nong",
+      "bao quan",
+      "168h",
+      "khong khi trong lanh",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### ♨️ TÍNH NĂNG KHÍ NÓNG & BẢO QUẢN\n---\n* **Khí nóng:** 3 tùy chọn sấy khô sau rửa (Làm mới 60p, Làm ấm 120p, Rửa tráng & Sấy 100p).\n* **Bảo quản:** Quạt chạy giữ không khí tươi mới tối đa 168 giờ (màn hình hiện `--H`). Giữ 3s để bật chọn chế độ Bảo quản.",
+  },
+  {
+    id: "k58",
+    title: "Tính năng Tăng tốc & Điều khiển từ xa qua App DW-15F8(B)-VN",
+    keywords: [
+      "tang toc",
+      "dieu khien tu xa",
+      "wifi",
+      "app tsmartlife",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### ⚡ TÍNH NĂNG TĂNG TỐC & ĐIỀU KHIỂN TỪ XA\n---\n* **Tăng tốc:** Rút ngắn thời gian rửa (áp dụng cho Chuyên sâu, Eco, 90 phút, Đồ thủy tinh, Khử trùng).\n* **Điều khiển từ xa:** Nhấn giữ **3 giây** để kết nối mạng. Nhấn nút này và **đóng cửa trong vòng 3 giây** để cho phép điều khiển qua app TSmartLife.",
+  },
+  {
+    id: "k59",
+    title: "Các Chương trình rửa Tiêu chuẩn DW-15F8(B)-VN",
+    keywords: [
+      "eco",
+      "tiet kiem",
+      "tu dong ai",
+      "chuyen sau",
+      "90 phut",
+      "ve sinh",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🧼 CHƯƠNG TRÌNH RỬA TIÊU CHUẨN\n---\n* **Tiết kiệm (Eco):** 50°C | 215 phút | 1.225 kWh | 15.0L (Chương trình tiêu chuẩn).\n* **Tự động AI:** 45~55°C | 140-195 phút | Tự động phát hiện độ bẩn.\n* **Chuyên sâu:** 65°C | 195 phút | Dành cho nồi chảo, vết dầu mỡ nặng.\n* **90 phút:** 60°C | 90 phút | Rửa nhanh đồ bẩn thông thường.\n* **Vệ sinh:** 60°C | 175 phút | Làm sạch bên trong khoang máy.",
+  },
+  {
+    id: "k60",
+    title: "Các Chương trình Rửa tải xuống & Chuyên biệt DW-15F8(B)-VN",
+    keywords: [
+      "thuy tinh",
+      "rua nhanh",
+      "ngam",
+      "khu trung",
+      "hai san",
+      "trai cay",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 📱 CHƯƠNG TRÌNH TẢI XUỐNG & CHUYÊN BIỆT\n---\n* **Đồ thủy tinh (50°C - 140p) / Rửa nhanh (40°C - 30p) / Ngâm (15p)**.\n* **Khử trùng (72°C - 208p):** Nhiệt độ cao giúp khử trùng chén đĩa.\n* **Rửa hải sản (25/15p) & Rửa trái cây (15/10p):** Dùng làm sạch hải sản, rau củ quả.",
+  },
+  {
+    id: "k61",
+    title: "Thay đổi chương trình & Thêm chén đĩa giữa chu trình DW-15F8(B)-VN",
+    keywords: [
+      "thay doi chuong trinh",
+      "them do",
+      "mo cua giua chung",
+      "huy chuong trinh",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🔄 ĐỔI CHƯƠNG TRÌNH & THÊM CHÉN ĐĨA\n---\n* **Đổi chương trình:** Mở hé cửa cho tay phun dừng hẳn ➔ Mở hoàn toàn ➔ Giữ **Bắt đầu/Hủy** hơn 3s để về chế độ chờ ➔ Chọn lại chu trình ➔ Đóng cửa nhấn Bắt đầu.\n* **Thêm chén đĩa:** Mở hé cửa chờ tay phun dừng ➔ Mở cửa cho thêm đồ ➔ Đóng cửa lại, máy tự chạy tiếp sau 10 giây.",
+  },
+  {
+    id: "k62",
+    title: "Màn hình Hiển thị Biểu tượng & Mã thông báo DW-15F8(B)-VN",
+    keywords: [
+      "den bao nuoc",
+      "den bao muoi",
+      "bieu tuong h",
+      "man hinh",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      '### 🖥️ CÁC ĐÈN BÁO TRÊN MÀN HÌNH\n---\n* **Đèn [ ☀️ ]:** Báo sắp hết nước trợ xả, cần thêm vào.\n* **Đèn [ 🔀 / S ]:** Báo sắp hết muối làm mềm nước, cần thêm vào.\n* **Màn hình hiện "--H":** Báo chức năng Bảo quản đang được chọn.\n* **Màn hình hiện "End":** Báo chương trình rửa đã kết thúc.',
+  },
+  {
+    id: "k63",
+    title: "Cách Điều chỉnh Giỏ trên & Gấp giá đỡ DW-15F8(B)-VN",
+    keywords: [
+      "dieu chinh gio tren",
+      "nang gio",
+      "ha gio",
+      "gap gia do",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🧺 NÂNG HẠ GIỎ TREN & GẤP GIÁ ĐỠ\n---\n* **Nâng giỏ trên:** Nâng nhẹ giữa hai bên giỏ lên cho đến khi giỏ khóa vào vị trí trên.\n* **Hạ giỏ trên:** Nâng tay cầm điều chỉnh hai bên để thả giỏ xuống vị trí thấp hơn.\n* **Gấp gai giỏ dưới:** Hạ các gai giữ đĩa xuống để tạo khoảng trống cho nồi chảo lớn.",
+  },
+  {
+    id: "k64",
+    title: "Vệ sinh Cánh phun nước phía Trên & Dưới DW-15F8(B)-VN",
+    keywords: [
+      "ve sinh tay phun",
+      "canh phun nuoc",
+      "tac lo phun",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🧽 VỆ SINH CÁNH PHUN NƯỚC\n---\n* **Cánh phun trên:** Giữ chặt đai ốc ở giữa, xoay ngược chiều kim đồng hồ để tháo.\n* **Cánh phun dưới:** Kéo thẳng cánh phun lên trên để tháo.\n* **Làm sạch:** Rửa bằng nước ấm pha xà phòng, dùng bàn chải mềm làm sạch các lỗ phun bị tắc.",
+  },
+  {
+    id: "k65",
+    title: "Vệ sinh Cửa, Ron cửa & Đèn chiếu sáng DW-15F8(B)-VN",
+    keywords: [
+      "ron cua",
+      "ve sinh cua",
+      "den chieu sang",
+      "khi vo den",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🧽 BẢO TRÌ CỬA & ĐÈN CHIẾU SÁNG\n---\n* **Ron cửa:** Lau sạch cặn thức ăn bằng vải mềm ẩm. Cần lau cả hai bên mép cửa ngoài khoang rửa.\n* **Đèn chiếu sáng:** Không cần vệ sinh thêm. Nếu bóng bị vỡ, ngắt điện ngay và yêu cầu kỹ thuật viên thay thế.",
+  },
+  {
+    id: "k66",
+    title: "Yêu cầu Nguồn nước cấp & Đường thoát nước DW-15F8(B)-VN",
+    keywords: [
+      "ap luc nuoc",
+      "ong cap nuoc",
+      "ong thoat nuoc",
+      "chieu cao ong xa",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🚰 YÊU CẦU NƯỚC CẤP & THOÁT\n---\n* **Áp lực nước:** Tối thiểu 0,04 MPa - Tối đa 1,0 MPa. Sử dụng ống cấp nước mới đi kèm.\n* **Ống thoát nước:** Đường kính tối thiểu 4cm, chiều cao đường xả **thấp hơn 1000mm (1m)**. Không ngâm đầu xả trong nước. Độ dài nối thêm tối đa **4 mét**.",
+  },
+  {
+    id: "k67",
+    title: "Sự cố: Máy không khởi động hoặc Không bơm thoát nước DW-15F8(B)-VN",
+    keywords: [
+      "may khong chay",
+      "khong khoi dong",
+      "khong xam nuoc",
+      "khong bom nuoc",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🔴 SỰ CỐ: KHÔNG KHỞI ĐỘNG / KHÔNG BƠM\n---\n* **Máy không khởi động:** Kiểm tra phích cắm, cầu dao/cầu chì; đảm bảo đã đóng chặt cửa máy.\n* **Máy không bơm thoát nước:** Kiểm tra ống thoát nước có bị gấp khúc/tắc không; kiểm tra bộ lọc thô hoặc đường thoát bồn rửa.",
+  },
+  {
+    id: "k68",
+    title: "Sự cố: Trào bọt trong khoang & Rỉ sét trên dao kéo DW-15F8(B)-VN",
+    keywords: ["trao bot", "nhieu bot", "ri set", "vet trang", "DW-15F8(B)-VN"],
+    answer:
+      "### 🔴 SỰ CỐ: TRÀO BỌT / RỈ SÉT\n---\n* **Bọt trào trong máy:** Do dùng sai loại chất tẩy rửa hoặc tràn nước trợ xả. Mở cửa cho bọt tan, lau nước trợ xả bị tràn, bật 1 chương trình rửa để xả sạch.\n* **Rỉ sét dao kéo:** Do đồ dùng không có khả năng chống ăn mòn. Tránh rửa đồ dễ bị ăn mòn.",
+  },
+  {
+    id: "k69",
+    title: "Sự cố: Chén đĩa rửa xong vẫn bẩn hoặc Chưa khô DW-15F8(B)-VN",
+    keywords: [
+      "chen dia van ban",
+      "con dinh ban",
+      "khong kho",
+      "dieu chinh tro xa",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 🔴 SỰ CỐ: CHÉN ĐĨA BẨN / CHƯA KHÔ\n---\n* **Chén đĩa vẫn bẩn:** Do xếp đồ cản cánh phun; bộ lọc bẩn; dùng không đủ viên rửa hoặc chọn chương trình quá nhẹ.\n* **Chén đĩa chưa khô:** Do lấy đồ ra quá sớm (nên chờ 15 phút); chọn chu trình rửa ngắn; hoặc do chất liệu chén đĩa thoát nước kém.",
+  },
+  {
+    id: "k70",
+    title: "Bảng Tra cứu Mã lỗi xử lý sự cố DW-15F8(B)-VN",
+    keywords: ["ma loi", "E1", "E3", "E4", "E8", "EC", "Ed", "DW-15F8(B)-VN"],
+    answer:
+      "### 🛠️ BẢNG MÃ LỖI THƯỜNG GẶP\n---\n* **[ E1 ] Cấp nước lâu:** Lỗi lưu lượng kế, van xả hoặc bơm (Gọi KTV).\n* **[ E3 ] Nhiệt độ không đạt:** Lỗi thanh nhiệt/cảm biến. Rút phích cắm ngay (Gọi KTV).\n* **[ E4 ] Tràn nước:** Lỗi phao hoặc tràn khoang chứa. Khóa van nước chính và đổ nước khay đáy trước khi thử lại (Gọi KTV).\n* **[ E8 ] Lỗi van phân phối nước** / **[ EC ] Lỗi hệ thống điều khiển** / **[ Ed ] Lỗi truyền thông** (Gọi KTV sửa chữa).",
+  },
+  {
+    id: "k71",
+    title: "Thông số Kỹ thuật & Kích thước DW-15F8(B)-VN",
+    keywords: [
+      "thong so",
+      "kich thuoc",
+      "cong suat",
+      "muc tieu thu",
+      "dien nang",
+      "suc chua",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 📏 THÔNG SỐ KỸ THUẬT & KÍCH THƯỚC\n---\n📌 **1. KÍCH THƯỚC SẢN PHẨM:**\n* **Rộng x Cao x Sâu:** 598 mm x 845 mm x 600 mm (Chiều sâu mở cửa 90° là 1175 mm).\n* **Khối lượng:** Tịnh 48.4 kg / Tổng 52.7 kg.\n\n⚡ **2. THÔNG SỐ HOẠT ĐỘNG:**\n* **Nguồn điện:** 220-240V AC / 50Hz | Công suất: 1760-2100 W.\n* **Tiêu thụ (Eco):** 1.225 kWh / 15 L.\n* **Sức chứa:** 15 bộ chén đĩa (94 món vật dụng).\n* **Áp lực nước:** 0.04 MPa – 1 MPa. Cấp chống nước: IPX1.",
+  },
+  {
+    id: "k72",
+    title: "Kết nối App TSmartLife & Khắc phục lỗi Wifi DW-15F8(B)-VN",
+    keywords: [
+      "app tsmartlife",
+      "ket noi wifi",
+      "khac phuc loi wifi",
+      "18001529",
+      "DW-15F8(B)-VN",
+    ],
+    answer:
+      "### 📱 APP TSMARTLIFE & BẢO HÀNH\n---\n* **Kết nối:** Tải app TSmartLife ➔ Bật Bluetooth & Wifi 2.4GHz ➔ Giữ **Điều khiển từ xa** trên máy 3s ➔ Thêm thiết bị trên App.\n* **Lỗi Wifi:** Kiểm tra Wifi 2.4GHz (không dùng 5GHz), tên Wifi không dùng ký tự đặc biệt, tắt *Trợ lý WLAN* trên điện thoại.\n* **Bảo hành:** 36 tháng kể từ ngày mua. Hotline Toshiba: **1800 1529**.",
+  },
+  {
+    id: "k73",
+    title: "Cảnh báo An toàn về Điện & Dây nguồn Tủ lạnh GR-RF611WI-PGV",
+    keywords: [
+      "an toan dien",
+      "dien giat",
+      "day nguon",
+      "o cam",
+      "phich cam",
+      "rut phich cam",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### ⚠️ CẢNH BÁO AN TOÀN VỀ ĐIỆN\n---\n* **Phích cắm & Ổ cắm:** Sử dụng ổ cắm chuyên dụng, cắm chặt phích cắm, không dùng chung ổ cắm với thiết bị khác để tránh quá nhiệt gây hỏa hoạn.\n* **Thao tác rút cắm:** Khi rút phích cắm, nắm chặt thân phích rút trực tiếp, tuyệt đối không kéo lê dây điện.\n* **Nối đất an toàn:** Yêu cầu ổ cắm phải có dây nối đất đáng tin cậy. Rút điện trước khi vệ sinh, bảo dưỡng hoặc ngắt kết nối thiết bị.\n* **Dây điện hỏng:** Tuyệt đối không tự ý thay dây nguồn hỏng, phải do nhà sản xuất hoặc KTV chuyên môn thay thế.",
+  },
+  {
+    id: "k74",
+    title: "Cảnh báo An toàn về Chống cháy nổ & Gas lạnh GR-RF611WI-PGV",
+    keywords: [
+      "chong chay no",
+      "gas lanh",
+      "cyclopentane",
+      "vat lieu de chay",
+      "ro ri gas",
+      "r290",
+      "r600a",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🔥 CẢNH BÁO CHỐNG CHÁY NỔ & GAS LẠNH\n---\n* **Môi chất lạnh:** Tủ sử dụng Gas lạnh và chất cách nhiệt Cyclopentane dễ cháy. Khi hủy bỏ phải đưa đến điểm thu gom chuyên dụng, không thải bỏ chung với rác thải sinh hoạt hay nguồn lửa.\n* **Vật liệu cấm để trong tủ:** Cấm đặt chai lọ chứa cồn, xăng, dầu hỏa, dung môi, cồn ethyl hoặc thực phẩm chứa chất này vào tủ (nguy cơ nổ).\n* **Vật liệu cấm để gần tủ:** Không đặt nến, thuốc lá đang cháy hay chất dễ cháy gần tủ lạnh.\n* **Xử lý khi rò rỉ Gas:** Khóa van gas ngay, mở tất cả cửa sổ/cửa chính cho thông thoáng. **Tuyệt đối không** rút/cắm phích điện hay bật tắt thiết bị điện vì tia lửa điện sẽ gây cháy nổ.",
+  },
+  {
+    id: "k75",
+    title: "Cảnh báo An toàn Trẻ em & Môi trường sử dụng GR-RF611WI-PGV",
+    keywords: [
+      "an toan tre em",
+      "tre em chui vao tu",
+      "nguy co ngat tho",
+      "moi truong su dung",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🚸 AN TOÀN TRẺ EM & MÔI TRƯỜNG SỬ DỤNG\n---\n* **An toàn trẻ em:** Trẻ em không được trèo, chui hay chơi đùa bên trong/bên ngoài tủ. Giữ vỏ bao bì, nilon xa tầm tay trẻ để tránh nguy cơ ngạt thở.\n* **Khi thải bỏ tủ cũ:** Tháo rời toàn bộ cửa tủ và gioăng cửa, để kệ ở vị trí cố định để trẻ không thể chui vào bên trong bị kẹt.\n* **Môi trường sử dụng:** Chỉ dùng trong gia đình (trong nhà). Không sử dụng trên các phương tiện giao thông (như tàu thủy, xe lưu động). Không cắm điện tủ lạnh ở nơi ẩm ướt, dột nước hay ngoài trời.",
+  },
+  {
+    id: "k76",
+    title: "Mô tả Các bộ phận & Khay kệ bên trong Tủ lạnh GR-RF611WI-PGV",
+    keywords: [
+      "cau tao tu lanh",
+      "cac bo phan",
+      "ngan mat",
+      "ngan dong",
+      "ngan linh hoat",
+      "den led",
+      "khay kinh",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🧊 CẤU TẠO BỘ PHẬN TỦ LẠNH Multi Door\n---\n* **Ngăn mát (Phía trên):** Đèn LED chiếu sáng, các khay kính chịu lực (chỉnh nâng hạ), khay đựng cửa tủ, ngăn kéo lưu trữ.\n* **Ngăn chứa linh hoạt (Flexible Zone):** Ngăn kéo riêng biệt tùy chỉnh đa dạng nhu cầu (Rau củ, Đồ uống, Ướp lạnh).\n* **Ngăn đông (Phía dưới):** Hệ thống khay kéo gồm ngăn kéo trên, ngăn kéo giữa và ngăn kéo dưới giúp phân loại thịt cá dễ dàng.",
+  },
+  {
+    id: "k77",
+    title: "Lưu ý Lắp đặt & Kích thước khoảng cách kê tủ GR-RF611WI-PGV",
+    keywords: [
+      "lap dat tu lanh",
+      "khoang cach ke tu",
+      "toa nhiệt",
+      "can bang chan tu",
+      "chieu cao",
+      "chieu rong",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 📐 LẮP ĐẶT & KHOẢNG CÁCH THÔNG THOÁNG\n---\n* **Khoảng cách tản nhiệt:** Phía trên đỉnh tủ phải cách trần **> 30cm**; Mặt sau cách tường **> 10cm**; Hai bên hông tủ cách tường **> 10cm** để đảm bảo máy tản nhiệt tốt, tiết kiệm điện.\n* **Vị trí đặt tủ:** Đặt trên sàn nhà bằng phẳng, chắc chắn. Tránh ánh nắng mặt trời chiếu trực tiếp và xa các nguồn nhiệt (bếp gas, lò sưởi).\n* **Cân bằng chân tủ:** Xoay chân điều chỉnh phía trước theo chiều kim đồng hồ để nâng cao tủ, xoay ngược chiều kim đồng hồ để hạ thấp tủ.",
+  },
+  {
+    id: "k78",
+    title: "Bảng điều khiển & Màn hình hiển thị Tủ lạnh GR-RF611WI-PGV",
+    keywords: [
+      "bang dieu khien",
+      "man hinh hien thi",
+      "khoa va mo khoa",
+      "khoa phim",
+      "mo khoa phim",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      '### 🎛️ BẢNG ĐIỀU KHIỂN & KHÓA AN TOÀN\n---\n* **Trạng thái màn hình:** Khi đóng cửa và không thao tác trong 30 giây, màn hình sẽ tự động khóa và tắt đèn để tiết kiệm điện. Đèn sáng lại khi mở cửa hoặc bấm phím bất kỳ.\n* **Mở khóa bảng điều khiển (Lock/Unlock):** Ở trạng thái khóa, nhấn giữ nút **[ Khóa/Mở khóa 🔒 ]** trong **3 giây** cho đến khi phát ra tiếng "bíp" để mở khóa.\n* **Khóa bảng điều khiển:** Ở trạng thái mở khóa, nhấn giữ nút **[ Khóa/Mở khóa 🔒 ]** trong **3 giây** để khóa màn hình.',
+  },
+  {
+    id: "k79",
+    title: "Cài đặt Nhiệt độ Ngăn mát (Fridge) GR-RF611WI-PGV",
+    keywords: [
+      "cai dat nhiet do ngan mat",
+      "chinh nhiet do ngan mat",
+      "do c ngan mat",
+      "nhiet do ngan mat",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🌡️ CÀI ĐẶT NHIỆT ĐỘ NGĂN MÁT\n---\n* **Thao tác:** Ở trạng thái mở khóa màn hình, nhấn nút **[ Ngăn mát ]** để thay đổi nhiệt độ.\n* **Phạm vi nhiệt độ:** Cho phép cài đặt từ **2°C đến 8°C**.\n* **Quy trình nhảy số:** Mỗi lần nhấn nút, nhiệt độ sẽ giảm **1°C**. Khi giảm xuống `2°C`, nhấn tiếp một lần nữa nhiệt độ sẽ quay trở lại **8°C**.\n* **Xác nhận:** Sau khi chọn mức mong muốn, không thao tác trong vài giây đến khi màn hình bị khóa, nhiệt độ mới sẽ có hiệu lực.",
+  },
+  {
+    id: "k80",
+    title: "Cài đặt Nhiệt độ Ngăn đông (Freezer) GR-RF611WI-PGV",
+    keywords: [
+      "cai dat nhiet do ngan dong",
+      "chinh nhiet do ngan dong",
+      "do c ngan dong",
+      "nhiet do ngan am",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### ❄️ CÀI ĐẶT NHIỆT ĐỘ NGĂN ĐÔNG\n---\n* **Thao tác:** Ở trạng thái mở khóa màn hình, nhấn nút **[ Ngăn đông ]** để chỉnh nhiệt độ.\n* **Phạm vi nhiệt độ:** Cho phép cài đặt từ **-16°C đến -24°C**.\n* **Quy trình nhảy số:** Mỗi lần nhấn nút, nhiệt độ sẽ giảm **1°C**. Khi giảm xuống `-24°C`, nhấn tiếp một lần nữa nhiệt độ sẽ quay trở lại **-16°C**.\n* **Xác nhận:** Sau khi chọn mức mong muốn, chờ màn hình tự khóa để lưu thiết lập.",
+  },
+  {
+    id: "k81",
+    title: "Cài đặt Ngăn chứa linh hoạt (Flexible Zone) GR-RF611WI-PGV",
+    keywords: [
+      "ngan linh hoat",
+      "flexible zone",
+      "chinh ngan linh hoat",
+      "trai cay va rau cu",
+      "do uong lanh",
+      "uop lanh",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🔄 CÀI ĐẶT NGĂN CHỨA LINH HOẠT\n---\n* **Thao tác:** Nhấn nút **[ Ngăn chứa linh hoạt ]** để chuyển đổi giữa 3 chế độ bảo quản đặc biệt:\n* **1. Trái cây & Rau củ (Fruit & Veg):** Đèn biểu tượng tương ứng sáng lên, tối ưu độ ẩm bảo quản rau củ tươi ngon.\n* **2. Đồ uống lạnh (Drink):** Đèn biểu tượng sáng, làm lạnh nhanh các loại nước giải khát, lon bia, nước ngọt.\n* **3. Ướp lạnh (Soft Freeze / Chill):** Đèn biểu tượng sáng, thích hợp lưu trữ thịt cá dùng trong ngày không cần rã đông.",
+  },
+  {
+    id: "k82",
+    title: "Chế độ Làm lạnh sâu & Làm đông sâu GR-RF611WI-PGV",
+    keywords: [
+      "lam lanh sau",
+      "lam dong sau",
+      "super cooling",
+      "super freezing",
+      "cap dong nhanh",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### ⚡ CHẾ ĐỘ LÀM LẠNH SÂU & LÀM ĐÔNG SÂU\n---\n* **Chế độ Làm lạnh sâu (Super Cooling):** Tự động cài đặt ngăn mát về **2°C**. Thích hợp khi cần làm lạnh nhanh khối lượng lớn thực phẩm mới cho vào. Đèn biểu tượng sáng khi kích hoạt.\n* **Chế độ Làm đông sâu (Super Freezing):** Tự động cài đặt ngăn đông về **-24°C**. Thích hợp cấp đông nhanh thịt cá tươi sống để giữ trọn dưỡng chất. Đèn biểu tượng sáng khi kích hoạt.\n* **Thoát chế độ:** Khi hết chu kỳ tự động hoặc khi chọn lại nhiệt độ thủ công, tủ sẽ tự thoát chế độ và trở về nhiệt độ cài đặt trước đó.",
+  },
+  {
+    id: "k83",
+    title: "Chế độ Kỳ nghỉ (Vacation Mode) GR-RF611WI-PGV",
+    keywords: [
+      "che do ky nghi",
+      "vacation mode",
+      "di du lich",
+      "vang nha",
+      "tiet kiem dien ky nghi",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### ✈️ CHẾ ĐỘ KỲ NGHĨA (VACATION MODE)\n---\n* **Công dụng:** Dùng khi gia đình đi du lịch hoặc vắng nhà trong thời gian dài không sử dụng ngăn mát.\n* **Trạng thái tủ:** Chức năng làm lạnh ngăn mát sẽ tắt, biểu tượng **[ Vacation ✈️ ]** sáng lên. Ngăn đông vẫn hoạt động bình thường để bảo quản thực phẩm đông lạnh.\n* **Lưu ý quan trọng:** *Phải lấy hết toàn bộ thực phẩm ra khỏi ngăn mát* trước khi bật chế độ Kỳ nghỉ để tránh hư hỏng bốc mùi.",
+  },
+  {
+    id: "k84",
+    title: "Mẹo Bảo quản Thực phẩm đúng cách GR-RF611WI-PGV",
+    keywords: [
+      "bao quan thuc pham",
+      "meo de do trong tu lanh",
+      "boc thuc pham",
+      "ngan mat",
+      "ngan dong",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🥗 MẸO BẢO QUẢN THỰC PHẨM ĐÚNG CÁCH\n---\n* **Sơ chế & Đóng gói:** Nên bọc kín hoặc cho thực phẩm vào hộp đậy nắp trước khi cất vào tủ để tránh mất nước và lẫn mùi.\n* **Thức ăn nóng:** Phải để thức ăn nóng nguội hoàn toàn về nhiệt độ phòng mới được cho vào tủ lạnh.\n* **Ngăn mát:** Phù hợp lưu trữ rau củ, trái cây, thức ăn chín, đồ uống (thời hạn dùng ngắn 1-3 ngày).\n* **Ngăn đông:** Phù hợp bảo quản thịt, cá, hải sản tươi sống đông lạnh dài hạn và làm đá viên.\n* **Lưu ý không gian:** Không xếp thực phẩm quá chật che kín các khe hở thổi gió lạnh.",
+  },
+  {
+    id: "k85",
+    title: "Sử dụng Khay đá xoay & Hộp trữ đá GR-RF611WI-PGV",
+    keywords: [
+      "khay lam da",
+      "khay da xoay",
+      "hop tru da",
+      "lay da vien",
+      "cach lam da",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🧊 HƯỚNG DẪN SỬ DỤNG KHAY LÀM ĐÁ\n---\n* **Cách làm đá:** Đổ nước sạch vào các ô của khay làm đá, không đổ quá đầy tràn vách ngăn. Đặt khay vào vị trí ngăn đông.\n* **Cách lấy đá:** Khi đá đã đông cứng, xoay núm vặn trên khay đá theo chiều kim đồng hồ, đá viên sẽ tự động rớt xuống hộp trữ đá bên dưới.\n* **Rút hộp đá:** Rút nhẹ hộp trữ đá ra để lấy đá viên sử dụng.",
+  },
+  {
+    id: "k86",
+    title: "Hướng dẫn Vệ sinh & Bảo dưỡng Tủ lạnh GR-RF611WI-PGV",
+    keywords: [
+      "ve sinh tu lanh",
+      "bao duong tu lanh",
+      "lau tu lanh",
+      "baking soda",
+      "ve sinh gioang cua",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🧽 HƯỚNG DẪN VỆ SINH TỦ LẠNH\n---\n* **Chuẩn bị:** Rút phích cắm điện và lấy toàn bộ thực phẩm ra ngoài trước khi vệ sinh.\n* **Dung dịch lau chùi:** Dùng khăn mềm thấm nước ấm pha với ít bột baking soda (khoảng 2 thìa baking soda với 1 lít nước ấm) để lau lòng tủ. Sau đó lau lại bằng khăn sạch khô.\n* **Vệ sinh gioăng cửa:** Lau gioăng cao su cửa thường xuyên bằng nước xà phòng pha loãng để tránh bám bẩn gây hở cửa.\n* **Cấm sử dụng:** Không dùng bàn chải cứng, búi sắt, chất tẩy rửa ăn mòn, xăng, benzene, dung môi hay nước sôi để vệ sinh tủ. Không xịt nước trực tiếp lên tủ.",
+  },
+  {
+    id: "k87",
+    title: "Chức năng Xả đông tự động (Defrost) GR-RF611WI-PGV",
+    keywords: [
+      "xa dong tu dong",
+      "xa tuyet",
+      "dong tuyet tu lanh",
+      "no frost",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### ❄️ CHỨC NĂNG XẢ ĐÔNG TỰ ĐỘNG\n---\n* **Nguyên lý:** Tủ lạnh được thiết kế theo cơ chế làm mát bằng quạt gió (No Frost) nên có chức năng tự động xả đông/xả tuyết định kỳ.\n* **Thao tác thủ công:** Người dùng không cần phải cạo tuyết thủ công.\n* **Lưu ý:** Nếu thấy sương/tuyết bám do độ ẩm thời tiết giao mùa hoặc mở cửa nhiều, bạn chỉ cần ngắt điện tủ và dùng khăn khô lau sạch. Tuyệt đối không dùng vật sắc nhọn để cạy tuyết.",
+  },
+  {
+    id: "k88",
+    title:
+      "Hướng dẫn xử lý Khi Tủ lạnh không hoạt động/ Mất điện GR-RF611WI-PGV",
+    keywords: [
+      "mat dien",
+      "khi mat dien",
+      "khong hoat dong trong thoi gian dai",
+      "di chuyen tu lanh",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🔌 XỬ LÝ KHI MẤT ĐIỆN & NGHỈ SỬ DỤNG DÀI NGHÀY\n---\n* **Khi mất điện đột ngột:** Hạn chế tối đa số lần mở cửa tủ để giữ hơi lạnh. Không cho thêm thực phẩm tươi mới vào tủ trong lúc mất điện. Thực phẩm có thể giữ lạnh an toàn trong vài giờ.\n* **Khi không dùng thời gian dài:** Rút phích cắm điện, lấy hết thực phẩm, vệ sinh sạch sẽ bên trong và **để hở cửa tủ** để tránh phát sinh nấm mốc, mùi hôi.\n* **Khi di chuyển tủ:** Rút điện, lấy hết đồ, dùng băng dính cố định các khay kệ kính, vặn cao chân đế, đóng chặt cửa. Góc nghiêng khi di chuyển **không vượt quá 45°**, không lật ngược tủ. Sau khi di chuyển đến vị trí mới, nên để tủ đứng yên **2-4 tiếng** rồi mới cắm điện lại.",
+  },
+  {
+    id: "k89",
+    title: "Xử lý Sự cố: Tủ không hoạt động hoặc Có mùi hôi GR-RF611WI-PGV",
+    keywords: [
+      "tu khong chay",
+      "tu khong len dien",
+      "co mui hoi",
+      "tu bi mui",
+      "khac phuc loi tu lanh",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🛠️ XỬ LÝ SỰ CỐ: TỦ KHÔNG CHẠY / CÓ MÙI HÔI\n---\n* **Tủ không hoạt động:** Kiểm tra phích cắm đã cắm chặt chưa; kiểm tra nguồn điện nhà hoặc cầu dao có bị nhảy không; điện áp có quá thấp không.\n* **Tủ có mùi hôi:** Kiểm tra thực phẩm bọc kín chưa, có đồ nào bị hỏng không. Tiến hành vệ sinh lòng tủ bằng nước ấm pha baking soda.\n* **Máy nén chạy liên tục:** Bình thường vào mùa hè nhiệt độ môi trường cao, hoặc do bỏ quá nhiều thực phẩm cùng lúc, hoặc do mở cửa quá thường xuyên.",
+  },
+  {
+    id: "k90",
+    title: "Xử lý Sự cố: Cửa không đóng kín & Gioăng cửa bị hở GR-RF611WI-PGV",
+    keywords: [
+      "cua khong dong duoc",
+      "gioang cua bi ho",
+      "ron cua bi hơ",
+      "phuc hoi gioang cua",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🛠️ XỬ LÝ SỰ CỐ: CỬA TỦ & GIOĂNG CỬA HỞ\n---\n* **Cửa tủ không đóng kín:** Kiểm tra xem túi thực phẩm hay khay đồ có bị cản trở hành trình đóng cửa không; kiểm tra tủ có bị đặt nghiêng lệch không (chỉnh lại chân đế cân bằng).\n* **Gioăng (ron) cửa bị hở/bẩn:** Lau sạch vết bẩn bám trên gioăng cao su.\n* **Phục hồi gioăng bị biến dạng:** Dùng máy sấy tóc sấy nóng nhẹ vùng gioăng bị méo hoặc dùng khăn nóng ủ lên gioăng để cao su mềm ra và khôi phục lại độ bám dính.",
+  },
+  {
+    id: "k91",
+    title: "Xử lý Hiện tượng Thường gặp (Không phải lỗi) GR-RF611WI-PGV",
+    keywords: [
+      "tu lanh bi nong",
+      "nong 2 ben hong",
+      "tieng keu keu",
+      "dong nuoc ngoai tu",
+      "tieng gas chay",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 🔊 BÌNH THƯỜNG HAY LỖI KỸ THUẬT?\n---\n* **Vỏ tủ bị nóng (Hai bên hông tủ nóng):** Đây là hiện tượng **HOÀN TOÀN BÌNH THƯỜNG** do dàn nóng tản nhiệt tích hợp hai bên hông tủ.\n* **Đọng sương bên ngoài tủ:** Khi độ ẩm không khí môi trường quá cao (ngày nồm, mưa ẩm), sương có thể đọng bề mặt ngoài hoặc gioăng cửa. Chỉ cần dùng khăn sạch lau khô.\n* **Tiếng ồn róc rách/róc rách:** Do môi chất lạnh (Gas) luân chuyển bên trong đường ống tạo ra (Bình thường).\n* **Tiếng kêu rung khi bắt đầu/dừng:** Do máy nén (Block) khởi động hoặc ngắt nhịp (Bình thường).",
+  },
+  {
+    id: "k92",
+    title: "Thông số Kỹ thuật chi tiết Tủ lạnh GR-RF611WI-PGV",
+    keywords: [
+      "thong so ky thuat tu lanh",
+      "kich thuoc tu lanh",
+      "dung tich tu lanh",
+      "khoi luong tu lanh",
+      "cong suat tu lanh",
+      "GR-RF611WI-PGV",
+    ],
+    answer:
+      "### 📏 THÔNG SỐ KỸ THUẬT TỦ LẠNH GR-RF611WI-PGV\n---\n📌 **1. KÍCH THƯỚC & TRỌNG LƯỢNG:**\n* **Kiểu dáng:** Multi Door (4 cửa).\n* **Chiều Rộng x Chiều Sâu x Chiều Cao:** 833 mm x 648 mm x 1898 mm.\n\n⚡ **2. THÔNG SỐ VẬN HÀNH:**\n* **Điện áp định mức:** 220V - 240V / 50Hz.\n* **Môi chất lạnh (Gas):** R600a / Cyclopentane.\n* **Công nghệ:** Inverter tiết kiệm điện, Xả đông tự động (No Frost).\n* **Hệ thống điều khiển:** Màn hình cảm ứng bên ngoài tủ.",
+  },
 ];
