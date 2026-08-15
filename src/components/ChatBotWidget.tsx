@@ -10,7 +10,6 @@ import type { DiagnosisNode } from "../data/diagnosisTree";
 import { deviceImages, type DeviceImageItem } from "../data/deviceImages";
 import { modelComparisons } from "../data/modelComparisons";
 
-// 🧹 2. HÀM LÀM SẠCH CHUỖI TÌM KIẾM
 function cleanString(str: string): string {
   if (!str) return "";
   return str
@@ -23,7 +22,6 @@ function cleanString(str: string): string {
     .trim();
 }
 
-// 🏷️ 3. INTERFACES
 interface Option {
   label: string;
   action: () => void;
@@ -52,18 +50,35 @@ export default function ChatBotWidget() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Mặc định mở nếu là mobile hoặc đã mở trước đó
+  // 📱 Nhận diện Mobile (<= 640px)
+  const [isMobile, setIsMobile] = useState(() => {
+    return typeof window !== "undefined" ? window.innerWidth <= 640 : false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 640);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Mặc định: Mobile mở toàn màn hình ban đầu, Desktop mở sẵn dạng popup góc phải
   const [isOpen, setIsOpen] = useState(true);
   const [isMaximized, setIsMaximized] = useState(false);
   const [input, setInput] = useState("");
   const [selectedModelFilter, setSelectedModelFilter] = useState<string>("ALL");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const [activeModal, setActiveModal] = useState<"PINNED" | "UNRESOLVED" | "CALC" | "COMPARE" | null>(null);
+  const [activeModal, setActiveModal] = useState<
+    "PINNED" | "UNRESOLVED" | "CALC" | "COMPARE" | null
+  >(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const [compareCategory, setCompareCategory] = useState<string>("dishwasher");
-  const [selectedCompareModels, setSelectedCompareModels] = useState<string[]>(["DW-15F9(B)-VN", "DW-15F8(B)-VN", "DW-15F7(G)-VN"]);
+  const [selectedCompareModels, setSelectedCompareModels] = useState<string[]>([
+    "DW-15F9(B)-VN",
+    "DW-15F8(B)-VN",
+    "DW-15F7(G)-VN",
+  ]);
   const [calcDhInput, setCalcDhInput] = useState<string>("15");
 
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
@@ -82,7 +97,7 @@ export default function ChatBotWidget() {
       {
         id: "1",
         sender: "bot",
-        text: "Xin chào! Tôi là Trợ lý Tra cứu Nghiệp vụ Call Center Toshiba. Bạn có thể gõ Mã lỗi/Hiện tượng để vào trực tiếp trang hướng dẫn xử lý chi tiết!",
+        text: "Xin chào! Tôi là Trợ lý Tra cứu Nghiệp vụ Call Center Toshiba. Bạn có thể tra cứu Mã lỗi, Sách HDSD, xem sơ đồ ảnh, hoặc bấm chẩn đoán sự cố bên trên!",
       },
     ];
   });
@@ -94,7 +109,7 @@ export default function ChatBotWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Phím tắt bàn phím
+  // Phím tắt bàn phím (Ctrl+K, Esc)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -115,7 +130,10 @@ export default function ChatBotWidget() {
   useEffect(() => {
     let interval: any = null;
     if (isTimerRunning && timerSeconds !== null && timerSeconds > 0) {
-      interval = setInterval(() => setTimerSeconds((prev) => (prev !== null ? prev - 1 : 0)), 1000);
+      interval = setInterval(
+        () => setTimerSeconds((prev) => (prev !== null ? prev - 1 : 0)),
+        1000,
+      );
     } else if (timerSeconds === 0) {
       setIsTimerRunning(false);
       alert("⏱️ Đã hết thời gian thao tác!");
@@ -141,13 +159,25 @@ export default function ChatBotWidget() {
     { id: "15F7", label: "🍽️ Máy rửa 15F7" },
   ];
 
-  // 🌟 GỢI Ý THÔNG MINH - KÈM LINK TRỰC TIẾP
   const smartSuggestions: SuggestionItem[] = (() => {
     const q = cleanString(input);
     if (q.length < 2) return [];
     const results: SuggestionItem[] = [];
 
-    // [A] Quét Mã lỗi
+    deviceImages.forEach((img) => {
+      const title = cleanString(img.title);
+      const matchKw = img.keywords.some((kw) => cleanString(kw).includes(q));
+      if (title.includes(q) || matchKw) {
+        results.push({
+          type: "IMAGE",
+          icon: "🖼️",
+          label: `[Ảnh (${img.images.length})] ${img.title}`,
+          subLabel: img.description,
+          query: img.keywords[0] || img.title,
+        });
+      }
+    });
+
     errors.forEach((e) => {
       const code = cleanString(e.code || "");
       const title = cleanString(e.title || "");
@@ -163,7 +193,6 @@ export default function ChatBotWidget() {
       }
     });
 
-    // [B] Quét Sách HDSD
     (manuals || []).forEach((m: any) => {
       const model = cleanString(m.model || m.code || "");
       const title = cleanString(m.title || "");
@@ -171,25 +200,23 @@ export default function ChatBotWidget() {
         results.push({
           type: "MANUAL",
           icon: "📖",
-          label: `[Sách HDSD] ${m.model || ""}`,
+          label: `[Model] ${m.model || ""}`,
           subLabel: m.title,
           query: m.model || m.title,
-          dataItem: m,
         });
       }
     });
 
-    // [C] Quét Hình ảnh
-    deviceImages.forEach((img) => {
-      const title = cleanString(img.title);
-      const matchKw = img.keywords.some((kw) => cleanString(kw).includes(q));
-      if (title.includes(q) || matchKw) {
+    chatbotKnowledge.forEach((k) => {
+      const title = cleanString(k.title || "");
+      const matchKeyword = k.keywords.some((kw) => cleanString(kw).includes(q));
+      if (title.includes(q) || matchKeyword) {
         results.push({
-          type: "IMAGE",
-          icon: "🖼️",
-          label: `[Ảnh (${img.images.length})] ${img.title}`,
-          subLabel: img.description,
-          query: img.keywords[0] || img.title,
+          type: "KNOWLEDGE",
+          icon: "💡",
+          label: k.title || "Hướng dẫn xử lý",
+          subLabel: "Mẹo & Tính năng Q&A",
+          query: k.keywords[0] || k.title || "",
         });
       }
     });
@@ -199,20 +226,30 @@ export default function ChatBotWidget() {
 
   const togglePinMessage = (msgId: string) => {
     setMessages((prev) =>
-      prev.map((m) => (m.id === msgId ? { ...m, isPinned: !m.isPinned } : m))
+      prev.map((m) => (m.id === msgId ? { ...m, isPinned: !m.isPinned } : m)),
     );
   };
 
   const logUnresolvedQuery = (query: string) => {
     if (!query.trim()) return;
     try {
-      const existing = JSON.parse(localStorage.getItem("unresolved_queries") || "[]");
-      if (!existing.some((item: any) => item.query.toLowerCase() === query.trim().toLowerCase())) {
+      const existing = JSON.parse(
+        localStorage.getItem("unresolved_queries") || "[]",
+      );
+      if (
+        !existing.some(
+          (item: any) =>
+            item.query.toLowerCase() === query.trim().toLowerCase(),
+        )
+      ) {
         existing.unshift({
           query: query.trim(),
           time: new Date().toLocaleString("vi-VN"),
         });
-        localStorage.setItem("unresolved_queries", JSON.stringify(existing.slice(0, 50)));
+        localStorage.setItem(
+          "unresolved_queries",
+          JSON.stringify(existing.slice(0, 50)),
+        );
       }
     } catch (e) {
       /* ignore */
@@ -263,18 +300,23 @@ export default function ChatBotWidget() {
 
   const handleFeedback = (msgId: string, type: "like" | "dislike") => {
     setMessages((prev) =>
-      prev.map((m) => (m.id === msgId ? { ...m, feedback: type } : m))
+      prev.map((m) => (m.id === msgId ? { ...m, feedback: type } : m)),
     );
   };
 
-  // 🌟 HÀM MỞ TRỰC TIẾP TRANG CHI TIẾT MÃ LỖI TRÊN WEB NỀN
+  // 🌟 Chuyển trang chi tiết trên Web nền
   const handleGoToErrorPage = (item: any) => {
     navigate(`/error-detail/${item.id}`);
-    setIsOpen(false); // Ẩn chatbot để hiện trang web chi tiết
+    if (isMobile) {
+      setIsOpen(false); // Thu nhỏ chatbot để người dùng thấy trang web chi tiết trên mobile
+    }
   };
 
   // Cây chẩn đoán pan bệnh
-  const handleDiagnosisStep = (node: DiagnosisNode, userSelectedLabel: string) => {
+  const handleDiagnosisStep = (
+    node: DiagnosisNode,
+    userSelectedLabel: string,
+  ) => {
     const nextOptions: Option[] = [];
     if (node.children && node.children.length > 0) {
       node.children.forEach((child) => {
@@ -333,10 +375,13 @@ export default function ChatBotWidget() {
     };
 
     const options: Option[] = Object.keys(categoryMap).map((catKey) => {
-      const count = deviceImages.filter((img) => img.category === catKey).length;
+      const count = deviceImages.filter(
+        (img) => img.category === catKey,
+      ).length;
       return {
         label: `${categoryMap[catKey].icon} ${categoryMap[catKey].label} (${count} model)`,
-        action: () => showImageModelsByCategory(catKey, categoryMap[catKey].label),
+        action: () =>
+          showImageModelsByCategory(catKey, categoryMap[catKey].label),
       };
     });
 
@@ -351,8 +396,13 @@ export default function ChatBotWidget() {
     ]);
   };
 
-  const showImageModelsByCategory = (categoryId: string, categoryName: string) => {
-    const filteredImages = deviceImages.filter((img) => img.category === categoryId);
+  const showImageModelsByCategory = (
+    categoryId: string,
+    categoryName: string,
+  ) => {
+    const filteredImages = deviceImages.filter(
+      (img) => img.category === categoryId,
+    );
     const options: Option[] = filteredImages.map((img) => ({
       label: `📌 [${img.model}] ${img.title} (${img.images.length} ảnh)`,
       action: () => displayImageResult(img),
@@ -409,11 +459,15 @@ export default function ChatBotWidget() {
 
     const cleanKeyword = cleanString(queryText);
 
-    // [A] Khớp Hình ảnh
+    // Khớp hình ảnh
     const matchedImg = deviceImages.find(
       (img) =>
         cleanString(img.title).includes(cleanKeyword) ||
-        img.keywords.some((kw) => cleanString(kw).includes(cleanKeyword) || cleanKeyword.includes(cleanString(kw)))
+        img.keywords.some(
+          (kw) =>
+            cleanString(kw).includes(cleanKeyword) ||
+            cleanKeyword.includes(cleanString(kw)),
+        ),
     );
 
     if (matchedImg) {
@@ -431,9 +485,22 @@ export default function ChatBotWidget() {
       return;
     }
 
-    // [B] Trợ giúp chung
-    const helpKeywords = ["giuptoi", "toicangiup", "help", "hotro", "trogiup", "menu", "batdau", "canhotro", "huongdan", "hinh"];
-    const isHelpIntent = helpKeywords.some((kw) => cleanKeyword.includes(kw) || kw.includes(cleanKeyword));
+    // Trợ giúp chung
+    const helpKeywords = [
+      "giuptoi",
+      "toicangiup",
+      "help",
+      "hotro",
+      "trogiup",
+      "menu",
+      "batdau",
+      "canhotro",
+      "huongdan",
+      "hinh",
+    ];
+    const isHelpIntent = helpKeywords.some(
+      (kw) => cleanKeyword.includes(kw) || kw.includes(cleanKeyword),
+    );
 
     if (isHelpIntent) {
       setTimeout(() => {
@@ -444,12 +511,30 @@ export default function ChatBotWidget() {
             sender: "bot",
             text: "### 🧭 TRUNG TÂM HỖ TRỢ TRA CỨU NHANH\n---\nChào bạn, vui lòng **chọn Ngành hàng hoặc Công cụ tra cứu** bên dưới:",
             options: [
-              { label: "🖼️ Tra cứu Hình ảnh Bảng điều khiển & Sơ đồ", action: () => showImageCatalog() },
-              { label: "🌳 Cây Chẩn đoán Pan bệnh (Theo hiện tượng)", action: () => startDecisionTree() },
-              { label: "⚖️ Đối chiếu So sánh Thông số Model", action: () => setActiveModal("COMPARE") },
-              { label: "🧺 Tra cứu Máy giặt & Máy sấy", action: () => handleSend("TW-BK115") },
-              { label: "🧊 Tra cứu Tủ lạnh Toshiba", action: () => handleSend("GR-RF611WI-PGV") },
-              { label: "🍽️ Tra cứu Máy rửa chén Toshiba", action: () => handleSend("DW-15F9(B)-VN") },
+              {
+                label: "🖼️ Tra cứu Hình ảnh Bảng điều khiển & Sơ đồ",
+                action: () => showImageCatalog(),
+              },
+              {
+                label: "🌳 Cây Chẩn đoán Pan bệnh (Theo hiện tượng)",
+                action: () => startDecisionTree(),
+              },
+              {
+                label: "⚖️ Đối chiếu So sánh Thông số Model",
+                action: () => setActiveModal("COMPARE"),
+              },
+              {
+                label: "🧺 Tra cứu Máy giặt & Máy sấy",
+                action: () => handleSend("TW-BK115"),
+              },
+              {
+                label: "🧊 Tra cứu Tủ lạnh Toshiba",
+                action: () => handleSend("GR-RF611WI-PGV"),
+              },
+              {
+                label: "🍽️ Tra cứu Máy rửa chén Toshiba",
+                action: () => handleSend("DW-15F9(B)-VN"),
+              },
             ],
           },
         ]);
@@ -457,37 +542,49 @@ export default function ChatBotWidget() {
       return;
     }
 
-    // [C] Khớp Knowledge Base Q&A
     let matchedKnowledge = chatbotKnowledge.filter((k) =>
       k.keywords.some((kw) => {
         const cleanKw = cleanString(kw);
         return cleanKw.includes(cleanKeyword) || cleanKeyword.includes(cleanKw);
-      })
+      }),
     );
 
     if (selectedModelFilter !== "ALL") {
       matchedKnowledge = matchedKnowledge.filter(
         (k) =>
-          cleanString(k.title || "").includes(cleanString(selectedModelFilter)) ||
-          k.keywords.some((kw) => cleanString(kw).includes(cleanString(selectedModelFilter)))
+          cleanString(k.title || "").includes(
+            cleanString(selectedModelFilter),
+          ) ||
+          k.keywords.some((kw) =>
+            cleanString(kw).includes(cleanString(selectedModelFilter)),
+          ),
       );
     }
 
-    // [D] Khớp Danh mục Mã lỗi (errors.ts)
     const matchedCallCenter = errors.filter((item: any) => {
       const code = cleanString(item.code || "");
       const title = cleanString(item.title || "");
       const desc = cleanString(item.description || "");
-      return code.includes(cleanKeyword) || title.includes(cleanKeyword) || desc.includes(cleanKeyword);
+      return (
+        code.includes(cleanKeyword) ||
+        title.includes(cleanKeyword) ||
+        desc.includes(cleanKeyword)
+      );
     });
 
-    // [E] Khớp Sách HDSD (manuals.ts)
     const matchedManuals = (manuals || []).filter((item: any) => {
-      const model = cleanString(item.model || item.modelName || item.code || "");
+      const model = cleanString(
+        item.model || item.modelName || item.code || "",
+      );
       const title = cleanString(item.title || item.name || "");
       const category = cleanString(item.category || "");
       const id = cleanString(item.id || "");
-      return model.includes(cleanKeyword) || title.includes(cleanKeyword) || category.includes(cleanKeyword) || id.includes(cleanKeyword);
+      return (
+        model.includes(cleanKeyword) ||
+        title.includes(cleanKeyword) ||
+        category.includes(cleanKeyword) ||
+        id.includes(cleanKeyword)
+      );
     });
 
     let botResponseText = "";
@@ -510,13 +607,22 @@ export default function ChatBotWidget() {
             action: () => {
               setMessages((prev) => [
                 ...prev,
-                { id: Date.now().toString(), sender: "user", text: item.title || "Xem chi tiết" },
+                {
+                  id: Date.now().toString(),
+                  sender: "user",
+                  text: item.title || "Xem chi tiết",
+                },
                 {
                   id: (Date.now() + 1).toString(),
                   sender: "bot",
                   text: item.answer,
                   options: item.link
-                    ? [{ label: "🔗 Xem chi tiết liên kết", action: () => window.open(item.link, "_blank") }]
+                    ? [
+                        {
+                          label: "🔗 Xem chi tiết liên kết",
+                          action: () => window.open(item.link, "_blank"),
+                        },
+                      ]
                     : [],
                 },
               ]);
@@ -529,7 +635,6 @@ export default function ChatBotWidget() {
       if (totalMatches > 0) {
         botResponseText = `🔍 Tìm thấy ${totalMatches} kết quả phù hợp cho "${queryText}". Bấm vào để **mở trang xử lý chi tiết**:`;
 
-        // 🌟 BẤM VÀO LÀ MỞ THẲNG TRANG WEB NỀN
         matchedCallCenter.slice(0, 6).forEach((item: any) => {
           botOptions.push({
             label: `🚀 [MÃ LỖI ${item.code || ""}] ${item.title} (Vào trang chi tiết) →`,
@@ -547,8 +652,10 @@ export default function ChatBotWidget() {
               if (pdfLink) {
                 window.open(pdfLink, "_blank");
               } else {
-                navigate(`/manuals?search=${encodeURIComponent(displayModel || displayTitle)}`);
-                setIsOpen(false);
+                navigate(
+                  `/manuals?search=${encodeURIComponent(displayModel || displayTitle)}`,
+                );
+                if (isMobile) setIsOpen(false);
               }
             },
           });
@@ -557,8 +664,14 @@ export default function ChatBotWidget() {
         logUnresolvedQuery(queryText);
         botResponseText = `❌ Chưa tìm thấy dữ liệu chính xác cho từ khóa "${queryText}".\n\n👉 Bạn hãy chọn công cụ tra cứu bên dưới:`;
         botOptions = [
-          { label: "🖼️ Xem thư viện hình ảnh", action: () => showImageCatalog() },
-          { label: "🌳 Chẩn đoán theo hiện tượng", action: () => startDecisionTree() },
+          {
+            label: "🖼️ Xem thư viện hình ảnh",
+            action: () => showImageCatalog(),
+          },
+          {
+            label: "🌳 Chẩn đoán theo hiện tượng",
+            action: () => startDecisionTree(),
+          },
           ...categories.map((cat) => ({
             label: `${cat.icon || "⚙️"} ${cat.name}`,
             action: () => handleSelectCategory(cat.id, cat.name),
@@ -614,21 +727,33 @@ export default function ChatBotWidget() {
     let formatted = text
       .replace(
         /###\s*(.*)/g,
-        '<div style="color: #0369a1; font-size: 13px; font-weight: 800; background: #f0f9ff; padding: 6px 10px; border-radius: 6px; border-left: 4px solid #0284c7; margin-bottom: 8px;">$1</div>'
+        '<div style="color: #0369a1; font-size: 13px; font-weight: 800; background: #f0f9ff; padding: 6px 10px; border-radius: 6px; border-left: 4px solid #0284c7; margin-bottom: 8px;">$1</div>',
       )
-      .replace(/---/g, '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 8px 0;" />')
-      .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 700;">$1</strong>')
+      .replace(
+        /---/g,
+        '<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 8px 0;" />',
+      )
+      .replace(
+        /\*\*(.*?)\*\*/g,
+        '<strong style="color: #0f172a; font-weight: 700;">$1</strong>',
+      )
       .replace(/\*(.*?)\*/g, '<em style="color: #0284c7;">$1</em>')
       .replace(/\n/g, "<br />")
-      .replace(/<br\s*\/?>\s*(?=<table|<thead|<tbody|<tr|<th|<td|<\/table|<\/thead|<\/tbody|<\/tr|<\/th|<\/td)/gi, "")
-      .replace(/(<\/table>|<\/thead>|<\/tbody>|<\/tr>|<\/th>|<\/td>)\s*<br\s*\/?>/gi, "$1");
+      .replace(
+        /<br\s*\/?>\s*(?=<table|<thead|<tbody|<tr|<th|<td|<\/table|<\/thead|<\/tbody|<\/tr|<\/th|<\/td)/gi,
+        "",
+      )
+      .replace(
+        /(<\/table>|<\/thead>|<\/tbody>|<\/tr>|<\/th>|<\/td>)\s*<br\s*\/?>/gi,
+        "$1",
+      );
 
     if (input.trim().length >= 2) {
       try {
         const reg = new RegExp(`(${input.trim()})`, "gi");
         formatted = formatted.replace(
           reg,
-          '<mark style="background: #fef08a; padding: 0 2px; border-radius: 2px; color: #854d0e;">$1</mark>'
+          '<mark style="background: #fef08a; padding: 0 2px; border-radius: 2px; color: #854d0e;">$1</mark>',
         );
       } catch (e) {
         /* ignore */
@@ -641,11 +766,16 @@ export default function ChatBotWidget() {
   const calculateWaterHardness = (valStr: string) => {
     const val = parseFloat(valStr);
     if (isNaN(val)) return "Vui lòng nhập số hợp lệ (°dH)";
-    if (val <= 5) return "Mức H1 (0 - 5 °dH): Không cần tái sinh muối (0g/chu kỳ)";
-    if (val <= 11) return "Mức H2 (6 - 11 °dH): Tái tạo sau mỗi 10 chu trình (9g muối)";
-    if (val <= 17) return "Mức H3 ⭐ (12 - 17 °dH): Mặc định nhà máy. Tái tạo sau 5 chu trình (12g muối)";
-    if (val <= 22) return "Mức H4 (18 - 22 °dH): Tái tạo sau mỗi 3 chu trình (20g muối)";
-    if (val <= 34) return "Mức H5 (23 - 34 °dH): Tái tạo sau mỗi 2 chu trình (30g muối)";
+    if (val <= 5)
+      return "Mức H1 (0 - 5 °dH): Không cần tái sinh muối (0g/chu kỳ)";
+    if (val <= 11)
+      return "Mức H2 (6 - 11 °dH): Tái tạo sau mỗi 10 chu trình (9g muối)";
+    if (val <= 17)
+      return "Mức H3 ⭐ (12 - 17 °dH): Mặc định nhà máy. Tái tạo sau 5 chu trình (12g muối)";
+    if (val <= 22)
+      return "Mức H4 (18 - 22 °dH): Tái tạo sau mỗi 3 chu trình (20g muối)";
+    if (val <= 34)
+      return "Mức H5 (23 - 34 °dH): Tái tạo sau mỗi 2 chu trình (30g muối)";
     return "Mức H6 (35 - 55 °dH): Nước rất cứng! Tái tạo sau mỗi 1 chu trình (60g muối)";
   };
 
@@ -653,14 +783,34 @@ export default function ChatBotWidget() {
     if (!value) return "—";
     if (value.startsWith("✕") || value.toLowerCase().includes("không")) {
       return (
-        <span style={{ display: "inline-block", backgroundColor: "#fee2e2", color: "#dc2626", padding: "2px 6px", borderRadius: 4, fontWeight: 700, fontSize: 10 }}>
+        <span
+          style={{
+            display: "inline-block",
+            backgroundColor: "#fee2e2",
+            color: "#dc2626",
+            padding: "2px 6px",
+            borderRadius: 4,
+            fontWeight: 700,
+            fontSize: 10,
+          }}
+        >
           {value}
         </span>
       );
     }
     if (value.startsWith("✓") || value.toLowerCase().includes("có")) {
       return (
-        <span style={{ display: "inline-block", backgroundColor: "#dcfce7", color: "#16a34a", padding: "2px 6px", borderRadius: 4, fontWeight: 700, fontSize: 10 }}>
+        <span
+          style={{
+            display: "inline-block",
+            backgroundColor: "#dcfce7",
+            color: "#16a34a",
+            padding: "2px 6px",
+            borderRadius: 4,
+            fontWeight: 700,
+            fontSize: 10,
+          }}
+        >
           {value}
         </span>
       );
@@ -671,29 +821,32 @@ export default function ChatBotWidget() {
   const toggleCompareModel = (modelName: string) => {
     if (selectedCompareModels.includes(modelName)) {
       if (selectedCompareModels.length > 1) {
-        setSelectedCompareModels(selectedCompareModels.filter((m) => m !== modelName));
+        setSelectedCompareModels(
+          selectedCompareModels.filter((m) => m !== modelName),
+        );
       }
     } else {
       setSelectedCompareModels([...selectedCompareModels, modelName]);
     }
   };
 
-  const currentCategoryCompareData = modelComparisons.find((c) => c.category === compareCategory);
-  const activeCompareModels = (currentCategoryCompareData?.models || []).filter((m) =>
-    selectedCompareModels.includes(m.model)
+  const currentCategoryCompareData = modelComparisons.find(
+    (c) => c.category === compareCategory,
+  );
+  const activeCompareModels = (currentCategoryCompareData?.models || []).filter(
+    (m) => selectedCompareModels.includes(m.model),
   );
 
   const pinnedMessages = messages.filter((m) => m.isPinned);
-  const unresolvedList = JSON.parse(localStorage.getItem("unresolved_queries") || "[]");
 
   return (
     <>
-      {/* 🔘 NÚT MỞ LẠI CHATBOT (HIỂN THỊ TRÊN MÀN HÌNH KHI CHATBOT ĐANG ĐÓNG) */}
+      {/* 🔘 NÚT TRÒN MỞ CHATBOT (Hiện khi Chatbot đang đóng) */}
       {!isOpen && (
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          title="Mở lại Trợ lý Call Center (Ctrl + K)"
+          title="Mở Trợ lý Chatbot"
           style={{
             position: "fixed",
             bottom: 20,
@@ -702,37 +855,61 @@ export default function ChatBotWidget() {
             color: "#ffffff",
             border: "none",
             boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
-            fontSize: 14,
+            fontSize: isMobile ? 13 : 24,
             fontWeight: 700,
             cursor: "pointer",
             zIndex: 9999,
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
             gap: 6,
-            padding: "10px 16px",
-            borderRadius: 24,
+            borderRadius: isMobile ? 24 : "50%",
+            width: isMobile ? "auto" : 56,
+            height: isMobile ? "auto" : 56,
+            padding: isMobile ? "10px 16px" : 0,
           }}
         >
-          <span>🤖 Mở Chatbot</span>
+          {isMobile ? <span>🤖 Mở Chatbot</span> : <span>💬</span>}
         </button>
       )}
 
-      {/* 💬 Khung Chatbot */}
+      {/* 💬 KHUNG CHATBOT: Tự thích ứng Desktop (Popup góc phải) và Mobile (Full màn hình) */}
       {isOpen && (
         <div
           onClick={(e) => e.stopPropagation()}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100dvh",
-            backgroundColor: "#ffffff",
-            display: "flex",
-            flexDirection: "column",
-            zIndex: 99999,
-            overflow: "hidden",
-          }}
+          style={
+            isMobile
+              ? {
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100vw",
+                  height: "100dvh",
+                  backgroundColor: "#ffffff",
+                  display: "flex",
+                  flexDirection: "column",
+                  zIndex: 99999,
+                  overflow: "hidden",
+                }
+              : {
+                  position: "fixed",
+                  bottom: isMaximized ? 20 : 86,
+                  right: 20,
+                  width: isMaximized ? "calc(100vw - 40px)" : 460,
+                  maxWidth: isMaximized ? 1200 : "94vw",
+                  height: isMaximized ? "calc(100vh - 100px)" : 620,
+                  maxHeight: isMaximized ? "none" : "85vh",
+                  backgroundColor: "#ffffff",
+                  borderRadius: 16,
+                  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.25)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  zIndex: 9999,
+                  border: "1px solid #e2e8f0",
+                  transition: "all 0.25s ease-in-out",
+                }
+          }
         >
           {/* Header */}
           <div
@@ -749,7 +926,9 @@ export default function ChatBotWidget() {
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ fontSize: 20 }}>🤖</span>
               <div>
-                <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700 }}>Trợ Lý Call Center Toshiba</h3>
+                <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700 }}>
+                  Trợ Lý Call Center Toshiba
+                </h3>
                 <span style={{ fontSize: 10, color: "#4ade80" }}>
                   ● SVC Station
                   {timerSeconds !== null && ` | ⏱️ ${timerSeconds}s`}
@@ -761,10 +940,15 @@ export default function ChatBotWidget() {
               {/* Nút Xem Đã Ghim */}
               <button
                 type="button"
-                onClick={() => setActiveModal(activeModal === "PINNED" ? null : "PINNED")}
+                onClick={() =>
+                  setActiveModal(activeModal === "PINNED" ? null : "PINNED")
+                }
                 title="Xem câu trả lời đã ghim"
                 style={{
-                  background: pinnedMessages.length > 0 ? "#f59e0b" : "rgba(255,255,255,0.12)",
+                  background:
+                    pinnedMessages.length > 0
+                      ? "#f59e0b"
+                      : "rgba(255,255,255,0.12)",
                   color: "#fff",
                   border: "none",
                   borderRadius: 6,
@@ -780,10 +964,15 @@ export default function ChatBotWidget() {
               {/* Nút So sánh Model */}
               <button
                 type="button"
-                onClick={() => setActiveModal(activeModal === "COMPARE" ? null : "COMPARE")}
+                onClick={() =>
+                  setActiveModal(activeModal === "COMPARE" ? null : "COMPARE")
+                }
                 title="Bảng đối chiếu thông số Model"
                 style={{
-                  background: activeModal === "COMPARE" ? "#0284c7" : "rgba(255,255,255,0.12)",
+                  background:
+                    activeModal === "COMPARE"
+                      ? "#0284c7"
+                      : "rgba(255,255,255,0.12)",
                   color: "#cbd5e1",
                   border: "none",
                   borderRadius: 6,
@@ -798,10 +987,15 @@ export default function ChatBotWidget() {
               {/* Nút Tính Toán */}
               <button
                 type="button"
-                onClick={() => setActiveModal(activeModal === "CALC" ? null : "CALC")}
+                onClick={() =>
+                  setActiveModal(activeModal === "CALC" ? null : "CALC")
+                }
                 title="Tiện ích quy đổi muối & hẹn giờ"
                 style={{
-                  background: activeModal === "CALC" ? "#0284c7" : "rgba(255,255,255,0.12)",
+                  background:
+                    activeModal === "CALC"
+                      ? "#0284c7"
+                      : "rgba(255,255,255,0.12)",
                   color: "#cbd5e1",
                   border: "none",
                   borderRadius: 6,
@@ -813,7 +1007,7 @@ export default function ChatBotWidget() {
                 🧮
               </button>
 
-              {/* Nút Thu nhỏ để xem trang Web nền */}
+              {/* 🌟 Nút Thu nhỏ / Đóng Chatbot để xem Web nền */}
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
@@ -829,8 +1023,26 @@ export default function ChatBotWidget() {
                   fontWeight: 700,
                 }}
               >
-                🌐 Xem Web
+                {isMobile ? "🌐 Xem Web" : "✕"}
               </button>
+
+              {!isMobile && (
+                <button
+                  type="button"
+                  onClick={() => setIsMaximized(!isMaximized)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.12)",
+                    border: "none",
+                    color: "#cbd5e1",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    padding: "4px 6px",
+                    borderRadius: 6,
+                  }}
+                >
+                  {isMaximized ? "🗗" : "🗖"}
+                </button>
+              )}
 
               <button
                 type="button"
@@ -908,7 +1120,8 @@ export default function ChatBotWidget() {
                   setSelectedModelFilter(filter.id);
                 }}
                 style={{
-                  background: selectedModelFilter === filter.id ? "#0284c7" : "#334155",
+                  background:
+                    selectedModelFilter === filter.id ? "#0284c7" : "#334155",
                   color: "#ffffff",
                   border: "none",
                   borderRadius: 12,
@@ -926,18 +1139,82 @@ export default function ChatBotWidget() {
 
           {/* MODALS PANEL */}
           {activeModal === "PINNED" && (
-            <div style={{ backgroundColor: "#fef3c7", padding: "10px", borderBottom: "1px solid #fde68a", maxHeight: 180, overflowY: "auto", flexShrink: 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e" }}>⭐ Danh sách câu trả lời đã ghim ({pinnedMessages.length}):</span>
-                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+            <div
+              style={{
+                backgroundColor: "#fef3c7",
+                padding: "10px",
+                borderBottom: "1px solid #fde68a",
+                maxHeight: 180,
+                overflowY: "auto",
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                }}
+              >
+                <span
+                  style={{ fontSize: 11, fontWeight: 700, color: "#92400e" }}
+                >
+                  ⭐ Danh sách câu trả lời đã ghim ({pinnedMessages.length}):
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    fontSize: 11,
+                  }}
+                >
+                  ✕ Đóng
+                </button>
               </div>
               {pinnedMessages.length === 0 ? (
-                <span style={{ fontSize: 11, color: "#b45309" }}>Chưa có tin nhắn nào được ghim. Bấm nút ⭐ dưới mỗi câu trả lời của Bot để lưu lại!</span>
+                <span style={{ fontSize: 11, color: "#b45309" }}>
+                  Chưa có tin nhắn nào được ghim. Bấm nút ⭐ dưới mỗi câu trả
+                  lời của Bot để lưu lại!
+                </span>
               ) : (
                 pinnedMessages.map((p) => (
-                  <div key={p.id} style={{ background: "#ffffff", padding: "6px 8px", borderRadius: 6, marginBottom: 4, fontSize: 11, border: "1px solid #fde68a" }}>
-                    <div style={{ fontWeight: 600, color: "#0f172a", marginBottom: 2 }}>{p.text.slice(0, 60)}...</div>
-                    <button type="button" onClick={() => handleCopyForCustomer(p.text, p.id)} style={{ color: "#0284c7", background: "none", border: "none", cursor: "pointer", fontSize: 10, padding: 0 }}>📋 Copy cho khách</button>
+                  <div
+                    key={p.id}
+                    style={{
+                      background: "#ffffff",
+                      padding: "6px 8px",
+                      borderRadius: 6,
+                      marginBottom: 4,
+                      fontSize: 11,
+                      border: "1px solid #fde68a",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        color: "#0f172a",
+                        marginBottom: 2,
+                      }}
+                    >
+                      {p.text.slice(0, 60)}...
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleCopyForCustomer(p.text, p.id)}
+                      style={{
+                        color: "#0284c7",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: 10,
+                        padding: 0,
+                      }}
+                    >
+                      📋 Copy cho khách
+                    </button>
                   </div>
                 ))
               )}
@@ -945,24 +1222,69 @@ export default function ChatBotWidget() {
           )}
 
           {activeModal === "COMPARE" && (
-            <div style={{ backgroundColor: "#f8fafc", padding: "10px", borderBottom: "1px solid #cbd5e1", maxHeight: 250, overflowY: "auto", fontSize: 11, flexShrink: 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, alignItems: "center" }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#0369a1" }}>⚖️ SO SÁNH THÔNG SỐ MODEL:</span>
-                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+            <div
+              style={{
+                backgroundColor: "#f8fafc",
+                padding: "10px",
+                borderBottom: "1px solid #cbd5e1",
+                maxHeight: 250,
+                overflowY: "auto",
+                fontSize: 11,
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 8,
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{ fontSize: 11, fontWeight: 700, color: "#0369a1" }}
+                >
+                  ⚖️ SO SÁNH THÔNG SỐ MODEL:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    fontSize: 11,
+                  }}
+                >
+                  ✕ Đóng
+                </button>
               </div>
 
-              <div style={{ display: "flex", gap: 4, marginBottom: 8, overflowX: "auto" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  marginBottom: 8,
+                  overflowX: "auto",
+                }}
+              >
                 {modelComparisons.map((cat) => (
                   <button
                     key={cat.category}
                     type="button"
                     onClick={() => {
                       setCompareCategory(cat.category);
-                      setSelectedCompareModels(cat.models.map((m) => m.model).slice(0, 3));
+                      setSelectedCompareModels(
+                        cat.models.map((m) => m.model).slice(0, 3),
+                      );
                     }}
                     style={{
-                      background: compareCategory === cat.category ? "#0284c7" : "#e2e8f0",
-                      color: compareCategory === cat.category ? "#fff" : "#334155",
+                      background:
+                        compareCategory === cat.category
+                          ? "#0284c7"
+                          : "#e2e8f0",
+                      color:
+                        compareCategory === cat.category ? "#fff" : "#334155",
                       border: "none",
                       padding: "3px 8px",
                       borderRadius: 12,
@@ -977,10 +1299,34 @@ export default function ChatBotWidget() {
                 ))}
               </div>
 
-              <div style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center", flexWrap: "wrap", background: "#f1f5f9", padding: "4px 8px", borderRadius: 6 }}>
-                <span style={{ fontSize: 10, color: "#64748b", fontWeight: 600 }}>Chọn model:</span>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  marginBottom: 8,
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  background: "#f1f5f9",
+                  padding: "4px 8px",
+                  borderRadius: 6,
+                }}
+              >
+                <span
+                  style={{ fontSize: 10, color: "#64748b", fontWeight: 600 }}
+                >
+                  Chọn model:
+                </span>
                 {currentCategoryCompareData?.models.map((m) => (
-                  <label key={m.model} style={{ display: "flex", alignItems: "center", gap: 3, cursor: "pointer", fontSize: 10 }}>
+                  <label
+                    key={m.model}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 3,
+                      cursor: "pointer",
+                      fontSize: 10,
+                    }}
+                  >
                     <input
                       type="checkbox"
                       checked={selectedCompareModels.includes(m.model)}
@@ -991,12 +1337,31 @@ export default function ChatBotWidget() {
                 ))}
               </div>
 
-              <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "center", fontSize: 10, background: "#fff" }}>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  textAlign: "center",
+                  fontSize: 10,
+                  background: "#fff",
+                }}
+              >
                 <thead>
                   <tr style={{ background: "#e0f2fe", color: "#0369a1" }}>
-                    <th style={{ border: "1px solid #bae6fd", padding: 4, textAlign: "left" }}>Tính năng</th>
+                    <th
+                      style={{
+                        border: "1px solid #bae6fd",
+                        padding: 4,
+                        textAlign: "left",
+                      }}
+                    >
+                      Tính năng
+                    </th>
                     {activeCompareModels.map((m) => (
-                      <th key={m.model} style={{ border: "1px solid #bae6fd", padding: 4 }}>
+                      <th
+                        key={m.model}
+                        style={{ border: "1px solid #bae6fd", padding: 4 }}
+                      >
                         {m.model}
                       </th>
                     ))}
@@ -1005,11 +1370,22 @@ export default function ChatBotWidget() {
                 <tbody>
                   {currentCategoryCompareData?.attributes.map((attr) => (
                     <tr key={attr}>
-                      <td style={{ border: "1px solid #e2e8f0", padding: 4, textAlign: "left", fontWeight: 600, color: "#475569" }}>
+                      <td
+                        style={{
+                          border: "1px solid #e2e8f0",
+                          padding: 4,
+                          textAlign: "left",
+                          fontWeight: 600,
+                          color: "#475569",
+                        }}
+                      >
                         {attr}
                       </td>
                       {activeCompareModels.map((m) => (
-                        <td key={m.model} style={{ border: "1px solid #e2e8f0", padding: 4 }}>
+                        <td
+                          key={m.model}
+                          style={{ border: "1px solid #e2e8f0", padding: 4 }}
+                        >
                           {renderSpecValue(m.specs[attr])}
                         </td>
                       ))}
@@ -1021,20 +1397,123 @@ export default function ChatBotWidget() {
           )}
 
           {activeModal === "CALC" && (
-            <div style={{ backgroundColor: "#f0fdf4", padding: "10px", borderBottom: "1px solid #bbf7d0", fontSize: 11, flexShrink: 0 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: "#166534" }}>🧮 Tiện ích Quy đổi & Đếm giờ thao tác:</span>
-                <button type="button" onClick={() => setActiveModal(null)} style={{ border: "none", background: "transparent", cursor: "pointer", fontSize: 11 }}>✕ Đóng</button>
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                padding: "10px",
+                borderBottom: "1px solid #bbf7d0",
+                fontSize: 11,
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                }}
+              >
+                <span
+                  style={{ fontSize: 11, fontWeight: 700, color: "#166534" }}
+                >
+                  🧮 Tiện ích Quy đổi & Đếm giờ thao tác:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    fontSize: 11,
+                  }}
+                >
+                  ✕ Đóng
+                </button>
               </div>
 
-              <div style={{ display: "flex", gap: 4, alignItems: "center", marginBottom: 8, flexWrap: "wrap" }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  alignItems: "center",
+                  marginBottom: 8,
+                  flexWrap: "wrap",
+                }}
+              >
                 <span style={{ fontWeight: 600 }}>⏱️ Hẹn giờ:</span>
-                <button type="button" onClick={() => startTimer(3)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Giữ 3s</button>
-                <button type="button" onClick={() => startTimer(5)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Giữ 5s</button>
-                <button type="button" onClick={() => startTimer(300)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Xả tụ 5p</button>
-                <button type="button" onClick={() => startTimer(900)} style={{ background: "#dcfce7", border: "1px solid #86efac", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Nguội bát 15p</button>
+                <button
+                  type="button"
+                  onClick={() => startTimer(3)}
+                  style={{
+                    background: "#dcfce7",
+                    border: "1px solid #86efac",
+                    borderRadius: 4,
+                    padding: "2px 5px",
+                    cursor: "pointer",
+                    fontSize: 10,
+                  }}
+                >
+                  Giữ 3s
+                </button>
+                <button
+                  type="button"
+                  onClick={() => startTimer(5)}
+                  style={{
+                    background: "#dcfce7",
+                    border: "1px solid #86efac",
+                    borderRadius: 4,
+                    padding: "2px 5px",
+                    cursor: "pointer",
+                    fontSize: 10,
+                  }}
+                >
+                  Giữ 5s
+                </button>
+                <button
+                  type="button"
+                  onClick={() => startTimer(300)}
+                  style={{
+                    background: "#dcfce7",
+                    border: "1px solid #86efac",
+                    borderRadius: 4,
+                    padding: "2px 5px",
+                    cursor: "pointer",
+                    fontSize: 10,
+                  }}
+                >
+                  Xả tụ 5p
+                </button>
+                <button
+                  type="button"
+                  onClick={() => startTimer(900)}
+                  style={{
+                    background: "#dcfce7",
+                    border: "1px solid #86efac",
+                    borderRadius: 4,
+                    padding: "2px 5px",
+                    cursor: "pointer",
+                    fontSize: 10,
+                  }}
+                >
+                  Nguội bát 15p
+                </button>
                 {timerSeconds !== null && (
-                  <button type="button" onClick={stopTimer} style={{ background: "#fee2e2", border: "1px solid #fca5a5", color: "#b91c1c", borderRadius: 4, padding: "2px 5px", cursor: "pointer", fontSize: 10 }}>Dừng</button>
+                  <button
+                    type="button"
+                    onClick={stopTimer}
+                    style={{
+                      background: "#fee2e2",
+                      border: "1px solid #fca5a5",
+                      color: "#b91c1c",
+                      borderRadius: 4,
+                      padding: "2px 5px",
+                      cursor: "pointer",
+                      fontSize: 10,
+                    }}
+                  >
+                    Dừng
+                  </button>
                 )}
               </div>
 
@@ -1045,11 +1524,26 @@ export default function ChatBotWidget() {
                   placeholder="VD: 15"
                   value={calcDhInput}
                   onChange={(e) => setCalcDhInput(e.target.value)}
-                  style={{ width: 60, padding: "2px 4px", borderRadius: 4, border: "1px solid #cbd5e1", fontSize: 11 }}
+                  style={{
+                    width: 60,
+                    padding: "2px 4px",
+                    borderRadius: 4,
+                    border: "1px solid #cbd5e1",
+                    fontSize: 11,
+                  }}
                 />
               </div>
               {calcDhInput && (
-                <div style={{ background: "#ffffff", padding: "4px 8px", borderRadius: 4, color: "#15803d", fontWeight: 600, marginTop: 4 }}>
+                <div
+                  style={{
+                    background: "#ffffff",
+                    padding: "4px 8px",
+                    borderRadius: 4,
+                    color: "#15803d",
+                    fontWeight: 600,
+                    marginTop: 4,
+                  }}
+                >
                   ➔ {calculateWaterHardness(calcDhInput)}
                 </div>
               )}
@@ -1073,30 +1567,44 @@ export default function ChatBotWidget() {
                 key={msg.id}
                 style={{
                   alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-                  maxWidth: "94%",
+                  maxWidth: isMobile ? "94%" : isMaximized ? "80%" : "92%",
                 }}
               >
                 <div
                   style={{
-                    backgroundColor: msg.sender === "user" ? "#0284c7" : "#ffffff",
+                    backgroundColor:
+                      msg.sender === "user" ? "#0284c7" : "#ffffff",
                     color: msg.sender === "user" ? "#ffffff" : "#0f172a",
                     padding: msg.sender === "user" ? "10px 14px" : "12px 14px",
-                    borderRadius: msg.sender === "user" ? "14px 14px 2px 14px" : "14px 14px 14px 2px",
+                    borderRadius:
+                      msg.sender === "user"
+                        ? "14px 14px 2px 14px"
+                        : "14px 14px 14px 2px",
                     fontSize: 13,
                     lineHeight: 1.6,
                     border: msg.sender === "bot" ? "1px solid #e2e8f0" : "none",
-                    boxShadow: msg.sender === "bot" ? "0 2px 6px rgba(0,0,0,0.03)" : "none",
+                    boxShadow:
+                      msg.sender === "bot"
+                        ? "0 2px 6px rgba(0,0,0,0.03)"
+                        : "none",
                   }}
                 >
                   {msg.sender === "bot" ? (
                     <>
-                      <div dangerouslySetInnerHTML={{ __html: renderFormattedText(msg.text) }} />
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: renderFormattedText(msg.text),
+                        }}
+                      />
 
                       {msg.images && msg.images.length > 0 && (
                         <div
                           style={{
                             display: "grid",
-                            gridTemplateColumns: msg.images.length === 1 ? "1fr" : "repeat(auto-fit, minmax(130px, 1fr))",
+                            gridTemplateColumns:
+                              msg.images.length === 1
+                                ? "1fr"
+                                : "repeat(auto-fit, minmax(130px, 1fr))",
                             gap: 6,
                             marginTop: 10,
                           }}
@@ -1153,49 +1661,126 @@ export default function ChatBotWidget() {
 
                 {/* Tiện ích dưới câu trả lời */}
                 {msg.sender === "bot" && (
-                  <div style={{ display: "flex", gap: 4, marginTop: 4, alignItems: "center", fontSize: 11, color: "#64748b", flexWrap: "wrap" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 4,
+                      marginTop: 4,
+                      alignItems: "center",
+                      fontSize: 11,
+                      color: "#64748b",
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <button
                       type="button"
                       onClick={() => handleCopyForCustomer(msg.text, msg.id)}
-                      style={{ background: "#e0f2fe", border: "1px solid #bae6fd", color: "#0369a1", cursor: "pointer", padding: "2px 5px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}
+                      style={{
+                        background: "#e0f2fe",
+                        border: "1px solid #bae6fd",
+                        color: "#0369a1",
+                        cursor: "pointer",
+                        padding: "2px 5px",
+                        borderRadius: 4,
+                        fontSize: 10,
+                        fontWeight: 600,
+                      }}
                     >
-                      {copiedId === `cust_${msg.id}` ? "✓ Đã copy" : "📋 Cho khách"}
+                      {copiedId === `cust_${msg.id}`
+                        ? "✓ Đã copy"
+                        : "📋 Cho khách"}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleCopyTechnical(msg.text, msg.id)}
-                      style={{ background: "#f1f5f9", border: "1px solid #cbd5e1", color: "#334155", cursor: "pointer", padding: "2px 5px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}
+                      style={{
+                        background: "#f1f5f9",
+                        border: "1px solid #cbd5e1",
+                        color: "#334155",
+                        cursor: "pointer",
+                        padding: "2px 5px",
+                        borderRadius: 4,
+                        fontSize: 10,
+                        fontWeight: 600,
+                      }}
                     >
-                      {copiedId === `tech_${msg.id}` ? "✓ Đã copy" : "🛠️ Kỹ thuật"}
+                      {copiedId === `tech_${msg.id}`
+                        ? "✓ Đã copy"
+                        : "🛠️ Kỹ thuật"}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleCopyCrmTicket(msg.text, msg.id)}
-                      style={{ background: "#fef3c7", border: "1px solid #fde68a", color: "#92400e", cursor: "pointer", padding: "2px 5px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}
+                      style={{
+                        background: "#fef3c7",
+                        border: "1px solid #fde68a",
+                        color: "#92400e",
+                        cursor: "pointer",
+                        padding: "2px 5px",
+                        borderRadius: 4,
+                        fontSize: 10,
+                        fontWeight: 600,
+                      }}
                     >
-                      {copiedId === `crm_${msg.id}` ? "✓ Đã copy Ticket" : "📝 Tạo Ticket"}
+                      {copiedId === `crm_${msg.id}`
+                        ? "✓ Đã copy Ticket"
+                        : "📝 Tạo Ticket"}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => togglePinMessage(msg.id)}
                       title={msg.isPinned ? "Bỏ ghim" : "Ghim câu trả lời"}
-                      style={{ background: "none", border: "none", cursor: "pointer", opacity: msg.isPinned ? 1 : 0.4 }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        opacity: msg.isPinned ? 1 : 0.4,
+                      }}
                     >
                       {msg.isPinned ? "⭐" : "☆"}
                     </button>
 
                     <span>•</span>
-                    <button type="button" onClick={() => handleFeedback(msg.id, "like")} style={{ background: "none", border: "none", cursor: "pointer", opacity: msg.feedback === "like" ? 1 : 0.4 }}>👍</button>
-                    <button type="button" onClick={() => handleFeedback(msg.id, "dislike")} style={{ background: "none", border: "none", cursor: "pointer", opacity: msg.feedback === "dislike" ? 1 : 0.4 }}>👎</button>
+                    <button
+                      type="button"
+                      onClick={() => handleFeedback(msg.id, "like")}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        opacity: msg.feedback === "like" ? 1 : 0.4,
+                      }}
+                    >
+                      👍
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleFeedback(msg.id, "dislike")}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        opacity: msg.feedback === "dislike" ? 1 : 0.4,
+                      }}
+                    >
+                      👎
+                    </button>
                   </div>
                 )}
 
                 {/* Danh sách các nút lựa chọn liên kết trực tiếp */}
                 {msg.options && msg.options.length > 0 && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 6,
+                      marginTop: 8,
+                    }}
+                  >
                     {msg.options.map((opt, idx) => (
                       <button
                         key={idx}
@@ -1228,12 +1813,36 @@ export default function ChatBotWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* 🌟 GỢI Ý ĐA CHIỀU - CLICK VÀO LÀ MỞ TRANG NGAY */}
+          {/* Gợi ý đa chiều */}
           {smartSuggestions.length > 0 && (
-            <div style={{ backgroundColor: "#ffffff", borderTop: "1px solid #e2e8f0", padding: "6px 8px", display: "flex", flexDirection: "column", gap: 4, maxHeight: 200, overflowY: "auto", boxShadow: "0 -4px 12px rgba(0,0,0,0.05)", flexShrink: 0 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: "#64748b", padding: "2px 6px", display: "flex", justifyContent: "space-between" }}>
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                borderTop: "1px solid #e2e8f0",
+                padding: "6px 8px",
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                maxHeight: 200,
+                overflowY: "auto",
+                boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: "#64748b",
+                  padding: "2px 6px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
                 <span>💡 Gợi ý (Bấm vào để mở trang hướng dẫn):</span>
-                <span style={{ fontSize: 10, color: "#0284c7" }}>Chạm để mở</span>
+                <span style={{ fontSize: 10, color: "#0284c7" }}>
+                  Chạm để mở
+                </span>
               </div>
               {smartSuggestions.map((item, idx) => (
                 <button
@@ -1242,21 +1851,76 @@ export default function ChatBotWidget() {
                   onClick={(e) => {
                     e.preventDefault();
                     if (item.type === "ERROR" && item.dataItem) {
-                      handleGoToErrorPage(item.dataItem); // 🌟 Chuyển trang trực tiếp!
+                      handleGoToErrorPage(item.dataItem);
                     } else {
                       handleSend(item.query);
                     }
                   }}
-                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "6px 10px", cursor: "pointer", textAlign: "left" }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    background: "#f8fafc",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: 8,
+                    padding: "6px 10px",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, overflow: "hidden" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      overflow: "hidden",
+                    }}
+                  >
                     <span style={{ fontSize: 14 }}>{item.icon}</span>
-                    <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#0f172a", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>{item.label}</span>
-                      {item.subLabel && <span style={{ fontSize: 10, color: "#64748b", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>{item.subLabel}</span>}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: "#0f172a",
+                          whiteSpace: "nowrap",
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                      {item.subLabel && (
+                        <span
+                          style={{
+                            fontSize: 10,
+                            color: "#64748b",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {item.subLabel}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <span style={{ fontSize: 12, color: "#0284c7", fontWeight: 700, marginLeft: 6 }}>→</span>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#0284c7",
+                      fontWeight: 700,
+                      marginLeft: 6,
+                    }}
+                  >
+                    →
+                  </span>
                 </button>
               ))}
             </div>
@@ -1330,7 +1994,13 @@ export default function ChatBotWidget() {
             padding: 20,
           }}
         >
-          <div style={{ position: "relative", maxWidth: "90vw", maxHeight: "90vh" }}>
+          <div
+            style={{
+              position: "relative",
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+            }}
+          >
             <img
               src={previewImage}
               alt="Phóng to sơ đồ"
