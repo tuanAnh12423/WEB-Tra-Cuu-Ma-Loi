@@ -549,7 +549,7 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     ]);
   };
 
-  // 🔍 TÌM KIẾM TRUNG TÂM (TÍCH HỢP BỘ TỪ ĐIỂN ĐỒNG NGHĨA SEARCH_MAPPING)
+  // 🔍 TÌM KIẾM TRUNG TÂM (TỰ ĐỘNG DỊCH TỪ ĐỒNG NGHĨA TỪ SEARCH_MAPPING)
   const handleSend = (textToSend?: string) => {
     const queryText = textToSend || input;
     if (!queryText.trim()) return;
@@ -562,8 +562,19 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInput("");
 
-    const cleanKeyword = cleanString(queryText);
+    let cleanKeyword = cleanString(queryText);
     const lowerQuery = queryText.toLowerCase().trim();
+
+    // 🌟 TỰ ĐỘNG DỊCH TỪ LÓNG/TỪ TẮT VỀ TỪ KHÓA CHUẨN TRONG SEARCH_MAPPING
+    Object.keys(SEARCH_MAPPING).forEach((standardKey) => {
+      const synonyms = SEARCH_MAPPING[standardKey].map((s) => cleanString(s));
+      if (
+        cleanKeyword === cleanString(standardKey) ||
+        synonyms.includes(cleanKeyword)
+      ) {
+        cleanKeyword = cleanString(standardKey);
+      }
+    });
 
     // 🌟 MỞ RỘNG TỪ KHÓA BẰNG BỘ TỪ ĐIỂN SEARCH_MAPPING
     let expandedKeywords = [cleanKeyword];
@@ -582,7 +593,6 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       const matchedFun = FUN_DIALOGUES.find((item) =>
         item.triggers.some((t) => {
           const cleanT = cleanString(t);
-          // Chỉ nhận diện khi từ khóa gõ trùng khít hoặc đứng độc lập, tránh dính chùm như "k-hi-nóng"
           return (
             cleanKeyword === cleanT ||
             queryText.toLowerCase().split(" ").includes(t)
@@ -638,15 +648,44 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       }
     }
 
+    // 🌟 3. ƯU TIÊN KHỚP HÌNH ẢNH TRƯỚC (GIỐNG HỆT PHẦN GỢI Ý HIỂN THỊ)
+    const matchedImg = deviceImages.find((img) => {
+      const titleClean = cleanString(img.title);
+      const modelClean = cleanString(img.model);
+      return (
+        cleanKeyword.length >= 2 &&
+        (titleClean.includes(cleanKeyword) ||
+          modelClean.includes(cleanKeyword) ||
+          img.keywords.some((kw) => cleanString(kw).includes(cleanKeyword)))
+      );
+    });
+
+    if (matchedImg) {
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "bot",
+            text: `### 🖼️ ${matchedImg.title.toUpperCase()}\n---\n**Mô tả:** ${matchedImg.description}\n*(Có ${matchedImg.images.length} hình tất cả, bấm vô hình để phóng to ngắm cho rõ nha mấy bà dà)*`,
+            images: matchedImg.images,
+          },
+        ]);
+      }, 200);
+      return;
+    }
+
     // [A] Khớp trong Kho Tri Thức Đám Mây (Firestore)
-    const matchedLearned = learnedList.filter((item) =>
-      item.keywords.some((kw) => {
-        const cKw = cleanString(kw);
-        return expandedKeywords.some(
-          (exp) => cKw.includes(exp) || exp.includes(cKw),
-        );
-      }),
-    );
+    const matchedLearned = learnedList.filter((item) => {
+      const itemText = cleanString(item.title) + " " + cleanString(item.answer);
+      return (
+        expandedKeywords.some((exp) => itemText.includes(exp)) ||
+        item.keywords.some((kw) => {
+          const cKw = cleanString(kw);
+          return expandedKeywords.some((exp) => cKw.includes(exp));
+        })
+      );
+    });
 
     if (matchedLearned.length > 0) {
       const foundItem = matchedLearned[0];
@@ -669,36 +708,6 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
             images: foundItem.imageUrl ? [foundItem.imageUrl] : undefined,
             videoUrl: foundItem.videoUrl || undefined,
             options: botOptionsItem.length > 0 ? botOptionsItem : undefined,
-          },
-        ]);
-      }, 200);
-      return;
-    }
-
-    // [B] Khớp Hình ảnh
-    const matchedImg = deviceImages.find((img) => {
-      const titleClean = cleanString(img.title);
-      const modelClean = cleanString(img.model);
-      return expandedKeywords.some(
-        (exp) =>
-          titleClean.includes(exp) ||
-          modelClean.includes(exp) ||
-          img.keywords.some(
-            (kw) =>
-              cleanString(kw).includes(exp) || exp.includes(cleanString(kw)),
-          ),
-      );
-    });
-
-    if (matchedImg) {
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: (Date.now() + 1).toString(),
-            sender: "bot",
-            text: `### 🖼️ ${matchedImg.title.toUpperCase()}\n---\n**Mô tả:** ${matchedImg.description}\n*(Có ${matchedImg.images.length} hình tất cả, bấm vô coi nha mấy má)*`,
-            images: matchedImg.images,
           },
         ]);
       }, 200);
@@ -762,15 +771,14 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       return;
     }
 
-    // [D] Khớp Knowledge Base Q&A
-    let matchedKnowledge = chatbotKnowledge.filter((k) =>
-      k.keywords.some((kw) => {
-        const cleanKw = cleanString(kw);
-        return expandedKeywords.some(
-          (exp) => cleanKw.includes(exp) || exp.includes(cleanKw),
-        );
-      }),
-    );
+    // [D] Khớp Knowledge Base Q&A (Khắt khe với cụm từ mở rộng)
+    let matchedKnowledge = chatbotKnowledge.filter((k) => {
+      const titleClean = cleanString(k.title || "");
+      const fullContent = cleanString(k.answer || "") + titleClean;
+      return expandedKeywords.some(
+        (exp) => fullContent.includes(exp) || titleClean.includes(exp),
+      );
+    });
 
     if (selectedModelFilter !== "ALL") {
       matchedKnowledge = matchedKnowledge.filter((k) =>
@@ -791,7 +799,7 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       );
     });
 
-    // [F] Khớp Sách HDSD (manuals.ts)
+    // [F] Khớp Sách HDSD (manuals.ts) - Chỉ khớp chuẩn xác cụm từ/model
     const matchedManuals = (manuals || []).filter((item: any) => {
       const model = cleanString(
         item.model || item.modelName || item.code || "",
@@ -2597,7 +2605,7 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
                           style={{
                             backgroundColor: isTeachBtn ? "#10b981" : "#ffffff",
                             backgroundImage: isTeachBtn
-                              ? "linear-gradient(135deg, #10b981 0%, #059669 100%"
+                              ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
                               : "none",
                             color: isTeachBtn ? "#ffffff" : "#0369a1",
                             border: isTeachBtn

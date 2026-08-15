@@ -201,12 +201,12 @@ export const dishWasherError: ErrorItem[] = [
     ],
   },
   {
-    id: "DW05",
+    id: "DW11",
     category: "dishWasher",
-    code: "(DW12) Máy rửa chén rửa không sạch",
-    title: "Máy rửa chén sau khi rửa xong chén đĩa không sạch",
+    code: "(DW12) Máy rửa chén rửa không sạch, dơ",
+    title: "Máy rửa chén sau khi rửa xong chén đĩa không sạch, dơ",
     description:
-      "Sau khi rửa xong chu trình bạn mở cửa máy ra và phát hiện chén đĩa có cái sạch cái không, hoặc chưa sạch hẳn",
+      "Sau khi rửa xong chu trình bạn mở cửa máy ra và phát hiện chén đĩa có cái sạch cái không, hoặc chưa sạch hẳn, dơ",
     steps: [
       {
         text: "Kiểm tra đèn muối và nước bóng có báo. Nếu thiếu cần bổ sung thêm cả 2",
