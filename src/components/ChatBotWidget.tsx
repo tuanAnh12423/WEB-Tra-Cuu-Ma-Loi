@@ -52,7 +52,11 @@ export default function ChatBotWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // ⚙️ 4. STATES
-  const [isOpen, setIsOpen] = useState(false);
+  // 🌟 [ĐIỂM 1]: Mặc định tự động mở nếu là màn hình điện thoại (<= 640px)
+  const [isOpen, setIsOpen] = useState(() => {
+    return typeof window !== "undefined" ? window.innerWidth <= 640 : false;
+  });
+
   const [isMaximized, setIsMaximized] = useState(false);
   const [input, setInput] = useState("");
   const [selectedModelFilter, setSelectedModelFilter] = useState<string>("ALL");
@@ -115,7 +119,7 @@ export default function ChatBotWidget() {
       } else if (e.key === "Escape" && isOpen) {
         if (previewImage) setPreviewImage(null);
         else if (activeModal) setActiveModal(null);
-        else setIsOpen(false);
+        else if (window.innerWidth > 640) setIsOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -279,6 +283,22 @@ export default function ChatBotWidget() {
 
     navigator.clipboard.writeText(cleanText);
     setCopiedId(`tech_${msgId}`);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleCopyCrmTicket = (text: string, msgId: string) => {
+    const cleanText = text
+      .replace(/<[^>]*>/g, "")
+      .replace(/###\s*/g, "")
+      .replace(/---/g, "")
+      .replace(/\*\*/g, "")
+      .replace(/\*/g, "")
+      .slice(0, 150);
+
+    const ticketTemplate = `[TOSHIBA SVC TICKET - ${new Date().toLocaleDateString("vi-VN")}]\n- Nội dung tiếp nhận: Khách cần hỗ trợ kỹ thuật / Báo lỗi thiết bị\n- Tóm tắt hướng dẫn: ${cleanText}...\n- Kết quả xử lý: Đã hướng dẫn KH thao tác / Theo dõi thêm.\n- Hotline liên hệ lại: 1800 1529`;
+
+    navigator.clipboard.writeText(ticketTemplate);
+    setCopiedId(`crm_${msgId}`);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -779,11 +799,10 @@ export default function ChatBotWidget() {
     return "Mức H6 (35 - 55 °dH): Nước rất cứng! Tái tạo sau mỗi 1 chu trình (60g muối)";
   };
 
-  // 🌟 Hàm tô màu nổi bật cho các giá trị "Có" / "Không" / Thông số
+  // Hàm tô màu nổi bật cho các giá trị "Có" / "Không" / Thông số
   const renderSpecValue = (value: string | undefined) => {
     if (!value) return "—";
 
-    // Nếu là tính năng "✕ Không" -> Hiện Badge Đỏ nổi bật
     if (value.startsWith("✕") || value.toLowerCase().includes("không")) {
       return (
         <span
@@ -802,7 +821,6 @@ export default function ChatBotWidget() {
       );
     }
 
-    // Nếu là tính năng "✓ Có" -> Hiện Badge Xanh lá nổi bật
     if (value.startsWith("✓") || value.toLowerCase().includes("có")) {
       return (
         <span
@@ -821,7 +839,6 @@ export default function ChatBotWidget() {
       );
     }
 
-    // Các thông số số liệu bình thường
     return <span style={{ fontWeight: 600, color: "#0f172a" }}>{value}</span>;
   };
 
@@ -852,9 +869,10 @@ export default function ChatBotWidget() {
 
   return (
     <>
-      {/* 🔘 Nút Toggle mở Chatbot */}
+      {/* 🔘 Nút Toggle mở Chatbot (🌟 [ĐIỂM 2]: Thêm class hide-on-mobile-toggle) */}
       <button
         type="button"
+        className="hide-on-mobile-toggle"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -883,9 +901,10 @@ export default function ChatBotWidget() {
         {isOpen ? "✕" : "💬"}
       </button>
 
-      {/* 💬 Khung Chatbot */}
+      {/* 💬 Khung Chatbot (🌟 [ĐIỂM 3]: Thêm class mobile-fullscreen-chat) */}
       {isOpen && (
         <div
+          className="mobile-fullscreen-chat"
           onClick={(e) => e.stopPropagation()}
           style={{
             position: "fixed",
@@ -1215,7 +1234,7 @@ export default function ChatBotWidget() {
             </div>
           )}
 
-          {/* 🌟 MODAL 2: BẢNG SO SÁNH MODEL ĐA NGÀNH HÀNG LINH HOẠT VỚI BADGE MÀU */}
+          {/* 🌟 MODAL 2: BẢNG SO SÁNH MODEL */}
           {activeModal === "COMPARE" && (
             <div
               style={{
@@ -1254,7 +1273,6 @@ export default function ChatBotWidget() {
                 </button>
               </div>
 
-              {/* Bước 1: Chọn Ngành hàng cần so sánh */}
               <div
                 style={{
                   display: "flex",
@@ -1294,7 +1312,6 @@ export default function ChatBotWidget() {
                 ))}
               </div>
 
-              {/* Bước 2: Checkbox chọn các Model trong ngành hàng */}
               <div
                 style={{
                   display: "flex",
@@ -1333,7 +1350,6 @@ export default function ChatBotWidget() {
                 ))}
               </div>
 
-              {/* Bảng so sánh các model đã chọn với Badge màu nổi bật */}
               <table
                 style={{
                   width: "100%",
@@ -1730,7 +1746,7 @@ export default function ChatBotWidget() {
                   )}
                 </div>
 
-                {/* Tiện ích dưới câu trả lời: 3 Nút Copy + Ghim ⭐ + Feedback */}
+                {/* Tiện ích dưới câu trả lời */}
                 {msg.sender === "bot" && (
                   <div
                     style={{
@@ -1779,6 +1795,26 @@ export default function ChatBotWidget() {
                       {copiedId === `tech_${msg.id}`
                         ? "✓ Đã copy"
                         : "🛠️ Kỹ thuật"}
+                    </button>
+
+                    {/* Nút Tạo Ticket CRM */}
+                    <button
+                      type="button"
+                      onClick={() => handleCopyCrmTicket(msg.text, msg.id)}
+                      style={{
+                        background: "#fef3c7",
+                        border: "1px solid #fde68a",
+                        color: "#92400e",
+                        cursor: "pointer",
+                        padding: "2px 5px",
+                        borderRadius: 4,
+                        fontSize: 10,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {copiedId === `crm_${msg.id}`
+                        ? "✓ Đã copy Ticket"
+                        : "📝 Tạo Ticket"}
                     </button>
 
                     <button

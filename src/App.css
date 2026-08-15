@@ -6,15 +6,49 @@ select {
   touch-action: manipulation;
 }
 
+/* Mặc định trên Máy tính (Desktop): Hiện giao diện web bình thường */
+.main-web-content {
+  display: block;
+}
+
 /* Áp dụng cho màn hình nhỏ hơn 640px (Điện thoại) */
 @media (max-width: 640px) {
   body {
     font-size: 14px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Ngăn trang nền cuộn khi đang dùng chatbot */
   }
 
-  /* Ô tìm kiếm & Nút bấm to hơn dễ bấm bằng ngón tay */
+  /* 1. Ẩn toàn bộ giao diện web nền trên điện thoại */
+  .main-web-content {
+    display: none !important;
+  }
+
+  /* 2. Ép khung Chatbot bung trọn 100% màn hình điện thoại */
+  .mobile-fullscreen-chat {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important; /* Dùng dvh để khớp hoàn hảo trên cả Safari & Chrome */
+    max-width: 100% !important;
+    max-height: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+    z-index: 99999 !important;
+  }
+
+  /* 3. Ẩn nút tròn toggle vì trên mobile chatbot luôn mở sẵn */
+  .hide-on-mobile-toggle {
+    display: none !important;
+  }
+
+  /* 4. Ô tìm kiếm & Nút bấm to hơn, dễ bấm bằng ngón tay */
   input[type="text"] {
-    font-size: 16px !important; /* Ngăn iOS tự động zoom khi gõ */
+    font-size: 16px !important; /* Ngăn iOS tự động zoom màn hình khi bấm vào ô nhập */
     padding-top: 12px !important;
     padding-bottom: 12px !important;
   }
