@@ -9,7 +9,6 @@ import RepairSupportPage from "./pages/RepairSupportPage";
 import ToolsPage from "./pages/toolsPage";
 import ChatbotWidget from "./components/ChatBotWidget";
 
-// 📡 Component hiển thị thông báo trạng thái Ngoại tuyến
 function OfflineNotification() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
@@ -52,67 +51,30 @@ function OfflineNotification() {
 }
 
 function App() {
-  // 📱 Quản lý trạng thái nhận diện Điện thoại (<= 640px)
-  const [isMobile, setIsMobile] = useState(() => {
-    return typeof window !== "undefined" ? window.innerWidth <= 640 : false;
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 640);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   return (
     <Router>
-      {/* Thanh thông báo đứt mạng */}
       <OfflineNotification />
 
-      {isMobile ? (
-        // 📱 TRÊN ĐIỆN THOẠI: Chỉ hiển thị duy nhất Chatbot toàn màn hình
-        <div
-          style={{
-            width: "100vw",
-            height: "100dvh",
-            overflow: "hidden",
-            margin: 0,
-            padding: 0,
-          }}
-        >
-          <ChatbotWidget isMobileDirect={true} />
+      <div style={{ minHeight: "100vh", background: "#f5f6fa" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px" }}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/error-list/:categoryId" element={<ErrorListPage />} />
+            <Route
+              path="/error-detail/:errorId"
+              element={<ErrorDetailPage />}
+            />
+            <Route path="/report" element={<ReportPage />} />
+            <Route path="/repair-support" element={<RepairSupportPage />} />
+            <Route path="/manuals" element={<ManualListPage />} />
+            <Route path="/tools" element={<ToolsPage />} />
+            <Route path="*" element={<HomePage />} />
+          </Routes>
         </div>
-      ) : (
-        // 💻 TRÊN MÁY TÍNH: Hiển thị đầy đủ Website + Chatbot Widget góc phải
-        <>
-          <div style={{ minHeight: "100vh", background: "#f5f6fa" }}>
-            <div
-              style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px" }}
-            >
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route
-                  path="/error-list/:categoryId"
-                  element={<ErrorListPage />}
-                />
-                <Route
-                  path="/error-detail/:errorId"
-                  element={<ErrorDetailPage />}
-                />
-                <Route path="/report" element={<ReportPage />} />
-                <Route path="/repair-support" element={<RepairSupportPage />} />
-                <Route path="/manuals" element={<ManualListPage />} />
-                <Route path="/tools" element={<ToolsPage />} />
-                <Route path="*" element={<HomePage />} />
-              </Routes>
-            </div>
-          </div>
+      </div>
 
-          {/* Chatbot nổi góc màn hình máy tính */}
-          <ChatbotWidget isMobileDirect={false} />
-        </>
-      )}
+      {/* Chatbot luôn sẵn sàng điều hướng trực tiếp đến các trang */}
+      <ChatbotWidget />
     </Router>
   );
 }
