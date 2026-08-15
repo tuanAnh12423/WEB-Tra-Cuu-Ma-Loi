@@ -45,45 +45,42 @@ interface SuggestionItem {
   subLabel?: string;
   query: string;
   icon: string;
+  dataItem?: any;
 }
 
-export default function ChatBotWidget() {
+interface ChatBotWidgetProps {
+  isMobileDirect?: boolean;
+}
+
+export default function ChatBotWidget({
+  isMobileDirect = false,
+}: ChatBotWidgetProps) {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // ⚙️ 4. STATES
-  // 🌟 [ĐIỂM 1]: Mặc định tự động mở nếu là màn hình điện thoại (<= 640px)
-  const [isOpen, setIsOpen] = useState(() => {
-    return typeof window !== "undefined" ? window.innerWidth <= 640 : false;
-  });
-
+  // Trên Mobile luôn luôn mở (isOpen = true)
+  const [isOpen, setIsOpen] = useState(isMobileDirect || false);
   const [isMaximized, setIsMaximized] = useState(false);
   const [input, setInput] = useState("");
   const [selectedModelFilter, setSelectedModelFilter] = useState<string>("ALL");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Modals mở rộng: PINNED | UNRESOLVED | CALC | COMPARE
   const [activeModal, setActiveModal] = useState<
     "PINNED" | "UNRESOLVED" | "CALC" | "COMPARE" | null
   >(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  // State bộ so sánh thông số nhiều ngành hàng
   const [compareCategory, setCompareCategory] = useState<string>("dishwasher");
   const [selectedCompareModels, setSelectedCompareModels] = useState<string[]>([
     "DW-15F9(B)-VN",
     "DW-15F8(B)-VN",
     "DW-15F7(G)-VN",
   ]);
+  const [calcDhInput, setCalcDhInput] = useState<string>("15");
 
-  // State bộ tính toán độ cứng nước
-  const [calcDhInput, setCalcDhInput] = useState<string>("");
-
-  // State đồng hồ đếm ngược thao tác
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
 
-  // Quản lý lịch sử tin nhắn
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem("chat_history");
     if (saved) {
@@ -97,7 +94,7 @@ export default function ChatBotWidget() {
       {
         id: "1",
         sender: "bot",
-        text: "Xin chào! Tôi là Trợ lý Tra cứu Nghiệp vụ Call Center Toshiba. Bạn có thể tra cứu Mã lỗi, Sách HDSD, xem sơ đồ ảnh, hoặc dùng các công cụ hỗ trợ tư vấn bên trên!",
+        text: "Xin chào! Tôi là Trợ lý Tra cứu Nghiệp vụ Call Center Toshiba. Bạn có thể tra cứu Mã lỗi, Sách HDSD, xem sơ đồ ảnh, hoặc bấm chẩn đoán sự cố bên trên!",
       },
     ];
   });
@@ -109,24 +106,30 @@ export default function ChatBotWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Phím tắt bàn phím (Ctrl+K, Esc)
+  useEffect(() => {
+    if (isMobileDirect) {
+      setIsOpen(true);
+    }
+  }, [isMobileDirect]);
+
+  // Phím tắt
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setIsOpen(true);
         setTimeout(() => inputRef.current?.focus(), 150);
-      } else if (e.key === "Escape" && isOpen) {
+      } else if (e.key === "Escape" && isOpen && !isMobileDirect) {
         if (previewImage) setPreviewImage(null);
         else if (activeModal) setActiveModal(null);
-        else if (window.innerWidth > 640) setIsOpen(false);
+        else setIsOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, previewImage, activeModal]);
+  }, [isOpen, previewImage, activeModal, isMobileDirect]);
 
-  // Đếm ngược thời gian
+  // Đếm giờ thao tác
   useEffect(() => {
     let interval: any = null;
     if (isTimerRunning && timerSeconds !== null && timerSeconds > 0) {
@@ -136,7 +139,7 @@ export default function ChatBotWidget() {
       );
     } else if (timerSeconds === 0) {
       setIsTimerRunning(false);
-      alert("⏱️ Hết thời gian thao tác!");
+      alert("⏱️ Đã hết thời gian thao tác!");
     }
     return () => clearInterval(interval);
   }, [isTimerRunning, timerSeconds]);
@@ -151,7 +154,6 @@ export default function ChatBotWidget() {
     setTimerSeconds(null);
   };
 
-  // Bộ lọc Model
   const modelFilters = [
     { id: "ALL", label: "🌐 Tất cả" },
     { id: "RF611", label: "🧊 Tủ lạnh RF611" },
@@ -160,11 +162,10 @@ export default function ChatBotWidget() {
     { id: "15F7", label: "🍽️ Máy rửa 15F7" },
   ];
 
-  // Gợi ý thông minh khi gõ
+  // Gợi ý thông minh
   const smartSuggestions: SuggestionItem[] = (() => {
     const q = cleanString(input);
     if (q.length < 2) return [];
-
     const results: SuggestionItem[] = [];
 
     deviceImages.forEach((img) => {
@@ -191,6 +192,7 @@ export default function ChatBotWidget() {
           label: `[Mã Lỗi ${e.code}] ${e.title}`,
           subLabel: e.description?.slice(0, 45) + "...",
           query: e.code || e.title,
+          dataItem: e,
         });
       }
     });
@@ -267,7 +269,6 @@ export default function ChatBotWidget() {
       .replace(/\*/g, "");
 
     const customerFormatted = `Dạ Toshiba xin hướng dẫn anh/chị ạ:\n\n${cleanText}\n\nNếu cần hỗ trợ thêm, anh/chị liên hệ lại tổng đài 1800 1529 nhé!`;
-
     navigator.clipboard.writeText(customerFormatted);
     setCopiedId(`cust_${msgId}`);
     setTimeout(() => setCopiedId(null), 2000);
@@ -295,8 +296,7 @@ export default function ChatBotWidget() {
       .replace(/\*/g, "")
       .slice(0, 150);
 
-    const ticketTemplate = `[TOSHIBA SVC TICKET - ${new Date().toLocaleDateString("vi-VN")}]\n- Nội dung tiếp nhận: Khách cần hỗ trợ kỹ thuật / Báo lỗi thiết bị\n- Tóm tắt hướng dẫn: ${cleanText}...\n- Kết quả xử lý: Đã hướng dẫn KH thao tác / Theo dõi thêm.\n- Hotline liên hệ lại: 1800 1529`;
-
+    const ticketTemplate = `[TOSHIBA SVC TICKET - ${new Date().toLocaleDateString("vi-VN")}]\n- Nội dung: Hỗ trợ kỹ thuật\n- Hướng dẫn: ${cleanText}...\n- Kết quả: Đã hướng dẫn KH thao tác.\n- Hotline: 1800 1529`;
     navigator.clipboard.writeText(ticketTemplate);
     setCopiedId(`crm_${msgId}`);
     setTimeout(() => setCopiedId(null), 2000);
@@ -308,13 +308,72 @@ export default function ChatBotWidget() {
     );
   };
 
+  // 🌟 HÀM HIỂN THỊ CHI TIẾT MÃ LỖI TRỰC TIẾP TRONG CHATBOT
+  const handleSelectErrorDetail = (item: any) => {
+    const errorTitle = `[MÃ LỖI ${item.code || ""}] ${item.title}`;
+    let detailContent = `### 🎧 ${errorTitle.toUpperCase()}\n---\n`;
+
+    if (item.description) {
+      detailContent += `📌 **Mô tả hiện tượng:**\n${item.description}\n\n`;
+    }
+
+    if (item.cause || item.causes) {
+      const causes = Array.isArray(item.cause || item.causes)
+        ? (item.cause || item.causes).map((c: string) => `* ${c}`).join("\n")
+        : `* ${item.cause || item.causes}`;
+      detailContent += `⚠️ **Nguyên nhân chính:**\n${causes}\n\n`;
+    }
+
+    if (item.solution || item.solutions || item.action) {
+      const solutions = Array.isArray(
+        item.solution || item.solutions || item.action,
+      )
+        ? (item.solution || item.solutions || item.action)
+            .map((s: string) => `* ${s}`)
+            .join("\n")
+        : `* ${item.solution || item.solutions || item.action}`;
+      detailContent += `🛠️ **Hướng dẫn xử lý / Khắc phục:**\n${solutions}\n\n`;
+    }
+
+    if (item.customerGuide) {
+      detailContent += `🗣️ **Hướng dẫn giải thích cho Khách hàng:**\n${item.customerGuide}\n\n`;
+    }
+
+    const nextOptions: Option[] = [];
+
+    // Nếu trên máy tính thì hỗ trợ thêm nút chuyển sang trang web lớn
+    if (!isMobileDirect) {
+      nextOptions.push({
+        label: "🌐 Mở toàn màn hình trên Web chính",
+        action: () => {
+          navigate(`/error-detail/${item.id}`);
+          setIsOpen(false);
+        },
+      });
+    }
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        sender: "user",
+        text: `Xem chi tiết ${item.code || item.title}`,
+      },
+      {
+        id: (Date.now() + 1).toString(),
+        sender: "bot",
+        text: detailContent,
+        options: nextOptions.length > 0 ? nextOptions : undefined,
+      },
+    ]);
+  };
+
   // Cây chẩn đoán pan bệnh
   const handleDiagnosisStep = (
     node: DiagnosisNode,
     userSelectedLabel: string,
   ) => {
     const nextOptions: Option[] = [];
-
     if (node.children && node.children.length > 0) {
       node.children.forEach((child) => {
         nextOptions.push({
@@ -322,7 +381,6 @@ export default function ChatBotWidget() {
           action: () => handleDiagnosisStep(child, child.label),
         });
       });
-
       setMessages((prev) => [
         ...prev,
         { id: Date.now().toString(), sender: "user", text: userSelectedLabel },
@@ -401,7 +459,6 @@ export default function ChatBotWidget() {
     const filteredImages = deviceImages.filter(
       (img) => img.category === categoryId,
     );
-
     const options: Option[] = filteredImages.map((img) => ({
       label: `📌 [${img.model}] ${img.title} (${img.images.length} ảnh)`,
       action: () => displayImageResult(img),
@@ -443,7 +500,7 @@ export default function ChatBotWidget() {
     ]);
   };
 
-  // Tìm kiếm trung tâm
+  // 🔍 TÌM KIẾM TRUNG TÂM
   const handleSend = (textToSend?: string) => {
     const queryText = textToSend || input;
     if (!queryText.trim()) return;
@@ -458,7 +515,7 @@ export default function ChatBotWidget() {
 
     const cleanKeyword = cleanString(queryText);
 
-    // Khớp hình ảnh
+    // [A] Khớp Hình ảnh
     const matchedImg = deviceImages.find(
       (img) =>
         cleanString(img.title).includes(cleanKeyword) ||
@@ -484,7 +541,7 @@ export default function ChatBotWidget() {
       return;
     }
 
-    // Trợ giúp chung
+    // [B] Bắt Intent Trợ giúp chung
     const helpKeywords = [
       "giuptoi",
       "toicangiup",
@@ -541,6 +598,7 @@ export default function ChatBotWidget() {
       return;
     }
 
+    // [C] Khớp Knowledge Base Q&A
     let matchedKnowledge = chatbotKnowledge.filter((k) =>
       k.keywords.some((kw) => {
         const cleanKw = cleanString(kw);
@@ -560,6 +618,7 @@ export default function ChatBotWidget() {
       );
     }
 
+    // [D] Khớp Danh mục Mã lỗi (errors.ts)
     const matchedCallCenter = errors.filter((item: any) => {
       const code = cleanString(item.code || "");
       const title = cleanString(item.title || "");
@@ -571,6 +630,7 @@ export default function ChatBotWidget() {
       );
     });
 
+    // [E] Khớp Sách HDSD (manuals.ts)
     const matchedManuals = (manuals || []).filter((item: any) => {
       const model = cleanString(
         item.model || item.modelName || item.code || "",
@@ -600,7 +660,6 @@ export default function ChatBotWidget() {
         }
       } else {
         botResponseText = `🔍 Tìm thấy **${matchedKnowledge.length}** kết quả phù hợp với từ khóa "${queryText}".\nVui lòng bấm chọn thông tin bên dưới:`;
-
         matchedKnowledge.forEach((item) => {
           let displayTag = "📌";
           if (item.title?.includes("RF611")) displayTag = "🧊 [TỦ LẠNH RF611]";
@@ -641,15 +700,21 @@ export default function ChatBotWidget() {
       }
     } else {
       const totalMatches = matchedCallCenter.length + matchedManuals.length;
-
       if (totalMatches > 0) {
         botResponseText = `🔍 Tìm thấy ${totalMatches} kết quả phù hợp cho "${queryText}":`;
+
+        // 🌟 LINK TRỰC TIẾP VÀ IN CHI TIẾT MÃ LỖI
+        matchedCallCenter.slice(0, 6).forEach((item: any) => {
+          botOptions.push({
+            label: `🎧 [MÃ LỖI ${item.code || ""}] ${item.title}`,
+            action: () => handleSelectErrorDetail(item),
+          });
+        });
 
         matchedManuals.slice(0, 3).forEach((item: any) => {
           const displayModel = item.model || item.modelName || "PDF";
           const displayTitle = item.title || item.name || "Sách HDSD";
           const pdfLink = item.pdfUrl || item.link || item.url || item.file;
-
           botOptions.push({
             label: `📖 [SÁCH HDSD] ${displayModel} - ${displayTitle}`,
             action: () => {
@@ -660,25 +725,12 @@ export default function ChatBotWidget() {
                   `/manuals?search=${encodeURIComponent(displayModel || displayTitle)}`,
                 );
               }
-              setIsOpen(false);
-            },
-          });
-        });
-
-        matchedCallCenter.slice(0, 3).forEach((item: any) => {
-          botOptions.push({
-            label: `🎧 [MÃ LỖI] ${item.code || ""} - ${item.title}`,
-            action: () => {
-              navigate(`/error-detail/${item.id}`);
-              setIsOpen(false);
             },
           });
         });
       } else {
         logUnresolvedQuery(queryText);
-
         botResponseText = `❌ Chưa tìm thấy dữ liệu chính xác cho từ khóa "${queryText}".\n\n👉 Bạn hãy chọn công cụ tra cứu bên dưới:`;
-
         botOptions = [
           {
             label: "🖼️ Xem thư viện hình ảnh",
@@ -711,12 +763,9 @@ export default function ChatBotWidget() {
 
   const handleSelectCategory = (categoryId: string, categoryName: string) => {
     const filtered = errors.filter((e) => e.category === categoryId);
-    let options: Option[] = filtered.slice(0, 6).map((item) => ({
+    let options: Option[] = filtered.slice(0, 8).map((item) => ({
       label: `🎧 [${item.code || "LỖI"}] ${item.title}`,
-      action: () => {
-        navigate(`/error-detail/${item.id}`);
-        setIsOpen(false);
-      },
+      action: () => handleSelectErrorDetail(item), // In chi tiết mã lỗi
     }));
 
     setMessages((prev) => [
@@ -742,7 +791,6 @@ export default function ChatBotWidget() {
     ]);
   };
 
-  // Format văn bản
   const renderFormattedText = (text: string) => {
     let formatted = text
       .replace(
@@ -799,10 +847,8 @@ export default function ChatBotWidget() {
     return "Mức H6 (35 - 55 °dH): Nước rất cứng! Tái tạo sau mỗi 1 chu trình (60g muối)";
   };
 
-  // Hàm tô màu nổi bật cho các giá trị "Có" / "Không" / Thông số
   const renderSpecValue = (value: string | undefined) => {
     if (!value) return "—";
-
     if (value.startsWith("✕") || value.toLowerCase().includes("không")) {
       return (
         <span
@@ -820,7 +866,6 @@ export default function ChatBotWidget() {
         </span>
       );
     }
-
     if (value.startsWith("✓") || value.toLowerCase().includes("có")) {
       return (
         <span
@@ -838,11 +883,9 @@ export default function ChatBotWidget() {
         </span>
       );
     }
-
     return <span style={{ fontWeight: 600, color: "#0f172a" }}>{value}</span>;
   };
 
-  // Toggle chọn model để so sánh
   const toggleCompareModel = (modelName: string) => {
     if (selectedCompareModels.includes(modelName)) {
       if (selectedCompareModels.length > 1) {
@@ -869,61 +912,75 @@ export default function ChatBotWidget() {
 
   return (
     <>
-      {/* 🔘 Nút Toggle mở Chatbot (🌟 [ĐIỂM 2]: Thêm class hide-on-mobile-toggle) */}
-      <button
-        type="button"
-        className="hide-on-mobile-toggle"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setIsOpen((prev) => !prev);
-        }}
-        title="Bấm để mở trợ lý (Ctrl + K)"
-        style={{
-          position: "fixed",
-          bottom: 20,
-          right: 20,
-          width: 56,
-          height: 56,
-          borderRadius: "50%",
-          backgroundColor: "#0284c7",
-          color: "#ffffff",
-          border: "none",
-          boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
-          fontSize: 26,
-          cursor: "pointer",
-          zIndex: 9999,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {isOpen ? "✕" : "💬"}
-      </button>
-
-      {/* 💬 Khung Chatbot (🌟 [ĐIỂM 3]: Thêm class mobile-fullscreen-chat) */}
-      {isOpen && (
-        <div
-          className="mobile-fullscreen-chat"
-          onClick={(e) => e.stopPropagation()}
+      {/* 🔘 Nút tròn toggle (CHỈ HIỆN TRÊN MÁY TÍNH KHI KHÔNG PHẢI DIRECT MOBILE) */}
+      {!isMobileDirect && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsOpen((prev) => !prev);
+          }}
+          title="Bấm để mở trợ lý (Ctrl + K)"
           style={{
             position: "fixed",
-            bottom: isMaximized ? 20 : 86,
+            bottom: 20,
             right: 20,
-            width: isMaximized ? "calc(100vw - 40px)" : 460,
-            maxWidth: isMaximized ? 1200 : "94vw",
-            height: isMaximized ? "calc(100vh - 100px)" : 620,
-            maxHeight: isMaximized ? "none" : "85vh",
-            backgroundColor: "#ffffff",
-            borderRadius: 16,
-            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.25)",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
+            width: 56,
+            height: 56,
+            borderRadius: "50%",
+            backgroundColor: "#0284c7",
+            color: "#ffffff",
+            border: "none",
+            boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
+            fontSize: 26,
+            cursor: "pointer",
             zIndex: 9999,
-            border: "1px solid #e2e8f0",
-            transition: "all 0.25s ease-in-out",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
+        >
+          {isOpen ? "✕" : "💬"}
+        </button>
+      )}
+
+      {/* 💬 Khung Chatbot */}
+      {isOpen && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={
+            isMobileDirect
+              ? {
+                  position: "fixed",
+                  top: 0,
+                  left: 0,
+                  width: "100vw",
+                  height: "100dvh",
+                  backgroundColor: "#ffffff",
+                  display: "flex",
+                  flexDirection: "column",
+                  zIndex: 99999,
+                  overflow: "hidden",
+                }
+              : {
+                  position: "fixed",
+                  bottom: isMaximized ? 20 : 86,
+                  right: 20,
+                  width: isMaximized ? "calc(100vw - 40px)" : 460,
+                  maxWidth: isMaximized ? 1200 : "94vw",
+                  height: isMaximized ? "calc(100vh - 100px)" : 620,
+                  maxHeight: isMaximized ? "none" : "85vh",
+                  backgroundColor: "#ffffff",
+                  borderRadius: 16,
+                  boxShadow: "0 10px 25px rgba(0, 0, 0, 0.25)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  zIndex: 9999,
+                  border: "1px solid #e2e8f0",
+                  transition: "all 0.25s ease-in-out",
+                }
+          }
         >
           {/* Header */}
           <div
@@ -934,6 +991,7 @@ export default function ChatBotWidget() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              flexShrink: 0,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -943,7 +1001,7 @@ export default function ChatBotWidget() {
                   Trợ Lý Call Center Toshiba
                 </h3>
                 <span style={{ fontSize: 10, color: "#4ade80" }}>
-                  ● SVC Station (Ctrl+K)
+                  ● SVC Station
                   {timerSeconds !== null && ` | ⏱️ ${timerSeconds}s`}
                 </span>
               </div>
@@ -980,7 +1038,7 @@ export default function ChatBotWidget() {
                 onClick={() =>
                   setActiveModal(activeModal === "COMPARE" ? null : "COMPARE")
                 }
-                title="Bảng đối chiếu thông số Model theo ngành hàng"
+                title="Bảng đối chiếu thông số Model"
                 style={{
                   background:
                     activeModal === "COMPARE"
@@ -1042,21 +1100,23 @@ export default function ChatBotWidget() {
                 📊
               </button>
 
-              <button
-                type="button"
-                onClick={() => setIsMaximized(!isMaximized)}
-                style={{
-                  background: "rgba(255, 255, 255, 0.12)",
-                  border: "none",
-                  color: "#cbd5e1",
-                  cursor: "pointer",
-                  fontSize: 11,
-                  padding: "4px 6px",
-                  borderRadius: 6,
-                }}
-              >
-                {isMaximized ? "🗗" : "🗖"}
-              </button>
+              {!isMobileDirect && (
+                <button
+                  type="button"
+                  onClick={() => setIsMaximized(!isMaximized)}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.12)",
+                    border: "none",
+                    color: "#cbd5e1",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    padding: "4px 6px",
+                    borderRadius: 6,
+                  }}
+                >
+                  {isMaximized ? "🗗" : "🗖"}
+                </button>
+              )}
 
               <button
                 type="button"
@@ -1086,6 +1146,7 @@ export default function ChatBotWidget() {
               borderBottom: "1px solid #334155",
               overflowX: "auto",
               alignItems: "center",
+              flexShrink: 0,
             }}
           >
             <button
@@ -1151,7 +1212,6 @@ export default function ChatBotWidget() {
           </div>
 
           {/* 🌟 MODALS PANEL */}
-          {/* MODAL 1: PINNED */}
           {activeModal === "PINNED" && (
             <div
               style={{
@@ -1160,6 +1220,7 @@ export default function ChatBotWidget() {
                 borderBottom: "1px solid #fde68a",
                 maxHeight: 180,
                 overflowY: "auto",
+                flexShrink: 0,
               }}
             >
               <div
@@ -1234,7 +1295,6 @@ export default function ChatBotWidget() {
             </div>
           )}
 
-          {/* 🌟 MODAL 2: BẢNG SO SÁNH MODEL */}
           {activeModal === "COMPARE" && (
             <div
               style={{
@@ -1244,6 +1304,7 @@ export default function ChatBotWidget() {
                 maxHeight: 250,
                 overflowY: "auto",
                 fontSize: 11,
+                flexShrink: 0,
               }}
             >
               <div
@@ -1257,7 +1318,7 @@ export default function ChatBotWidget() {
                 <span
                   style={{ fontSize: 11, fontWeight: 700, color: "#0369a1" }}
                 >
-                  ⚖️ SO SÁNH THÔNG SỐ MODEL THEO NGÀNH HÀNG:
+                  ⚖️ SO SÁNH THÔNG SỐ MODEL:
                 </span>
                 <button
                   type="button"
@@ -1327,7 +1388,7 @@ export default function ChatBotWidget() {
                 <span
                   style={{ fontSize: 10, color: "#64748b", fontWeight: 600 }}
                 >
-                  Chọn model đối chiếu:
+                  Chọn model:
                 </span>
                 {currentCategoryCompareData?.models.map((m) => (
                   <label
@@ -1368,7 +1429,7 @@ export default function ChatBotWidget() {
                         textAlign: "left",
                       }}
                     >
-                      Tính năng / Model
+                      Tính năng
                     </th>
                     {activeCompareModels.map((m) => (
                       <th
@@ -1409,7 +1470,6 @@ export default function ChatBotWidget() {
             </div>
           )}
 
-          {/* MODAL 3: CALC & OPERATION TIMERS */}
           {activeModal === "CALC" && (
             <div
               style={{
@@ -1417,6 +1477,7 @@ export default function ChatBotWidget() {
                 padding: "10px",
                 borderBottom: "1px solid #bbf7d0",
                 fontSize: 11,
+                flexShrink: 0,
               }}
             >
               <div
@@ -1454,7 +1515,7 @@ export default function ChatBotWidget() {
                   flexWrap: "wrap",
                 }}
               >
-                <span style={{ fontWeight: 600 }}>⏱️ Hẹn giờ thao tác:</span>
+                <span style={{ fontWeight: 600 }}>⏱️ Hẹn giờ:</span>
                 <button
                   type="button"
                   onClick={() => startTimer(3)}
@@ -1563,7 +1624,6 @@ export default function ChatBotWidget() {
             </div>
           )}
 
-          {/* MODAL 4: UNRESOLVED */}
           {activeModal === "UNRESOLVED" && (
             <div
               style={{
@@ -1572,6 +1632,7 @@ export default function ChatBotWidget() {
                 borderBottom: "1px solid #cbd5e1",
                 maxHeight: 180,
                 overflowY: "auto",
+                flexShrink: 0,
               }}
             >
               <div
@@ -1646,7 +1707,11 @@ export default function ChatBotWidget() {
                 key={msg.id}
                 style={{
                   alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-                  maxWidth: isMaximized ? "80%" : "92%",
+                  maxWidth: isMobileDirect
+                    ? "94%"
+                    : isMaximized
+                      ? "80%"
+                      : "92%",
                 }}
               >
                 <div
@@ -1676,7 +1741,6 @@ export default function ChatBotWidget() {
                         }}
                       />
 
-                      {/* LƯỚI HIỂN THỊ NHIỀU ẢNH */}
                       {msg.images && msg.images.length > 0 && (
                         <div
                           style={{
@@ -1712,13 +1776,6 @@ export default function ChatBotWidget() {
                                   objectFit: "cover",
                                   transition: "transform 0.2s",
                                 }}
-                                onMouseEnter={(e) =>
-                                  (e.currentTarget.style.transform =
-                                    "scale(1.06)")
-                                }
-                                onMouseLeave={(e) =>
-                                  (e.currentTarget.style.transform = "scale(1)")
-                                }
                                 title="Bấm để phóng to"
                               />
                               <span
@@ -1797,7 +1854,6 @@ export default function ChatBotWidget() {
                         : "🛠️ Kỹ thuật"}
                     </button>
 
-                    {/* Nút Tạo Ticket CRM */}
                     <button
                       type="button"
                       onClick={() => handleCopyCrmTicket(msg.text, msg.id)}
@@ -1859,7 +1915,7 @@ export default function ChatBotWidget() {
                   </div>
                 )}
 
-                {/* Danh sách các nút lựa chọn */}
+                {/* Nút options */}
                 {msg.options && msg.options.length > 0 && (
                   <div
                     style={{
@@ -1901,7 +1957,7 @@ export default function ChatBotWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Gợi ý Đa chiều */}
+          {/* Gợi ý đa chiều */}
           {smartSuggestions.length > 0 && (
             <div
               style={{
@@ -1911,9 +1967,10 @@ export default function ChatBotWidget() {
                 display: "flex",
                 flexDirection: "column",
                 gap: 4,
-                maxHeight: 220,
+                maxHeight: 200,
                 overflowY: "auto",
                 boxShadow: "0 -4px 12px rgba(0,0,0,0.05)",
+                flexShrink: 0,
               }}
             >
               <div
@@ -1937,7 +1994,11 @@ export default function ChatBotWidget() {
                   type="button"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleSend(item.query);
+                    if (item.type === "ERROR" && item.dataItem) {
+                      handleSelectErrorDetail(item.dataItem);
+                    } else {
+                      handleSend(item.query);
+                    }
                   }}
                   style={{
                     display: "flex",
@@ -2021,6 +2082,7 @@ export default function ChatBotWidget() {
               borderTop: "1px solid #e2e8f0",
               backgroundColor: "#ffffff",
               gap: 6,
+              flexShrink: 0,
             }}
           >
             <input
@@ -2035,7 +2097,7 @@ export default function ChatBotWidget() {
                 borderRadius: 8,
                 border: "1px solid #cbd5e1",
                 outline: "none",
-                fontSize: 13,
+                fontSize: 14,
               }}
             />
             <button
@@ -2057,7 +2119,7 @@ export default function ChatBotWidget() {
         </div>
       )}
 
-      {/* MODAL PHÓNG TO ẢNH (LIGHTBOX) */}
+      {/* POPUP LIGHTBOX PHÓNG TO ẢNH */}
       {previewImage && (
         <div
           onClick={() => setPreviewImage(null)}
@@ -2071,7 +2133,7 @@ export default function ChatBotWidget() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 10000,
+            zIndex: 100000,
             cursor: "zoom-out",
             padding: 20,
           }}
