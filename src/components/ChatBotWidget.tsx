@@ -13,7 +13,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 
-// 📦 IMPORT DỮ LIỆU TÁCH FILE
+// 📦 IMPORT DỮ LIỆU TÁCH FILE & BỘ TỪ ĐIỂN TÌM KIẾM
 import { errors, categories } from "../data/errors";
 import { manuals } from "../data/manuals";
 import { chatbotKnowledge } from "../data/chatbotKnowledge";
@@ -22,6 +22,7 @@ import type { DiagnosisNode } from "../data/diagnosisTree";
 import { deviceImages, type DeviceImageItem } from "../data/deviceImages";
 import { modelComparisons } from "../data/modelComparisons";
 import { FUN_DIALOGUES } from "../data/funDialogues";
+import { SEARCH_MAPPING } from "../data/searchMapping";
 
 function cleanString(str: string): string {
   if (!str) return "";
@@ -548,7 +549,7 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     ]);
   };
 
-  // 🔍 TÌM KIẾM TRUNG TÂM
+  // 🔍 TÌM KIẾM TRUNG TÂM (TÍCH HỢP BỘ TỪ ĐIỂN ĐỒNG NGHĨA SEARCH_MAPPING)
   const handleSend = (textToSend?: string) => {
     const queryText = textToSend || input;
     if (!queryText.trim()) return;
@@ -564,15 +565,29 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     const cleanKeyword = cleanString(queryText);
     const lowerQuery = queryText.toLowerCase().trim();
 
-    // 🎭 🌟 1. BẮT BỘ CÂU NÓI VUI / BƯỚNG BỈNH TỪ FILE funDialogues.ts
+    // 🌟 MỞ RỘNG TỪ KHÓA BẰNG BỘ TỪ ĐIỂN SEARCH_MAPPING
+    let expandedKeywords = [cleanKeyword];
+    Object.keys(SEARCH_MAPPING).forEach((key) => {
+      if (
+        SEARCH_MAPPING[key].some(
+          (synonym) => cleanString(synonym) === cleanKeyword,
+        )
+      ) {
+        expandedKeywords.push(key);
+      }
+    });
+
+    // 🎭 1. BẮT BỘ CÂU NÓI VUI / BƯỚNG BỈNH TỪ FILE funDialogues.ts
     if (!lowerQuery.includes("=")) {
       const matchedFun = FUN_DIALOGUES.find((item) =>
-        item.triggers.some(
-          (t) =>
-            cleanKeyword === t ||
-            cleanKeyword.startsWith(t) ||
-            cleanKeyword.includes(t),
-        ),
+        item.triggers.some((t) => {
+          const cleanT = cleanString(t);
+          // Chỉ nhận diện khi từ khóa gõ trùng khít hoặc đứng độc lập, tránh dính chùm như "k-hi-nóng"
+          return (
+            cleanKeyword === cleanT ||
+            queryText.toLowerCase().split(" ").includes(t)
+          );
+        }),
       );
 
       if (matchedFun) {
@@ -604,7 +619,7 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       }
     }
 
-    // 🌟 2. Nhận diện cú pháp dạy học nhanh: "học: từ khóa = câu trả lời"
+    // 2. Nhận diện cú pháp dạy học nhanh: "học: từ khóa = câu trả lời"
     if (
       lowerQuery.startsWith("học:") ||
       lowerQuery.startsWith("dạy:") ||
@@ -627,7 +642,9 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     const matchedLearned = learnedList.filter((item) =>
       item.keywords.some((kw) => {
         const cKw = cleanString(kw);
-        return cKw.includes(cleanKeyword) || cleanKeyword.includes(cKw);
+        return expandedKeywords.some(
+          (exp) => cKw.includes(exp) || exp.includes(cKw),
+        );
       }),
     );
 
@@ -659,15 +676,19 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     }
 
     // [B] Khớp Hình ảnh
-    const matchedImg = deviceImages.find(
-      (img) =>
-        cleanString(img.title).includes(cleanKeyword) ||
-        img.keywords.some(
-          (kw) =>
-            cleanString(kw).includes(cleanKeyword) ||
-            cleanKeyword.includes(cleanString(kw)),
-        ),
-    );
+    const matchedImg = deviceImages.find((img) => {
+      const titleClean = cleanString(img.title);
+      const modelClean = cleanString(img.model);
+      return expandedKeywords.some(
+        (exp) =>
+          titleClean.includes(exp) ||
+          modelClean.includes(exp) ||
+          img.keywords.some(
+            (kw) =>
+              cleanString(kw).includes(exp) || exp.includes(cleanString(kw)),
+          ),
+      );
+    });
 
     if (matchedImg) {
       setTimeout(() => {
@@ -697,8 +718,8 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       "huongdan",
       "hinh",
     ];
-    const isHelpIntent = helpKeywords.some(
-      (kw) => cleanKeyword.includes(kw) || kw.includes(cleanKeyword),
+    const isHelpIntent = helpKeywords.some((kw) =>
+      expandedKeywords.some((exp) => exp.includes(kw) || kw.includes(exp)),
     );
 
     if (isHelpIntent) {
@@ -745,19 +766,17 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
     let matchedKnowledge = chatbotKnowledge.filter((k) =>
       k.keywords.some((kw) => {
         const cleanKw = cleanString(kw);
-        return cleanKw.includes(cleanKeyword) || cleanKeyword.includes(cleanKw);
+        return expandedKeywords.some(
+          (exp) => cleanKw.includes(exp) || exp.includes(cleanKw),
+        );
       }),
     );
 
     if (selectedModelFilter !== "ALL") {
-      matchedKnowledge = matchedKnowledge.filter(
-        (k) =>
-          cleanString(k.title || "").includes(
-            cleanString(selectedModelFilter),
-          ) ||
-          k.keywords.some((kw) =>
-            cleanString(kw).includes(cleanString(selectedModelFilter)),
-          ),
+      matchedKnowledge = matchedKnowledge.filter((k) =>
+        k.keywords.some((kw) =>
+          cleanString(kw).includes(cleanString(selectedModelFilter)),
+        ),
       );
     }
 
@@ -766,10 +785,9 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       const code = cleanString(item.code || "");
       const title = cleanString(item.title || "");
       const desc = cleanString(item.description || "");
-      return (
-        code.includes(cleanKeyword) ||
-        title.includes(cleanKeyword) ||
-        desc.includes(cleanKeyword)
+      return expandedKeywords.some(
+        (exp) =>
+          code.includes(exp) || title.includes(exp) || desc.includes(exp),
       );
     });
 
@@ -781,11 +799,12 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
       const title = cleanString(item.title || item.name || "");
       const category = cleanString(item.category || "");
       const id = cleanString(item.id || "");
-      return (
-        model.includes(cleanKeyword) ||
-        title.includes(cleanKeyword) ||
-        category.includes(cleanKeyword) ||
-        id.includes(cleanKeyword)
+      return expandedKeywords.some(
+        (exp) =>
+          model.includes(exp) ||
+          title.includes(exp) ||
+          category.includes(exp) ||
+          id.includes(exp),
       );
     });
 
@@ -2578,7 +2597,7 @@ export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
                           style={{
                             backgroundColor: isTeachBtn ? "#10b981" : "#ffffff",
                             backgroundImage: isTeachBtn
-                              ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                              ? "linear-gradient(135deg, #10b981 0%, #059669 100%"
                               : "none",
                             color: isTeachBtn ? "#ffffff" : "#0369a1",
                             border: isTeachBtn

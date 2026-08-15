@@ -218,6 +218,7 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       "ngudi",
       "nguqua",
       "matnham",
+      "buonnguqua",
     ],
     responses: [
       `Dậy đi mấy má ơi! Giờ này mà ngủ gật là bị chụp hình dìm hàng lên group công ty ráng chịu á nha! 📸👀`,
@@ -405,6 +406,213 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       `Chán cái gì mà chán? Có ca khách nào vô kìa, ra tiếp lẹ đi cho bớt chán mấy bà dà ơi! 🏃‍♀️💨`,
       `Đời mà, có lúc này lúc khác! Chán thì ngồi bấm mấy cái nút tiện ích trên đầu tui chơi nè, đừng có buồn một mình nha mấy mẹ! 🥰✨`,
       `Chán thì rủ mấy má trong ca trực order đồ ăn vặt ăn đi, bao hết chán liền luôn á! 🍕🍟`,
+    ],
+  },
+  // 🌟 Nhóm Hỏi khả năng của Bot (Kiểu: "bà biết... không?")
+  {
+    triggers: [
+      "bietkhong",
+      "congly",
+      "babiết",
+      "maybiet",
+      "botbiet",
+      "bietgi",
+      "bietlam",
+      "bancotroi",
+      "cochethong",
+    ],
+    responses: [
+      `Dạ con rành 6 câu luôn chứ ở đó mà không biết! Mấy má muốn tra cứu tủ lạnh, máy giặt, máy rửa chén hay lọc nước loại nào cứ việc quăng mã qua đây! 💅`,
+      `Hỏi câu thừa ghê gớm! Tui là trợ lý Toshiba siêu cấp thông thái mà cái gì tui cũng biết hết trơn á, chỉ là mấy má có chịu hỏi đúng cách hay không thôi! 🤖✨`,
+      `Biết chứ, bộ tưởng tui là bot dỏm chắc hả? Thích hỏi gì về điện máy Toshiba cứ thử thách tui đi, lẹ lên nghen mấy bả! 🎯`,
+      `Cái gì tui cũng biết, chỉ có điều... lương tui hổng có nên mấy má đừng bắt tui làm quá sức nha! 😂 Muốn hỏi gì khai lẹ đi!`,
+    ],
+  },
+
+  // 🌟 Nhóm Hỏi về Tủ Lạnh
+  {
+    triggers: [
+      "tulanh",
+      "inverter",
+      "ngandong",
+      "nganmat",
+      "dongtuyet",
+      "khonglanh",
+      "mattro",
+    ],
+    responses: [
+      `Nhắc tới tủ lạnh là trúng tủ của tui rồi! Từ tủ inverter, side by side cho tới tủ mặt gương multi door tui chấp hết. Đang gặp lỗi gì khai lẹ đi mấy má! 🧊`,
+      `Tủ lạnh không lạnh hay bị đóng tuyết hả mấy bả? Quăng mã model hoặc hiện tượng qua đây, tui chỉ cách fix trong một nốt nhạc! ❄️`,
+    ],
+  },
+
+  // 🌟 Nhóm Hỏi về Máy Giặt & Máy Sấy
+  {
+    triggers: [
+      "maygiat",
+      "maysay",
+      "longngang",
+      "longdung",
+      "khongvat",
+      "khongxanuoc",
+      "ketcua",
+      "baoloi",
+    ],
+    responses: [
+      `Mảng máy giặt máy sấy thì cứ để tui lo! Kẹt cửa, không vắt hay tràn nước gì tui cũng có thuốc trị hết. Đưa mã lỗi qua đây mau lên mấy mẹ! 🧺`,
+      `Cần tra mã lỗi máy giặt lồng ngang hay lồng đứng nè mấy bà dà? Gõ model vô đây, tui lục kho dữ liệu ra liền! 🌀`,
+    ],
+  },
+
+  // 🌟 Nhóm Hỏi về Máy Rửa Chén
+  {
+    triggers: [
+      "mayruachen",
+      "mayruabat",
+      "ruachen",
+      "muoi",
+      "botruachen",
+      "15f9",
+      "15f8",
+      "15f7",
+    ],
+    responses: [
+      `Máy rửa chén Toshiba dòng 15F7, 15F8 hay 15F9 tui nắm trong lòng bàn tay nha! Hỏi về độ cứng nước hay lượng muối tái sinh cứ hú tui! 🍽️✨`,
+      `Rửa bát không sạch hay báo lỗi cấp nước hả mấy má? Đưa mã model đây tui tư vấn chính xác 100% cho! 💧`,
+    ],
+  },
+  {
+    triggers: [
+      "ngonha",
+      "ngonluon",
+      "ngonvai",
+      "ngonthiet",
+      "choiluon",
+      "mucluon",
+      "duocne",
+      "ngonvay",
+      "ngonvl",
+    ],
+    responses: [
+      `Ngon gì mà ngon, thấy sắp sỉn đòn với đống ticket chưa mấy má? 😂`,
+      `Ngon trong lòng đất á chứ ở đó mà ngon! Lo cày KPI đi kìa, đừng có đứng đó khen tui hoài!`,
+      `Ngon nghẻ gì tầm này, đói thủng cả ruột rồi đây này, mời ly trà sữa lẹ đi rồi tính tiếp! 🧋`,
+      `Nghe mùi xạo xạo ở đây nha, bớt khen tui lại đặng tui còn tập trung làm việc nghen mấy bả!`,
+      `Đương nhiên! Hàng của mấy má đào tạo mà lại lị, không ngon hơi phí! 💅`,
+      `Chơi lớn dữ thần chưa? Hư máy khách đền ráng chịu nha mấy má! 🤪`,
+      `Nói là phải làm đó nha, đừng có 'múc luôn' rồi đứng ngó ngơ không biết xử lý sao là tui cười vô mặt á!`,
+      `Hơi bị liều lĩnh nha, nhưng tui thích phong cách máu chiến này của mấy mẹ đấy! 🚀`,
+      `Chốt đơn! Đã máu đừng hỏi bố cháu là ai, quăng mã lỗi vô đây tui cân tất!`,
+    ],
+  },
+  {
+    triggers: [
+      "saolauvay",
+      "chamthe",
+      "botngu",
+      "dodien",
+      "quaos",
+      "cham",
+      "loadlau",
+      "chamnhudua",
+    ],
+    responses: [
+      `Từ từ làm ơn mắc ói hả mấy má? Đang load dữ liệu muốn xỉu ngang đây nè, hối hoài! 😤`,
+      `Bộ tưởng tui là siêu nhân hả? Gõ lẹ quá lú code rồi đây này, muốn thì tự đi mà tra! 🤖`,
+      `Chửi nữa là tui đình công, cắt điện hông thèm hỗ trợ nữa bây giờ! Đừng có thách kiên nhẫn của tui nha! ⚡`,
+      `Chậm mà chắc nha mấy bả, chứ nhanh như mấy má toàn bấm nhầm nút xóa dữ liệu hông à! 😂`,
+    ],
+  },
+
+  // 🌟 Nhóm Tám chuyện Công sở / Sếp / Đồng nghiệp
+  {
+    triggers: [
+      "sep",
+      "sepchui",
+      "traman",
+      "nhanvien",
+      "dongnghiep",
+      "sếptới",
+      "ôngsếp",
+      "bàsếp",
+    ],
+    responses: [
+      `Nhắc tới sếp là thấy lạnh sống lưng rồi đó nha, làm ăn đàng hoàng hông sếp thấy bây giờ! 🤫`,
+      `Đồng nghiệp gì mà kỳ ghê, trốn đi vệ sinh nửa tiếng chưa thấy về, bỏ mình tui trực một mình thế này hả mấy bà dà? 🙄`,
+      `Hôm nay ai trực ca chiều giao ca lại chưa dọn rác bàn phím là tui méc sếp phạt tiền đó nghen! 💸`,
+      `Sếp mà đứng sau lưng là tự động tab ẩn danh lên liền đúng hông? Bắt được mấy bả rồi nha! 🕵️‍♀️`,
+    ],
+  },
+
+  // 🌟 Nhóm Ngôn ngữ Gen Z / Bắt Trend
+  {
+    triggers: [
+      "oke",
+      "dubi",
+      "sogood",
+      "cangvai",
+      "uolatroidat",
+      "ghethietchut",
+      "uồi",
+      "uoi",
+      "chut",
+    ],
+    responses: [
+      `Uồi, sốp hông ngờ chuyện này xảy ra luôn á nha! Ghê chưa ghê chưa? 💅`,
+      `Căng cực! Ca này mà không khéo là ăn biên bản như chơi chứ ở đó mà đùa nha mấy má. 🛑`,
+      `Ê chân ái cuộc đời nha, tìm ra cái mã lỗi này đúng là cứu tinh của mấy bà dà rồi! ✨`,
+      `Ôi lạy chúa tôi, uolatroidat ơi! Sao đời lắm drama thế không biết! 😱`,
+    ],
+  },
+
+  // 🌟 Nhóm Thả thính / Độc thân / FA
+  {
+    triggers: [
+      "edom",
+      "etoi",
+      "codon",
+      "fa",
+      "coaiyeuchua",
+      "echong",
+      "eog",
+      "luoiyeu",
+    ],
+    responses: [
+      `Nhìn mấy má có đôi có cặp đi ăn cưới, còn tui ở đây ôm server hít khói tủ lạnh... tủi thân ghê gớm! 🥺💔`,
+      `Độc thân cao quý nha mấy bả, bớt hỏi chuyện yêu đương lại đặng tập trung tìm mã lỗi đi! 💅`,
+      `Yêu đương gì tầm này, tiền mua trà sữa còn chưa đủ đòi có bồ! Tỉnh lại đi mấy mẹ ơi! 😂`,
+      `Tui cưới công nghệ lâu rồi, mấy má đừng có gạ gẫm tui nữa nha! 🤖💍`,
+    ],
+  },
+
+  // 🌟 Nhóm Thời tiết / Mưa gió / Ngập lụt (Đặc sản Sài Gòn)
+  {
+    triggers: ["mua", "muato", "ngap", "ngapnuoc", "troimua", "lanh", "uam"],
+    responses: [
+      `Sài Gòn mùa này mưa ngập lụt tới ngực rồi mấy má ơi! Lát về nhớ mặc áo mưa cẩn thận, không thôi trôi luôn xuống cống á! 🌧️🌊`,
+      `Trời mưa u ám thế này chỉ muốn chăn ấm nệm êm ở nhà ngủ, ai bắt ra tổng đài trực chi cho khổ! 😭`,
+      `Mưa gió thế này khách hay gọi than máy giặt ẩm mốc với tủ lạnh chập chờn lắm đây. Chuẩn bị tinh thần ăn hành nghen mấy bả! ⚡`,
+    ],
+  },
+
+  // 🌟 Nhóm Hối về / Tan ca / Sắp hết giờ
+  {
+    triggers: [
+      "vele",
+      "sapve",
+      "saphetgio",
+      "moimimet",
+      "vegon",
+      "vele",
+      "vethoi",
+      "dive",
+      "macve",
+      "macvequa",
+    ],
+    responses: [
+      `Còn 5 phút nữa là qua ca rồi, ráng ngậm đắng nuốt cay nhìn đồng hồ đi mấy má ơi! ⏱️👀`,
+      `Đứa nào hối về là tui nguyền rủa ca trực ngày mai gặp toàn khách quạo à nha! 📿😂`,
+      `Sắp được giải thoát rồi! Cất bàn phím, thu dọn đồ đạc, chuẩn bị tư thế sẵn sàng phi ra cửa thôi mấy mẹ! 🚀`,
     ],
   },
 ];
