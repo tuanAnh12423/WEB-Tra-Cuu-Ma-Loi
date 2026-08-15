@@ -1524,4 +1524,22 @@ export const chatbotKnowledge: KnowledgeItem[] = [
     answer:
       "### ➕ ĐÓNG GÓP PAN BỆNH & MÃ LỖI MỚI\n---\nNếu bạn phát hiện mã lỗi mới hoặc có kinh nghiệm xử lý thực tế từ kỹ thuật viên:\n\n* **Thao tác:** Bấm vào ô **[ + ĐÓNG GÓP PAN BỆNH MỚI ]** trên trang chủ hệ thống.\n* **Thông tin cần nhập:** Ngành hàng, Model máy, Hiện tượng, Nguyên nhân thực tế và Cách xử lý chi tiết.\n* **Duyệt bài:** Bộ phận kỹ thuật chuyên môn sẽ thẩm định và cập nhật vào kho dữ liệu Chatbot nội bộ.",
   },
+  {
+    id: "fun_learn_prompt",
+    title: "Yêu cầu dạy học cho Bot",
+    keywords: [
+      "học cái này cho tôi",
+      "hoc cai nay cho toi",
+      "học cái này",
+      "hoc cai nay",
+      "học đi",
+      "hoc di",
+      "dạy học",
+      "day hoc",
+      "học thêm",
+      "hoc them",
+    ],
+    answer:
+      "### 🥺 DẠ EM SẼ HỌC MÀ ĐỪNG MẮNG EM!!!\n---\nEm đang sẵn sàng tiếp thu kiến thức mới đây ạ! 📝✨\n\nHÃY BẤM VÀO **☁️ DẠY BOT (LƯU CLOUD)** ở thanh công cụ phía trên NHA MẤY BÀ DÀ. hoặc gõ theo cú pháp:\n👉 `học: [từ khóa] = [câu trả lời]`",
+  },
 ];

@@ -1,7 +1,19 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 📦 1. IMPORT DỮ LIỆU
+// 🌐 IMPORT FIREBASE FIRESTORE CLOUD
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+
+// 📦 IMPORT DỮ LIỆU TÁCH FILE
 import { errors, categories } from "../data/errors";
 import { manuals } from "../data/manuals";
 import { chatbotKnowledge } from "../data/chatbotKnowledge";
@@ -9,6 +21,7 @@ import { diagnosisTree } from "../data/diagnosisTree";
 import type { DiagnosisNode } from "../data/diagnosisTree";
 import { deviceImages, type DeviceImageItem } from "../data/deviceImages";
 import { modelComparisons } from "../data/modelComparisons";
+import { FUN_DIALOGUES } from "../data/funDialogues";
 
 function cleanString(str: string): string {
   if (!str) return "";
@@ -32,6 +45,7 @@ interface Message {
   sender: "bot" | "user";
   text: string;
   images?: string[];
+  videoUrl?: string;
   options?: Option[];
   feedback?: "like" | "dislike";
   isPinned?: boolean;
@@ -46,11 +60,20 @@ interface SuggestionItem {
   dataItem?: any;
 }
 
+interface LearnedKnowledge {
+  id: string;
+  keywords: string[];
+  title: string;
+  answer: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  createdAt: string;
+}
+
 export default function ChatBotWidget() {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 📱 Nhận diện Mobile (<= 640px)
   const [isMobile, setIsMobile] = useState(() => {
     return typeof window !== "undefined" ? window.innerWidth <= 640 : false;
   });
@@ -61,15 +84,24 @@ export default function ChatBotWidget() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Mặc định: Mobile mở toàn màn hình ban đầu, Desktop mở sẵn dạng popup góc phải
   const [isOpen, setIsOpen] = useState(true);
   const [isMaximized, setIsMaximized] = useState(false);
   const [input, setInput] = useState("");
   const [selectedModelFilter, setSelectedModelFilter] = useState<string>("ALL");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  const [learnedList, setLearnedList] = useState<LearnedKnowledge[]>([]);
+
+  // Form Dạy Bot
+  const [teachKeywords, setTeachKeywords] = useState("");
+  const [teachAnswer, setTeachAnswer] = useState("");
+  const [teachImageUrl, setTeachImageUrl] = useState("");
+  const [teachVideoUrl, setTeachVideoUrl] = useState("");
+  const [isSavingCloud, setIsSavingCloud] = useState(false);
+
+  // Modals
   const [activeModal, setActiveModal] = useState<
-    "PINNED" | "UNRESOLVED" | "CALC" | "COMPARE" | null
+    "PINNED" | "UNRESOLVED" | "CALC" | "COMPARE" | "LEARN" | "TEACH" | null
   >(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
@@ -97,7 +129,7 @@ export default function ChatBotWidget() {
       {
         id: "1",
         sender: "bot",
-        text: "Xin chào! Tôi là Trợ lý Tra cứu Nghiệp vụ Call Center Toshiba. Bạn có thể tra cứu Mã lỗi, Sách HDSD, xem sơ đồ ảnh, hoặc bấm chẩn đoán sự cố bên trên!",
+        text: "Dạ kính chào mấy bà dà! 🤖 Tui là Trợ lý Toshiba đây, mấy mẹ cần tra mã lỗi, sơ đồ ảnh hay muốn dạy dỗ tui cái gì thì gõ vô đây lẹ lên nha!",
       },
     ];
   });
@@ -109,7 +141,31 @@ export default function ChatBotWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Phím tắt bàn phím (Ctrl+K, Esc)
+  useEffect(() => {
+    try {
+      const q = query(
+        collection(db, "bot_knowledge"),
+        orderBy("createdAt", "desc"),
+      );
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const cloudData: LearnedKnowledge[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          keywords: doc.data().keywords || [],
+          title: doc.data().title || "",
+          answer: doc.data().answer || "",
+          imageUrl: doc.data().imageUrl || "",
+          videoUrl: doc.data().videoUrl || "",
+          createdAt: doc.data().createdAt || "",
+        }));
+        setLearnedList(cloudData);
+      });
+
+      return () => unsubscribe();
+    } catch (error) {
+      console.error("Lỗi kết nối Firebase:", error);
+    }
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
@@ -126,7 +182,6 @@ export default function ChatBotWidget() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, previewImage, activeModal]);
 
-  // Đếm giờ thao tác
   useEffect(() => {
     let interval: any = null;
     if (isTimerRunning && timerSeconds !== null && timerSeconds > 0) {
@@ -136,7 +191,7 @@ export default function ChatBotWidget() {
       );
     } else if (timerSeconds === 0) {
       setIsTimerRunning(false);
-      alert("⏱️ Đã hết thời gian thao tác!");
+      alert("⏱️ Hết giờ rồi mấy má ơi! Thao tác lẹ giùm tui cái!");
     }
     return () => clearInterval(interval);
   }, [isTimerRunning, timerSeconds]);
@@ -164,16 +219,15 @@ export default function ChatBotWidget() {
     if (q.length < 2) return [];
     const results: SuggestionItem[] = [];
 
-    deviceImages.forEach((img) => {
-      const title = cleanString(img.title);
-      const matchKw = img.keywords.some((kw) => cleanString(kw).includes(q));
-      if (title.includes(q) || matchKw) {
+    learnedList.forEach((item) => {
+      const match = item.keywords.some((kw) => cleanString(kw).includes(q));
+      if (cleanString(item.title).includes(q) || match) {
         results.push({
-          type: "IMAGE",
-          icon: "🖼️",
-          label: `[Ảnh (${img.images.length})] ${img.title}`,
-          subLabel: img.description,
-          query: img.keywords[0] || img.title,
+          type: "KNOWLEDGE",
+          icon: "☁️",
+          label: `[Mấy Má Dạy] ${item.title}`,
+          subLabel: item.answer.slice(0, 45) + "...",
+          query: item.keywords[0] || item.title,
         });
       }
     });
@@ -189,20 +243,6 @@ export default function ChatBotWidget() {
           subLabel: e.description?.slice(0, 45) + "...",
           query: e.code || e.title,
           dataItem: e,
-        });
-      }
-    });
-
-    (manuals || []).forEach((m: any) => {
-      const model = cleanString(m.model || m.code || "");
-      const title = cleanString(m.title || "");
-      if (model.includes(q) || title.includes(q)) {
-        results.push({
-          type: "MANUAL",
-          icon: "📖",
-          label: `[Model] ${m.model || ""}`,
-          subLabel: m.title,
-          query: m.model || m.title,
         });
       }
     });
@@ -230,30 +270,112 @@ export default function ChatBotWidget() {
     );
   };
 
-  const logUnresolvedQuery = (query: string) => {
-    if (!query.trim()) return;
-    try {
-      const existing = JSON.parse(
-        localStorage.getItem("unresolved_queries") || "[]",
-      );
-      if (
-        !existing.some(
-          (item: any) =>
-            item.query.toLowerCase() === query.trim().toLowerCase(),
-        )
-      ) {
-        existing.unshift({
-          query: query.trim(),
-          time: new Date().toLocaleString("vi-VN"),
-        });
-        localStorage.setItem(
-          "unresolved_queries",
-          JSON.stringify(existing.slice(0, 50)),
-        );
-      }
-    } catch (e) {
-      /* ignore */
+  const handleSaveLearnedKnowledge = async (
+    rawKeywords: string,
+    answerText: string,
+    imgUrl?: string,
+    vidUrl?: string,
+  ) => {
+    if (!rawKeywords.trim() || !answerText.trim()) {
+      alert("Ủa mấy má, chưa nhập từ khóa với câu trả lời sao tui lưu được???");
+      return;
     }
+
+    setIsSavingCloud(true);
+    const keywordList = rawKeywords
+      .split(",")
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0);
+
+    try {
+      await addDoc(collection(db, "bot_knowledge"), {
+        title: keywordList[0] || "Kiến thức đám mây",
+        keywords: keywordList,
+        answer: answerText.trim(),
+        imageUrl: imgUrl ? imgUrl.trim() : "",
+        videoUrl: vidUrl ? vidUrl.trim() : "",
+        createdAt: new Date().toISOString(),
+      });
+
+      setActiveModal(null);
+      setTeachKeywords("");
+      setTeachAnswer("");
+      setTeachImageUrl("");
+      setTeachVideoUrl("");
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          sender: "bot",
+          text: `### ☁️ Ố KỀ NHỚ RỒI MẤY MÁ ƠI!\n---\n📌 **Từ khóa:** ${keywordList.join(", ")}\n📝 **Nội dung:**\n${answerText.trim()}${imgUrl ? `\n🖼️ **Có hình ảnh kèm theo**` : ""}${vidUrl ? `\n🎬 **Có video kèm theo**` : ""}\n\n*(Lưu lên Cloud cho cả Team rồi đó, lần sau hỏi lại là tui trả lời liền nha!)*`,
+          images: imgUrl ? [imgUrl.trim()] : undefined,
+          videoUrl: vidUrl ? vidUrl.trim() : undefined,
+        },
+      ]);
+    } catch (error) {
+      console.error("Lỗi khi lưu lên Cloud:", error);
+      alert("Mạng mẽo bị gì rồi mấy má ơi, lưu hổng được!");
+    } finally {
+      setIsSavingCloud(false);
+    }
+  };
+
+  const handleDeleteLearnedItem = async (docId: string) => {
+    if (
+      confirm("Ủa tính xóa thiệt hả mấy má? Xóa là cả Team mất luôn á nha!")
+    ) {
+      try {
+        await deleteDoc(doc(db, "bot_knowledge", docId));
+      } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+      }
+    }
+  };
+
+  const handleExportTypescriptFile = () => {
+    if (learnedList.length === 0) {
+      alert("Có miếng dữ liệu nào đâu mà đòi tải về mấy má ơi!");
+      return;
+    }
+
+    const fileContent = `// File dữ liệu xuất từ Kho Tri Thức Đám Mây Toshiba
+// Ngày xuất: ${new Date().toLocaleString("vi-VN")}
+
+export interface ChatbotKnowledgeItem {
+  id: string;
+  title: string;
+  keywords: string[];
+  answer: string;
+  imageUrl?: string;
+  videoUrl?: string;
+}
+
+export const cloudExportedKnowledge: ChatbotKnowledgeItem[] = ${JSON.stringify(
+      learnedList.map((item) => ({
+        id: item.id,
+        title: item.title,
+        keywords: item.keywords,
+        answer: item.answer,
+        ...(item.imageUrl ? { imageUrl: item.imageUrl } : {}),
+        ...(item.videoUrl ? { videoUrl: item.videoUrl } : {}),
+      })),
+      null,
+      2,
+    )};
+`;
+
+    const blob = new Blob([fileContent], {
+      type: "text/typescript;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `chatbotKnowledge_cloud_${Date.now()}.ts`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleCopyForCustomer = (text: string, msgId: string) => {
@@ -283,36 +405,19 @@ export default function ChatBotWidget() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleCopyCrmTicket = (text: string, msgId: string) => {
-    const cleanText = text
-      .replace(/<[^>]*>/g, "")
-      .replace(/###\s*/g, "")
-      .replace(/---/g, "")
-      .replace(/\*\*/g, "")
-      .replace(/\*/g, "")
-      .slice(0, 150);
-
-    const ticketTemplate = `[TOSHIBA SVC TICKET - ${new Date().toLocaleDateString("vi-VN")}]\n- Nội dung: Hỗ trợ kỹ thuật\n- Hướng dẫn: ${cleanText}...\n- Kết quả: Đã hướng dẫn KH thao tác.\n- Hotline: 1800 1529`;
-    navigator.clipboard.writeText(ticketTemplate);
-    setCopiedId(`crm_${msgId}`);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
   const handleFeedback = (msgId: string, type: "like" | "dislike") => {
     setMessages((prev) =>
       prev.map((m) => (m.id === msgId ? { ...m, feedback: type } : m)),
     );
   };
 
-  // 🌟 Chuyển trang chi tiết trên Web nền
   const handleGoToErrorPage = (item: any) => {
     navigate(`/error-detail/${item.id}`);
     if (isMobile) {
-      setIsOpen(false); // Thu nhỏ chatbot để người dùng thấy trang web chi tiết trên mobile
+      setIsOpen(false);
     }
   };
 
-  // Cây chẩn đoán pan bệnh
   const handleDiagnosisStep = (
     node: DiagnosisNode,
     userSelectedLabel: string,
@@ -331,7 +436,7 @@ export default function ChatBotWidget() {
         {
           id: (Date.now() + 1).toString(),
           sender: "bot",
-          text: `### 🧭 ${node.title || node.label.toUpperCase()}\n---\n${node.guide || "Vui lòng chọn hiện tượng chi tiết bên dưới:"}`,
+          text: `### 🧭 ${node.title || node.label.toUpperCase()}\n---\n${node.guide || "Dạ mấy mẹ chọn đúng triệu chứng bên dưới giùm con cái:"}`,
           options: nextOptions,
         },
       ]);
@@ -342,7 +447,7 @@ export default function ChatBotWidget() {
         {
           id: (Date.now() + 1).toString(),
           sender: "bot",
-          text: `### 🛠️ ${node.title ? node.title.toUpperCase() : "HƯỚNG DẪN XỬ LÝ"}\n---\n${node.result}`,
+          text: `### 🛠️ ${node.title ? node.title.toUpperCase() : "CÁCH TRỊ ĐÂY NÈ MẤY MÁ"}\n---\n${node.result}`,
         },
       ]);
     }
@@ -359,13 +464,12 @@ export default function ChatBotWidget() {
       {
         id: Date.now().toString(),
         sender: "bot",
-        text: "### 🌳 CHẨN ĐOÁN PAN BỆNH THEO HIỆN TƯỢNG\n---\nVui lòng chọn thiết bị đang gặp sự cố để bắt đầu kiểm tra từng bước:",
+        text: "### 🌳 CHẨN ĐOÁN PAN BỆNH THEO HIỆN TƯỢNG\n---\nBị máy nào vậy mấy bà dà? Chọn đúng thiết bị bên dưới rồi tui chỉ từng bước cho nè:",
         options: rootOptions,
       },
     ]);
   };
 
-  // Tra cứu hình ảnh
   const showImageCatalog = () => {
     const categoryMap: { [key: string]: { label: string; icon: string } } = {
       washing: { label: "Máy giặt & Máy sấy", icon: "🧺" },
@@ -390,7 +494,7 @@ export default function ChatBotWidget() {
       {
         id: Date.now().toString(),
         sender: "bot",
-        text: "### 🖼️ THƯ VIỆN HÌNH ẢNH & SƠ ĐỒ THIẾT BỊ\n---\n**Bước 1:** Vui lòng chọn ngành hàng bạn muốn tra cứu hình ảnh sơ đồ:",
+        text: "### 🖼️ THƯ VIỆN HÌNH ẢNH & SƠ ĐỒ THIẾT BỊ\n---\n**Bước 1:** Mấy mẹ muốn coi hình ngành hàng nào thì chọn cái đó giùm tui nghen:",
         options,
       },
     ]);
@@ -419,7 +523,7 @@ export default function ChatBotWidget() {
       {
         id: (Date.now() + 1).toString(),
         sender: "bot",
-        text: `### 🖼️ SƠ ĐỒ HÌNH ẢNH (${categoryName.toUpperCase()})\n---\n**Bước 2:** Chọn Model máy cần xem chi tiết sơ đồ:`,
+        text: `### 🖼️ SƠ ĐỒ HÌNH ẢNH (${categoryName.toUpperCase()})\n---\n**Bước 2:** Chọn đúng Model máy cần xem sơ đồ nha mấy má:`,
         options,
       },
     ]);
@@ -432,7 +536,7 @@ export default function ChatBotWidget() {
       {
         id: (Date.now() + 1).toString(),
         sender: "bot",
-        text: `### 🖼️ ${img.title.toUpperCase()}\n---\n**Mô tả:** ${img.description}\n*(Tìm thấy ${img.images.length} hình ảnh, bấm vào ảnh để phóng to)*`,
+        text: `### 🖼️ ${img.title.toUpperCase()}\n---\n**Mô tả:** ${img.description}\n*(Có ${img.images.length} hình tất cả, bấm vô hình để phóng to ngắm cho rõ nha mấy bà dà)*`,
         images: img.images,
         options: [
           {
@@ -458,8 +562,103 @@ export default function ChatBotWidget() {
     if (!textToSend) setInput("");
 
     const cleanKeyword = cleanString(queryText);
+    const lowerQuery = queryText.toLowerCase().trim();
 
-    // Khớp hình ảnh
+    // 🎭 🌟 1. BẮT BỘ CÂU NÓI VUI / BƯỚNG BỈNH TỪ FILE funDialogues.ts
+    if (!lowerQuery.includes("=")) {
+      const matchedFun = FUN_DIALOGUES.find((item) =>
+        item.triggers.some(
+          (t) =>
+            cleanKeyword === t ||
+            cleanKeyword.startsWith(t) ||
+            cleanKeyword.includes(t),
+        ),
+      );
+
+      if (matchedFun) {
+        const randomText =
+          matchedFun.responses[
+            Math.floor(Math.random() * matchedFun.responses.length)
+          ];
+
+        const funOptions: Option[] = [];
+        if (matchedFun.hasTeachButton) {
+          funOptions.push({
+            label: "✨ ☁️ MỞ BẢNG DẠY BOT NGAY (LƯU CLOUD) ➔",
+            action: () => setActiveModal("TEACH"),
+          });
+        }
+
+        setTimeout(() => {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: (Date.now() + 1).toString(),
+              sender: "bot",
+              text: randomText,
+              options: funOptions.length > 0 ? funOptions : undefined,
+            },
+          ]);
+        }, 200);
+        return;
+      }
+    }
+
+    // 🌟 2. Nhận diện cú pháp dạy học nhanh: "học: từ khóa = câu trả lời"
+    if (
+      lowerQuery.startsWith("học:") ||
+      lowerQuery.startsWith("dạy:") ||
+      lowerQuery.startsWith("hoc:") ||
+      lowerQuery.startsWith("day:")
+    ) {
+      const content = queryText.slice(4).trim();
+      const parts = content.split("=");
+      if (parts.length >= 2) {
+        const kw = parts[0].trim();
+        const ans = parts.slice(1).join("=").trim();
+        if (kw && ans) {
+          handleSaveLearnedKnowledge(kw, ans);
+          return;
+        }
+      }
+    }
+
+    // [A] Khớp trong Kho Tri Thức Đám Mây (Firestore)
+    const matchedLearned = learnedList.filter((item) =>
+      item.keywords.some((kw) => {
+        const cKw = cleanString(kw);
+        return cKw.includes(cleanKeyword) || cleanKeyword.includes(cKw);
+      }),
+    );
+
+    if (matchedLearned.length > 0) {
+      const foundItem = matchedLearned[0];
+      const botOptionsItem: Option[] = [];
+
+      if (foundItem.videoUrl) {
+        botOptionsItem.push({
+          label: "🎬 Mở Video Hướng Dẫn Chi Tiết",
+          action: () => window.open(foundItem.videoUrl, "_blank"),
+        });
+      }
+
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            sender: "bot",
+            text: `### ☁️ [BÀI MẤY MÁ DẠY NÈ] ${foundItem.title.toUpperCase()}\n---\n${foundItem.answer}`,
+            images: foundItem.imageUrl ? [foundItem.imageUrl] : undefined,
+            videoUrl: foundItem.videoUrl || undefined,
+            options: botOptionsItem.length > 0 ? botOptionsItem : undefined,
+          },
+        ]);
+      }, 200);
+      return;
+    }
+
+    // [B] Khớp Hình ảnh
     const matchedImg = deviceImages.find(
       (img) =>
         cleanString(img.title).includes(cleanKeyword) ||
@@ -477,7 +676,7 @@ export default function ChatBotWidget() {
           {
             id: (Date.now() + 1).toString(),
             sender: "bot",
-            text: `### 🖼️ ${matchedImg.title.toUpperCase()}\n---\n**Mô tả:** ${matchedImg.description}\n*(Tìm thấy ${matchedImg.images.length} hình ảnh, bấm vào ảnh để phóng to)*`,
+            text: `### 🖼️ ${matchedImg.title.toUpperCase()}\n---\n**Mô tả:** ${matchedImg.description}\n*(Có ${matchedImg.images.length} hình tất cả, bấm vô coi nha mấy má)*`,
             images: matchedImg.images,
           },
         ]);
@@ -485,7 +684,7 @@ export default function ChatBotWidget() {
       return;
     }
 
-    // Trợ giúp chung
+    // [C] Trợ giúp chung
     const helpKeywords = [
       "giuptoi",
       "toicangiup",
@@ -509,7 +708,7 @@ export default function ChatBotWidget() {
           {
             id: (Date.now() + 1).toString(),
             sender: "bot",
-            text: "### 🧭 TRUNG TÂM HỖ TRỢ TRA CỨU NHANH\n---\nChào bạn, vui lòng **chọn Ngành hàng hoặc Công cụ tra cứu** bên dưới:",
+            text: "### 🧭 TRUNG TÂM HỖ TRỢ TRA CỨU NHANH\n---\nDạ mấy mẹ bấm cái này giúp con cái, chọn đúng ngành hàng bên dưới nè:",
             options: [
               {
                 label: "🖼️ Tra cứu Hình ảnh Bảng điều khiển & Sơ đồ",
@@ -524,16 +723,16 @@ export default function ChatBotWidget() {
                 action: () => setActiveModal("COMPARE"),
               },
               {
+                label: "☁️ Dạy Bot lưu lên Đám Mây",
+                action: () => setActiveModal("TEACH"),
+              },
+              {
                 label: "🧺 Tra cứu Máy giặt & Máy sấy",
                 action: () => handleSend("TW-BK115"),
               },
               {
                 label: "🧊 Tra cứu Tủ lạnh Toshiba",
                 action: () => handleSend("GR-RF611WI-PGV"),
-              },
-              {
-                label: "🍽️ Tra cứu Máy rửa chén Toshiba",
-                action: () => handleSend("DW-15F9(B)-VN"),
               },
             ],
           },
@@ -542,6 +741,7 @@ export default function ChatBotWidget() {
       return;
     }
 
+    // [D] Khớp Knowledge Base Q&A
     let matchedKnowledge = chatbotKnowledge.filter((k) =>
       k.keywords.some((kw) => {
         const cleanKw = cleanString(kw);
@@ -561,6 +761,7 @@ export default function ChatBotWidget() {
       );
     }
 
+    // [E] Khớp Danh mục Mã lỗi (errors.ts)
     const matchedCallCenter = errors.filter((item: any) => {
       const code = cleanString(item.code || "");
       const title = cleanString(item.title || "");
@@ -572,6 +773,7 @@ export default function ChatBotWidget() {
       );
     });
 
+    // [F] Khớp Sách HDSD (manuals.ts)
     const matchedManuals = (manuals || []).filter((item: any) => {
       const model = cleanString(
         item.model || item.modelName || item.code || "",
@@ -600,7 +802,7 @@ export default function ChatBotWidget() {
           });
         }
       } else {
-        botResponseText = `🔍 Tìm thấy **${matchedKnowledge.length}** kết quả phù hợp với từ khóa "${queryText}".\nVui lòng bấm chọn thông tin bên dưới:`;
+        botResponseText = `🔍 Kiếm được **${matchedKnowledge.length}** kết quả cho mấy bà dà nè. Bấm vô chọn lẹ giùm con:`;
         matchedKnowledge.forEach((item) => {
           botOptions.push({
             label: `📌 ${item.title || "Xem chi tiết"}`,
@@ -633,11 +835,11 @@ export default function ChatBotWidget() {
     } else {
       const totalMatches = matchedCallCenter.length + matchedManuals.length;
       if (totalMatches > 0) {
-        botResponseText = `🔍 Tìm thấy ${totalMatches} kết quả phù hợp cho "${queryText}". Bấm vào để **mở trang xử lý chi tiết**:`;
+        botResponseText = `🔍 Tìm thấy ${totalMatches} mục liên quan nè mấy má ơi. Bấm vô để mở trang chi tiết nha:`;
 
         matchedCallCenter.slice(0, 6).forEach((item: any) => {
           botOptions.push({
-            label: `🚀 [MÃ LỖI ${item.code || ""}] ${item.title} (Vào trang chi tiết) →`,
+            label: `🚀 [MÃ LỖI ${item.code || ""}] ${item.title} (Bấm vô xem)`,
             action: () => handleGoToErrorPage(item),
           });
         });
@@ -661,9 +863,15 @@ export default function ChatBotWidget() {
           });
         });
       } else {
-        logUnresolvedQuery(queryText);
-        botResponseText = `❌ Chưa tìm thấy dữ liệu chính xác cho từ khóa "${queryText}".\n\n👉 Bạn hãy chọn công cụ tra cứu bên dưới:`;
+        botResponseText = `### ❌ TÌM HỔNG RA TỪ KHÓA "${queryText.toUpperCase()}" NHA MẤY MÁ!\n---\n💡 Mấy bà dà có biết cách xử lý ca này hông? Bấm nút **"Dạy Bot"** bên dưới nạp bài cho tui lẹ để lần sau tui biết đường trả lời nha! **HIỂU CHƯA MẤY MÁ???**`;
         botOptions = [
+          {
+            label: `✨ ☁️ DẠY TUI CÂU NÀY LIỀN ĐI MẤY BÀ ➔`,
+            action: () => {
+              setTeachKeywords(queryText);
+              setActiveModal("TEACH");
+            },
+          },
           {
             label: "🖼️ Xem thư viện hình ảnh",
             action: () => showImageCatalog(),
@@ -706,7 +914,7 @@ export default function ChatBotWidget() {
       {
         id: (Date.now() + 1).toString(),
         sender: "bot",
-        text: `✅ Danh sách mã lỗi của **${categoryName}**. Bấm vào để mở trang hướng dẫn chi tiết:`,
+        text: `✅ Danh sách mã lỗi của **${categoryName}** đây nè mấy má. Bấm vô xem chi tiết nha:`,
         options,
       },
     ]);
@@ -718,7 +926,7 @@ export default function ChatBotWidget() {
       {
         id: "1",
         sender: "bot",
-        text: "Lịch sử trò chuyện đã được dọn dẹp! Bạn cần tra cứu thông tin gì tiếp theo?",
+        text: "Dọn dẹp sạch sẽ như mới rồi nghen mấy bà dà! Giờ muốn hỏi cái gì nữa hông nè?",
       },
     ]);
   };
@@ -765,7 +973,7 @@ export default function ChatBotWidget() {
 
   const calculateWaterHardness = (valStr: string) => {
     const val = parseFloat(valStr);
-    if (isNaN(val)) return "Vui lòng nhập số hợp lệ (°dH)";
+    if (isNaN(val)) return "Nhập số đàng hoàng giùm con cái mấy má ơi (°dH)";
     if (val <= 5)
       return "Mức H1 (0 - 5 °dH): Không cần tái sinh muối (0g/chu kỳ)";
     if (val <= 11)
@@ -776,7 +984,7 @@ export default function ChatBotWidget() {
       return "Mức H4 (18 - 22 °dH): Tái tạo sau mỗi 3 chu trình (20g muối)";
     if (val <= 34)
       return "Mức H5 (23 - 34 °dH): Tái tạo sau mỗi 2 chu trình (30g muối)";
-    return "Mức H6 (35 - 55 °dH): Nước rất cứng! Tái tạo sau mỗi 1 chu trình (60g muối)";
+    return "Mức H6 (35 - 55 °dH): Nước siêu cứng nha mấy má! Tái tạo sau mỗi 1 chu trình (60g muối)";
   };
 
   const renderSpecValue = (value: string | undefined) => {
@@ -841,7 +1049,7 @@ export default function ChatBotWidget() {
 
   return (
     <>
-      {/* 🔘 NÚT TRÒN MỞ CHATBOT (Hiện khi Chatbot đang đóng) */}
+      {/* NÚT MỞ CHATBOT KHI ĐÓNG */}
       {!isOpen && (
         <button
           type="button"
@@ -873,7 +1081,7 @@ export default function ChatBotWidget() {
         </button>
       )}
 
-      {/* 💬 KHUNG CHATBOT: Tự thích ứng Desktop (Popup góc phải) và Mobile (Full màn hình) */}
+      {/* KHUNG CHATBOT */}
       {isOpen && (
         <div
           onClick={(e) => e.stopPropagation()}
@@ -895,10 +1103,10 @@ export default function ChatBotWidget() {
                   position: "fixed",
                   bottom: isMaximized ? 20 : 86,
                   right: 20,
-                  width: isMaximized ? "calc(100vw - 40px)" : 460,
-                  maxWidth: isMaximized ? 1200 : "94vw",
-                  height: isMaximized ? "calc(100vh - 100px)" : 620,
-                  maxHeight: isMaximized ? "none" : "85vh",
+                  width: isMaximized ? "calc(100vw - 40px)" : 480,
+                  maxWidth: 1200,
+                  height: isMaximized ? "calc(100vh - 100px)" : 640,
+                  maxHeight: "88vh",
                   backgroundColor: "#ffffff",
                   borderRadius: 16,
                   boxShadow: "0 10px 25px rgba(0, 0, 0, 0.25)",
@@ -921,148 +1129,330 @@ export default function ChatBotWidget() {
               justifyContent: "space-between",
               alignItems: "center",
               flexShrink: 0,
+              borderBottom: "1px solid #1e293b",
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 20 }}>🤖</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  backgroundColor: "#0284c7",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 18,
+                  boxShadow: "0 2px 6px rgba(2,132,199,0.4)",
+                }}
+              >
+                🤖
+              </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: 13, fontWeight: 700 }}>
-                  Trợ Lý Call Center Toshiba
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    letterSpacing: "-0.2px",
+                  }}
+                >
+                  Trợ Lý Của Mấy Má Nè
                 </h3>
-                <span style={{ fontSize: 10, color: "#4ade80" }}>
-                  ● SVC Station
-                  {timerSeconds !== null && ` | ⏱️ ${timerSeconds}s`}
-                </span>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    fontSize: 10,
+                    marginTop: 1,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#4ade80",
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 3,
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        background: "#4ade80",
+                      }}
+                    ></span>
+                    Cloud Active
+                  </span>
+                  {timerSeconds !== null && (
+                    <span
+                      style={{
+                        color: "#f59e0b",
+                        background: "rgba(245,158,11,0.15)",
+                        padding: "1px 5px",
+                        borderRadius: 4,
+                        fontWeight: 700,
+                      }}
+                    >
+                      ⏱️ {timerSeconds}s
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              {/* Nút Xem Đã Ghim */}
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveModal(activeModal === "PINNED" ? null : "PINNED")
-                }
-                title="Xem câu trả lời đã ghim"
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {/* NHÓM 1: CÔNG CỤ NGHIỆP VỤ */}
+              <div
                 style={{
-                  background:
-                    pinnedMessages.length > 0
-                      ? "#f59e0b"
-                      : "rgba(255,255,255,0.12)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "4px 6px",
-                  fontSize: 11,
-                  cursor: "pointer",
-                  fontWeight: 600,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  background: "#1e293b",
+                  padding: "3px 4px",
+                  borderRadius: 8,
                 }}
               >
-                ⭐ ({pinnedMessages.length})
-              </button>
-
-              {/* Nút So sánh Model */}
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveModal(activeModal === "COMPARE" ? null : "COMPARE")
-                }
-                title="Bảng đối chiếu thông số Model"
-                style={{
-                  background:
-                    activeModal === "COMPARE"
-                      ? "#0284c7"
-                      : "rgba(255,255,255,0.12)",
-                  color: "#cbd5e1",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "4px 6px",
-                  fontSize: 11,
-                  cursor: "pointer",
-                }}
-              >
-                ⚖️
-              </button>
-
-              {/* Nút Tính Toán */}
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveModal(activeModal === "CALC" ? null : "CALC")
-                }
-                title="Tiện ích quy đổi muối & hẹn giờ"
-                style={{
-                  background:
-                    activeModal === "CALC"
-                      ? "#0284c7"
-                      : "rgba(255,255,255,0.12)",
-                  color: "#cbd5e1",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "4px 6px",
-                  fontSize: 11,
-                  cursor: "pointer",
-                }}
-              >
-                🧮
-              </button>
-
-              {/* 🌟 Nút Thu nhỏ / Đóng Chatbot để xem Web nền */}
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                title="Thu nhỏ để xem Web nền"
-                style={{
-                  background: "rgba(255, 255, 255, 0.2)",
-                  color: "#ffffff",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: "4px 8px",
-                  fontSize: 11,
-                  cursor: "pointer",
-                  fontWeight: 700,
-                }}
-              >
-                {isMobile ? "🌐 Xem Web" : "✕"}
-              </button>
-
-              {!isMobile && (
                 <button
                   type="button"
-                  onClick={() => setIsMaximized(!isMaximized)}
+                  onClick={() =>
+                    setActiveModal(activeModal === "LEARN" ? null : "LEARN")
+                  }
+                  title={`Kho Tri thức Đám mây (${learnedList.length} mục)`}
                   style={{
-                    background: "rgba(255, 255, 255, 0.12)",
+                    position: "relative",
+                    background:
+                      activeModal === "LEARN" ? "#10b981" : "transparent",
+                    color: "#ffffff",
                     border: "none",
-                    color: "#cbd5e1",
-                    cursor: "pointer",
-                    fontSize: 11,
-                    padding: "4px 6px",
                     borderRadius: 6,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
                   }}
                 >
-                  {isMaximized ? "🗗" : "🗖"}
+                  ☁️
+                  {learnedList.length > 0 && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -3,
+                        right: -3,
+                        backgroundColor: "#10b981",
+                        color: "#ffffff",
+                        fontSize: 8,
+                        fontWeight: 800,
+                        padding: "1px 4px",
+                        borderRadius: 10,
+                        border: "1.5px solid #0f172a",
+                      }}
+                    >
+                      {learnedList.length}
+                    </span>
+                  )}
                 </button>
-              )}
 
-              <button
-                type="button"
-                onClick={handleClearHistory}
-                title="Xóa lịch sử"
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#94a3b8",
-                  cursor: "pointer",
-                  fontSize: 11,
-                  padding: "4px",
-                }}
-              >
-                🗑️
-              </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveModal(activeModal === "PINNED" ? null : "PINNED")
+                  }
+                  title={`Tin nhắn đã ghim (${pinnedMessages.length} mục)`}
+                  style={{
+                    position: "relative",
+                    background:
+                      activeModal === "PINNED" ? "#f59e0b" : "transparent",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 6,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  ⭐
+                  {pinnedMessages.length > 0 && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -3,
+                        right: -3,
+                        backgroundColor: "#f59e0b",
+                        color: "#ffffff",
+                        fontSize: 8,
+                        fontWeight: 800,
+                        padding: "1px 4px",
+                        borderRadius: 10,
+                        border: "1.5px solid #0f172a",
+                      }}
+                    >
+                      {pinnedMessages.length}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveModal(activeModal === "COMPARE" ? null : "COMPARE")
+                  }
+                  title="So sánh thông số kỹ thuật Model"
+                  style={{
+                    background:
+                      activeModal === "COMPARE" ? "#0284c7" : "transparent",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 6,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  ⚖️
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveModal(activeModal === "CALC" ? null : "CALC")
+                  }
+                  title="Tiện ích quy đổi muối & đếm giờ thao tác"
+                  style={{
+                    background:
+                      activeModal === "CALC" ? "#0284c7" : "transparent",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 6,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 13,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                  }}
+                >
+                  🧮
+                </button>
+              </div>
+
+              {/* VẠCH PHÂN CÁCH */}
+              <div
+                style={{ width: 1, height: 20, backgroundColor: "#334155" }}
+              />
+
+              {/* NHÓM 2: CỬA SỔ & HỆ THỐNG */}
+              <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
+                <button
+                  type="button"
+                  onClick={handleClearHistory}
+                  title="Dọn dẹp lịch sử trò chuyện"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "#94a3b8",
+                    borderRadius: 6,
+                    width: 28,
+                    height: 28,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = "#ef4444")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = "#94a3b8")
+                  }
+                >
+                  🗑️
+                </button>
+
+                {!isMobile && (
+                  <button
+                    type="button"
+                    onClick={() => setIsMaximized(!isMaximized)}
+                    title={
+                      isMaximized ? "Thu nhỏ về góc" : "Mở rộng toàn màn hình"
+                    }
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: "#94a3b8",
+                      borderRadius: 6,
+                      width: 28,
+                      height: 28,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      fontSize: 12,
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "#ffffff")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.color = "#94a3b8")
+                    }
+                  >
+                    {isMaximized ? "🗗" : "🗖"}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  title={
+                    isMobile ? "Thu nhỏ để xem Web nền" : "Đóng cửa sổ Chat"
+                  }
+                  style={{
+                    background: isMobile
+                      ? "rgba(2,132,199,0.2)"
+                      : "rgba(239,68,68,0.15)",
+                    border: isMobile
+                      ? "1px solid rgba(2,132,199,0.4)"
+                      : "1px solid rgba(239,68,68,0.3)",
+                    color: isMobile ? "#38bdf8" : "#fca5a5",
+                    borderRadius: 6,
+                    height: 28,
+                    padding: isMobile ? "0 8px" : "0 8px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
+                >
+                  {isMobile ? "🌐 Xem Web" : "✕"}
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Thanh Filter & Nút Chức Năng Nhanh */}
+          {/* Thanh Filter */}
           <div
             style={{
               display: "flex",
@@ -1075,6 +1465,29 @@ export default function ChatBotWidget() {
               flexShrink: 0,
             }}
           >
+            <button
+              type="button"
+              onClick={() => setActiveModal("TEACH")}
+              style={{
+                background: "linear-gradient(135deg, #10b981 0%, #047857 100%)",
+                color: "#ffffff",
+                border: "1px solid #34d399",
+                borderRadius: 14,
+                padding: "4px 10px",
+                fontSize: 11,
+                fontWeight: 800,
+                whiteSpace: "nowrap",
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(16, 185, 129, 0.45)",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <span>✨</span>
+              <span>☁️ DẠY TUI ĐI!!! </span>
+            </button>
+
             <button
               type="button"
               onClick={showImageCatalog}
@@ -1137,7 +1550,369 @@ export default function ChatBotWidget() {
             ))}
           </div>
 
-          {/* MODALS PANEL */}
+          {/* MODAL TEACH */}
+          {activeModal === "TEACH" && (
+            <div
+              style={{
+                backgroundColor: "#ffffff",
+                padding: "12px 14px",
+                borderBottom: "2px solid #10b981",
+                boxShadow: "0 6px 16px rgba(16, 185, 129, 0.15)",
+                fontSize: 12,
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 10,
+                  paddingBottom: 6,
+                  borderBottom: "1px dashed #cbd5e1",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ fontSize: 16 }}>☁️</span>
+                  <span
+                    style={{ fontSize: 12, fontWeight: 800, color: "#065f46" }}
+                  >
+                    DẠY BOT & ĐỒNG BỘ LÊN CLOUD CẢ TEAM
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActiveModal(null)}
+                  style={{
+                    border: "1px solid #fecaca",
+                    background: "#fef2f2",
+                    color: "#dc2626",
+                    cursor: "pointer",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    padding: "3px 8px",
+                    borderRadius: 6,
+                  }}
+                >
+                  ✕ Đóng
+                </button>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: "#334155",
+                      marginBottom: 3,
+                    }}
+                  >
+                    1. Từ khóa tìm kiếm{" "}
+                    <span style={{ color: "#ef4444" }}>*</span> (cách nhau bằng
+                    dấu phẩy nha mấy má):
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="VD: kẹt cửa, không mở được cửa, lỗi chốt cửa..."
+                    value={teachKeywords}
+                    onChange={(e) => setTeachKeywords(e.target.value)}
+                    style={{
+                      width: "100%",
+                      boxSizing: "border-box",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                      border: "1.5px solid #cbd5e1",
+                      backgroundColor: "#f8fafc",
+                      color: "#0f172a",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      outline: "none",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "#10b981";
+                      e.target.style.backgroundColor = "#ffffff";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#cbd5e1";
+                      e.target.style.backgroundColor = "#f8fafc";
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    style={{
+                      display: "block",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: "#334155",
+                      marginBottom: 3,
+                    }}
+                  >
+                    2. Nội dung câu trả lời / Hướng dẫn xử lý{" "}
+                    <span style={{ color: "#ef4444" }}>*</span>:
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Nhập chi tiết nguyên nhân và các bước khắc phục để tui học theo nha..."
+                    value={teachAnswer}
+                    onChange={(e) => setTeachAnswer(e.target.value)}
+                    style={{
+                      width: "100%",
+                      boxSizing: "border-box",
+                      padding: "8px 10px",
+                      borderRadius: 8,
+                      border: "1.5px solid #cbd5e1",
+                      backgroundColor: "#f8fafc",
+                      color: "#0f172a",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      outline: "none",
+                      resize: "vertical",
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = "#10b981";
+                      e.target.style.backgroundColor = "#ffffff";
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = "#cbd5e1";
+                      e.target.style.backgroundColor = "#f8fafc";
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: 8,
+                  }}
+                >
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: "#475569",
+                        marginBottom: 2,
+                      }}
+                    >
+                      🖼️ Link ảnh minh họa (nếu có):
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://...jpg, png"
+                      value={teachImageUrl}
+                      onChange={(e) => setTeachImageUrl(e.target.value)}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "6px 8px",
+                        borderRadius: 6,
+                        border: "1px solid #cbd5e1",
+                        backgroundColor: "#f8fafc",
+                        color: "#0f172a",
+                        fontSize: 11,
+                        outline: "none",
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      style={{
+                        display: "block",
+                        fontSize: 10,
+                        fontWeight: 700,
+                        color: "#475569",
+                        marginBottom: 2,
+                      }}
+                    >
+                      🎬 Link video (YouTube / MP4):
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://youtube.com/..."
+                      value={teachVideoUrl}
+                      onChange={(e) => setTeachVideoUrl(e.target.value)}
+                      style={{
+                        width: "100%",
+                        boxSizing: "border-box",
+                        padding: "6px 8px",
+                        borderRadius: 6,
+                        border: "1px solid #cbd5e1",
+                        backgroundColor: "#f8fafc",
+                        color: "#0f172a",
+                        fontSize: 11,
+                        outline: "none",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={isSavingCloud}
+                  onClick={() =>
+                    handleSaveLearnedKnowledge(
+                      teachKeywords,
+                      teachAnswer,
+                      teachImageUrl,
+                      teachVideoUrl,
+                    )
+                  }
+                  style={{
+                    marginTop: 4,
+                    background:
+                      "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                    color: "#ffffff",
+                    border: "none",
+                    padding: "10px 16px",
+                    borderRadius: 8,
+                    cursor: isSavingCloud ? "not-allowed" : "pointer",
+                    fontWeight: 800,
+                    fontSize: 12,
+                    boxShadow: "0 2px 8px rgba(16, 185, 129, 0.35)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 6,
+                    opacity: isSavingCloud ? 0.7 : 1,
+                  }}
+                >
+                  {isSavingCloud
+                    ? "⏳ Đang nạp bài lên Cloud..."
+                    : "☁️ LƯU LÊN CLOUD CHO CẢ TEAM CÙNG XÀI"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL LEARN */}
+          {activeModal === "LEARN" && (
+            <div
+              style={{
+                backgroundColor: "#f0fdf4",
+                padding: "10px",
+                borderBottom: "1px solid #bbf7d0",
+                maxHeight: 250,
+                overflowY: "auto",
+                fontSize: 11,
+                flexShrink: 0,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 6,
+                  alignItems: "center",
+                }}
+              >
+                <span
+                  style={{ fontSize: 11, fontWeight: 700, color: "#166534" }}
+                >
+                  ☁️ KHO TRI THỨC ĐÁM MÂY ({learnedList.length}):
+                </span>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <button
+                    type="button"
+                    onClick={handleExportTypescriptFile}
+                    title="Tải file code để lưu vào Github"
+                    style={{
+                      background: "#0284c7",
+                      color: "#fff",
+                      border: "none",
+                      padding: "3px 8px",
+                      borderRadius: 4,
+                      fontSize: 10,
+                      cursor: "pointer",
+                      fontWeight: 700,
+                    }}
+                  >
+                    📥 Tải File Code (.TS)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveModal(null)}
+                    style={{
+                      border: "none",
+                      background: "transparent",
+                      cursor: "pointer",
+                      fontSize: 11,
+                    }}
+                  >
+                    ✕ Đóng
+                  </button>
+                </div>
+              </div>
+
+              {learnedList.length === 0 ? (
+                <span style={{ color: "#64748b" }}>
+                  Chưa có kiến thức đám mây nào hết á. Mấy má bấm nút ☁️ Dạy Bot
+                  ở trên giùm con!
+                </span>
+              ) : (
+                learnedList.map((item) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      background: "#fff",
+                      padding: "6px 8px",
+                      borderRadius: 6,
+                      marginBottom: 4,
+                      border: "1px solid #dcfce7",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 2,
+                      }}
+                    >
+                      <strong style={{ color: "#065f46" }}>
+                        📌 {item.title}
+                      </strong>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteLearnedItem(item.id)}
+                        style={{
+                          color: "#ef4444",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          fontSize: 10,
+                        }}
+                      >
+                        🗑️ Xóa
+                      </button>
+                    </div>
+                    <div style={{ color: "#475569", fontSize: 10 }}>
+                      {item.answer.slice(0, 70)}...
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: 8,
+                        marginTop: 4,
+                        fontSize: 9,
+                        color: "#0284c7",
+                      }}
+                    >
+                      {item.imageUrl && <span>🖼️ Có Ảnh</span>}
+                      {item.videoUrl && <span>🎬 Có Video</span>}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          {/* MODAL PINNED */}
           {activeModal === "PINNED" && (
             <div
               style={{
@@ -1176,8 +1951,8 @@ export default function ChatBotWidget() {
               </div>
               {pinnedMessages.length === 0 ? (
                 <span style={{ fontSize: 11, color: "#b45309" }}>
-                  Chưa có tin nhắn nào được ghim. Bấm nút ⭐ dưới mỗi câu trả
-                  lời của Bot để lưu lại!
+                  Chưa có tin nhắn nào được ghim hết á mấy má! Bấm nút ⭐ dưới
+                  mỗi câu trả lời để lưu lại nha!
                 </span>
               ) : (
                 pinnedMessages.map((p) => (
@@ -1221,6 +1996,7 @@ export default function ChatBotWidget() {
             </div>
           )}
 
+          {/* MODAL COMPARE */}
           {activeModal === "COMPARE" && (
             <div
               style={{
@@ -1396,6 +2172,7 @@ export default function ChatBotWidget() {
             </div>
           )}
 
+          {/* MODAL CALC */}
           {activeModal === "CALC" && (
             <div
               style={{
@@ -1597,6 +2374,7 @@ export default function ChatBotWidget() {
                         }}
                       />
 
+                      {/* HIỂN THỊ HÌNH ẢNH */}
                       {msg.images && msg.images.length > 0 && (
                         <div
                           style={{
@@ -1651,6 +2429,31 @@ export default function ChatBotWidget() {
                               </span>
                             </div>
                           ))}
+                        </div>
+                      )}
+
+                      {/* HIỂN THỊ NÚT VIDEO */}
+                      {msg.videoUrl && (
+                        <div style={{ marginTop: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => window.open(msg.videoUrl, "_blank")}
+                            style={{
+                              background: "#dc2626",
+                              color: "#fff",
+                              border: "none",
+                              padding: "6px 12px",
+                              borderRadius: 6,
+                              fontSize: 11,
+                              fontWeight: 700,
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 6,
+                            }}
+                          >
+                            <span>🎬 Xem Video Hướng Dẫn Chi Tiết ➔</span>
+                          </button>
                         </div>
                       )}
                     </>
@@ -1712,25 +2515,6 @@ export default function ChatBotWidget() {
 
                     <button
                       type="button"
-                      onClick={() => handleCopyCrmTicket(msg.text, msg.id)}
-                      style={{
-                        background: "#fef3c7",
-                        border: "1px solid #fde68a",
-                        color: "#92400e",
-                        cursor: "pointer",
-                        padding: "2px 5px",
-                        borderRadius: 4,
-                        fontSize: 10,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {copiedId === `crm_${msg.id}`
-                        ? "✓ Đã copy Ticket"
-                        : "📝 Tạo Ticket"}
-                    </button>
-
-                    <button
-                      type="button"
                       onClick={() => togglePinMessage(msg.id)}
                       title={msg.isPinned ? "Bỏ ghim" : "Ghim câu trả lời"}
                       style={{
@@ -1771,7 +2555,7 @@ export default function ChatBotWidget() {
                   </div>
                 )}
 
-                {/* Danh sách các nút lựa chọn liên kết trực tiếp */}
+                {/* Danh sách Options */}
                 {msg.options && msg.options.length > 0 && (
                   <div
                     style={{
@@ -1781,31 +2565,41 @@ export default function ChatBotWidget() {
                       marginTop: 8,
                     }}
                   >
-                    {msg.options.map((opt, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          opt.action();
-                        }}
-                        style={{
-                          backgroundColor: "#ffffff",
-                          color: "#0369a1",
-                          border: "1px solid #bae6fd",
-                          padding: "8px 12px",
-                          borderRadius: 8,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          textAlign: "left",
-                          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-                          transition: "background 0.2s",
-                        }}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
+                    {msg.options.map((opt, idx) => {
+                      const isTeachBtn = opt.label.includes("DẠY");
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            opt.action();
+                          }}
+                          style={{
+                            backgroundColor: isTeachBtn ? "#10b981" : "#ffffff",
+                            backgroundImage: isTeachBtn
+                              ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                              : "none",
+                            color: isTeachBtn ? "#ffffff" : "#0369a1",
+                            border: isTeachBtn
+                              ? "1px solid #34d399"
+                              : "1px solid #bae6fd",
+                            padding: isTeachBtn ? "10px 14px" : "8px 12px",
+                            borderRadius: 8,
+                            fontSize: isTeachBtn ? 13 : 12,
+                            fontWeight: 700,
+                            cursor: "pointer",
+                            textAlign: "left",
+                            boxShadow: isTeachBtn
+                              ? "0 4px 12px rgba(16, 185, 129, 0.35)"
+                              : "0 1px 3px rgba(0,0,0,0.05)",
+                            transition: "all 0.2s ease-in-out",
+                          }}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -1944,7 +2738,7 @@ export default function ChatBotWidget() {
             <input
               ref={inputRef}
               type="text"
-              placeholder="Nhập Mã lỗi, Model, Hiện tượng hoặc gõ 'ảnh'..."
+              placeholder="Nhập Mã lỗi, Hiện tượng hoặc gõ: 'học: từ khóa = câu trả lời'..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               style={{
