@@ -4,6 +4,9 @@ import { fridgeManuals } from "./fridgeManual";
 import { waterPurifierManuals } from "./waterPurifierManual";
 import { dishWasherManuals } from "./dishWasherManual";
 import { ACManuals } from "./airConditionalManuals";
+import { OtherInformations } from "./others";
+import { AirFrierManuals } from "./airFrierManual";
+import { GrilledOvenManuals } from "./grillOven";
 
 // 2. Khai báo kiểu dữ liệu
 export interface ManualItem {
@@ -22,4 +25,7 @@ export const manuals: ManualItem[] = [
   ...waterPurifierManuals,
   ...dishWasherManuals,
   ...ACManuals,
+  ...OtherInformations,
+  ...AirFrierManuals,
+  ...GrilledOvenManuals,
 ];

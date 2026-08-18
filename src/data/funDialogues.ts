@@ -70,6 +70,7 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       "khocdi",
       "khocne",
       "toang",
+      "met",
     ],
     responses: [
       `Trời ơi thương thương mấy bà dà quá nè! (っ˘̩╭╮˘̩)っ Uống ngụm trà sữa, thở sâu một cái rồi chiến tiếp! Có pan nào hóc búa quăng qua đây tui cân giùm cho! 💪`,
