@@ -4,7 +4,7 @@ import { categories, errors } from "../data/errors";
 
 const TECHNICIAN_PASSWORD = "123456";
 
-function HomePage() {
+export default function HomePage() {
   const navigate = useNavigate();
 
   const [showPassModal, setShowPassModal] = useState(false);
@@ -28,121 +28,140 @@ function HomePage() {
       style={{
         width: "100%",
         minHeight: "100vh",
-        backgroundColor: "#f8fafc",
-        padding: "24px 16px",
+        backgroundColor: "#f1f5f9",
+        padding: "32px 24px",
         boxSizing: "border-box",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
       }}
     >
-      <div style={{ maxWidth: 960, width: "100%" }}>
-        {/* 🌟 BANNER CHÀO MỪNG CHUNG */}
+      {/* 🖥️ CONTAINER CHÍNH DÀNH CHO MÁY TÍNH */}
+      <div style={{ maxWidth: 1100, width: "100%" }}>
+        {/* 🌟 BANNER TIÊU ĐỀ CHÍNH */}
         <div
           style={{
             background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-            borderRadius: 16,
-            padding: "24px 20px",
+            borderRadius: 14,
+            padding: "24px 32px",
             marginBottom: 24,
             textAlign: "center",
-            boxShadow: "0 10px 25px rgba(15, 23, 42, 0.12)",
+            boxShadow: "0 4px 16px rgba(15, 23, 42, 0.1)",
           }}
         >
-          <p
+          <span
             style={{
-              color: "#94a3b8",
-              fontSize: 13,
-              margin: "0 0 6px 0",
-              fontWeight: 500,
+              color: "#38bdf8",
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
             }}
           >
-            HỆ THỐNG TRA CỨU NỘI BỘ
-          </p>
+            Hệ thống tra cứu nội bộ
+          </span>
           <h1
             style={{
               color: "#ffffff",
               fontSize: 24,
               fontWeight: 800,
-              margin: 0,
+              margin: "6px 0 0 0",
+              letterSpacing: "-0.01em",
             }}
           >
             Hỗ Trợ Kỹ Thuật & Sửa Chữa
           </h1>
         </div>
 
-        {/* PHÂN VÙNG 1: DÀNH CHO TỔNG ĐÀI VIÊN (HỖ TRỢ KỸ THUẬT) */}
+        {/* 🎧 PHÂN VÙNG 1: DÀNH CHO TỔNG ĐÀI VIÊN */}
         <div style={{ marginBottom: 32 }}>
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: 8,
-              marginBottom: 14,
-            }}
-          >
-            <span style={{ fontSize: 18 }}>🎧</span>
-            <h2
-              style={{
-                fontSize: 15,
-                fontWeight: 800,
-                color: "#0369a1",
-                margin: 0,
-                letterSpacing: "0.02em",
-              }}
-            >
-              DÀNH CHO TỔNG ĐÀI VIÊN (HỖ TRỢ KỸ THUẬT)
-            </h2>
-          </div>
-
-          {/* Nút Tra Cứu HDSD */}
-          <div
-            onClick={() => navigate("/manuals")}
-            style={{
-              background: "linear-gradient(135deg, #0284c7 0%, #0369a1 100%)",
-              borderRadius: 14,
-              padding: "16px 20px",
-              color: "#ffffff",
-              marginBottom: 16,
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              textAlign: "center",
-              boxShadow: "0 4px 14px rgba(2, 132, 199, 0.25)",
-              transition: "transform 0.2s ease",
-            }}
-            onMouseOver={(e) =>
-              (e.currentTarget.style.transform = "translateY(-2px)")
-            }
-            onMouseOut={(e) =>
-              (e.currentTarget.style.transform = "translateY(0)")
-            }
-          >
-            <h3 style={{ margin: "0 0 4px 0", fontSize: 16, fontWeight: 700 }}>
-              📚 TRA CỨU SÁCH HDSD (PDF)
-            </h3>
-            <p style={{ margin: 0, fontSize: 12, color: "#e0f2fe" }}>
-              Xem nhanh tài liệu hướng dẫn sử dụng theo từng model máy
-            </p>
-          </div>
-
-          {/* Danh sách các Ngành hàng Tra cứu Mã lỗi */}
-          <p
-            style={{
-              color: "#64748b",
-              fontSize: 12,
-              fontWeight: 700,
               marginBottom: 12,
             }}
           >
-            CHỌN NGÀNH HÀNG TRA CỨU MÃ LỖI CHO KHÁCH HÀNG
-          </p>
+            <span style={{ fontSize: 16 }}>🎧</span>
+            <h2
+              style={{
+                fontSize: 13,
+                fontWeight: 800,
+                color: "#0369a1",
+                margin: 0,
+                textTransform: "uppercase",
+                letterSpacing: "0.03em",
+              }}
+            >
+              Dành cho tổng đài viên (Hỗ trợ kỹ thuật)
+            </h2>
+          </div>
+
+          {/* 📚 Sách HDSD (Nằm full chiều ngang trên cùng) */}
+          <div
+            onClick={() => navigate("/manuals")}
+            style={{
+              background: "#ffffff",
+              borderRadius: 12,
+              padding: "16px 24px",
+              marginBottom: 16,
+              cursor: "pointer",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              border: "1px solid #cbd5e1",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+              transition: "all 0.15s ease",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.borderColor = "#0284c7";
+              e.currentTarget.style.background = "#f0f9ff";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.borderColor = "#cbd5e1";
+              e.currentTarget.style.background = "#ffffff";
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <span style={{ fontSize: 26 }}>📚</span>
+              <div>
+                <h3
+                  style={{
+                    margin: "0 0 3px 0",
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: "#0f172a",
+                  }}
+                >
+                  Tra cứu Sách HDSD (PDF)
+                </h3>
+                <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>
+                  Xem nhanh tài liệu hướng dẫn sử dụng chi tiết theo từng model
+                  máy
+                </p>
+              </div>
+            </div>
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 700,
+                color: "#0284c7",
+                background: "#e0f2fe",
+                padding: "6px 14px",
+                borderRadius: 8,
+              }}
+            >
+              Mở ngay →
+            </span>
+          </div>
+
+          {/* 🧺 5 Ngành hàng dàn đều thành 1 hàng ngang trên Desktop */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-              gap: 12,
+              gridTemplateColumns: "repeat(5, 1fr)",
+              gap: 14,
             }}
           >
             {categories.map((cat) => (
@@ -151,23 +170,28 @@ function HomePage() {
                 onClick={() => navigate(`/error-list/${cat.id}`)}
                 style={{
                   background: "#ffffff",
-                  borderRadius: 14,
+                  borderRadius: 12,
                   padding: "16px 12px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  textAlign: "center",
                   cursor: "pointer",
                   border: "1px solid #e2e8f0",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
-                  transition: "all 0.2s",
+                  transition: "all 0.15s ease",
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.borderColor = "#0284c7";
-                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 6px 12px rgba(2, 132, 199, 0.1)";
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.borderColor = "#e2e8f0";
                   e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 4px rgba(0,0,0,0.02)";
                 }}
               >
                 <div style={{ fontSize: 32, marginBottom: 8 }}>
@@ -175,16 +199,22 @@ function HomePage() {
                 </div>
                 <p
                   style={{
-                    margin: "0 0 2px 0",
-                    fontSize: 14,
+                    margin: "0 0 4px 0",
+                    fontSize: 13,
                     fontWeight: 700,
-                    color: "#0f172a",
-                    textAlign: "center",
+                    color: "#1e293b",
                   }}
                 >
                   {cat.name}
                 </p>
-                <p style={{ margin: 0, fontSize: 12, color: "#64748b" }}>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 11,
+                    color: "#64748b",
+                    fontWeight: 500,
+                  }}
+                >
                   {errors.filter((e) => e.category === cat.id).length} mã lỗi
                 </p>
               </div>
@@ -192,39 +222,39 @@ function HomePage() {
           </div>
         </div>
 
-        {/* PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA) */}
-        <div style={{ paddingTop: 16, borderTop: "2px dashed #e2e8f0" }}>
+        {/* 🛠️ PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN */}
+        <div style={{ paddingTop: 20, borderTop: "2px dashed #cbd5e1" }}>
           <div
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: 14,
+              marginBottom: 12,
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ fontSize: 18 }}>🛠️</span>
+              <span style={{ fontSize: 16 }}>🛠️</span>
               <h2
                 style={{
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: 800,
                   color: "#b91c1c",
                   margin: 0,
-                  letterSpacing: "0.02em",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.03em",
                 }}
               >
-                DÀNH CHO KỸ THUẬT VIÊN (HỖ TRỢ SỬA CHỮA)
+                Dành cho kỹ thuật viên (Sửa chữa)
               </h2>
             </div>
 
-            {/* 🧮 NÚT BỘ CÔNG CỤ TÍNH TOÁN */}
             <button
               onClick={() => navigate("/tools")}
               style={{
                 background: "#0284c7",
                 color: "#ffffff",
                 border: "none",
-                padding: "6px 12px",
+                padding: "6px 14px",
                 borderRadius: 8,
                 fontWeight: 700,
                 fontSize: 12,
@@ -233,110 +263,99 @@ function HomePage() {
                 alignItems: "center",
                 gap: 6,
                 boxShadow: "0 2px 6px rgba(2, 132, 199, 0.2)",
-                transition: "all 0.2s ease",
+                transition: "background 0.15s",
               }}
               onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#0369a1")
+                (e.currentTarget.style.background = "#0369a1")
               }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#0284c7")
-              }
+              onMouseOut={(e) => (e.currentTarget.style.background = "#0284c7")}
             >
               <span>🧮</span>
-              <span>Bộ công cụ tính toán</span>
-              <span style={{ fontSize: 10 }}>→</span>
+              <span>Bộ công cụ tính toán →</span>
             </button>
           </div>
 
+          {/* 2 Thẻ Kỹ thuật viên chia đôi 2 cột cân đối */}
           <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: 12,
-            }}
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}
           >
-            {/* 🔒 1. THẺ SỬA CHỮA CHUYÊN SÂU */}
+            {/* Sửa chữa chuyên sâu */}
             <div
               onClick={() => setShowPassModal(true)}
               style={{
-                background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
-                borderRadius: 14,
-                padding: "20px",
-                color: "#ffffff",
+                background: "#ffffff",
+                borderRadius: 12,
+                padding: "18px 20px",
                 cursor: "pointer",
-                border: "1px solid #334155",
-                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-                transition: "all 0.2s ease",
+                border: "1px solid #cbd5e1",
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+                transition: "all 0.15s ease",
               }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.transform = "translateY(-2px)")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.transform = "translateY(0)")
-              }
+              onMouseOver={(e) => {
+                e.currentTarget.style.borderColor = "#b91c1c";
+                e.currentTarget.style.background = "#fef2f2";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.borderColor = "#cbd5e1";
+                e.currentTarget.style.background = "#ffffff";
+              }}
             >
-              <div style={{ fontSize: 24, marginBottom: 6 }}>🔒</div>
-              <h3
-                style={{
-                  margin: "0 0 4px 0",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: "#f8fafc",
-                }}
-              >
-                SỬA CHỮA CHUYÊN SÂU
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 12,
-                  color: "#94a3b8",
-                  lineHeight: 1.4,
-                }}
-              >
-                Tra cứu sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
-              </p>
+              <div style={{ fontSize: 28 }}>🔒</div>
+              <div>
+                <h3
+                  style={{
+                    margin: "0 0 3px 0",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: "#0f172a",
+                  }}
+                >
+                  SỬA CHỮA CHUYÊN SÂU
+                </h3>
+                <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>
+                  Sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
+                </p>
+              </div>
             </div>
 
-            {/* ➕ 2. THẺ ĐÓNG GÓP PAN BỆNH MỚI */}
+            {/* Đóng góp pan bệnh mới */}
             <div
               onClick={() => navigate("/report")}
               style={{
                 background: "#ffffff",
-                borderRadius: 14,
-                padding: "20px",
+                borderRadius: 12,
+                padding: "18px 20px",
                 cursor: "pointer",
                 border: "2px dashed #0284c7",
-                transition: "all 0.2s ease",
+                display: "flex",
+                alignItems: "center",
+                gap: 14,
+                transition: "all 0.15s ease",
               }}
               onMouseOver={(e) =>
                 (e.currentTarget.style.background = "#f0f9ff")
               }
               onMouseOut={(e) => (e.currentTarget.style.background = "#ffffff")}
             >
-              <div style={{ fontSize: 24, marginBottom: 6, color: "#0284c7" }}>
-                ➕
+              <div style={{ fontSize: 28, color: "#0284c7" }}>➕</div>
+              <div>
+                <h3
+                  style={{
+                    margin: "0 0 3px 0",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: "#0369a1",
+                  }}
+                >
+                  ĐÓNG GÓP PAN BỆNH MỚI
+                </h3>
+                <p style={{ margin: 0, fontSize: 11, color: "#0284c7" }}>
+                  Kỹ thuật viên gửi mã lỗi hoặc kinh nghiệm sửa chữa mới
+                </p>
               </div>
-              <h3
-                style={{
-                  margin: "0 0 4px 0",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  color: "#0369a1",
-                }}
-              >
-                ĐÓNG GÓP PAN BỆNH MỚI
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontSize: 12,
-                  color: "#0284c7",
-                  lineHeight: 1.4,
-                }}
-              >
-                Kỹ thuật viên gửi mã lỗi hoặc kinh nghiệm sửa chữa mới
-              </p>
             </div>
           </div>
         </div>
@@ -356,12 +375,12 @@ function HomePage() {
             right: 0,
             bottom: 0,
             backgroundColor: "rgba(15, 23, 42, 0.75)",
-            backdropFilter: "blur(4px)",
+            backdropFilter: "blur(3px)",
             zIndex: 9999,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: 20,
+            padding: 16,
             boxSizing: "border-box",
           }}
         >
@@ -369,27 +388,27 @@ function HomePage() {
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "100%",
-              maxWidth: 400,
+              maxWidth: 380,
               background: "#ffffff",
-              borderRadius: 16,
+              borderRadius: 14,
               padding: "24px",
               boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
               textAlign: "center",
             }}
           >
-            <div style={{ fontSize: 36, marginBottom: 8 }}>🔒</div>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
             <h3
               style={{
                 margin: "0 0 6px 0",
-                fontSize: 18,
+                fontSize: 17,
                 fontWeight: 800,
                 color: "#0f172a",
               }}
             >
               XÁC NHẬN KỸ THUẬT VIÊN
             </h3>
-            <p style={{ margin: "0 0 16px 0", fontSize: 13, color: "#64748b" }}>
-              Vui lòng nhập mật khẩu được cấp để truy cập dữ liệu sửa chữa.
+            <p style={{ margin: "0 0 16px 0", fontSize: 12, color: "#64748b" }}>
+              Nhập mật khẩu để truy cập dữ liệu sửa chữa chuyên sâu.
             </p>
 
             <form onSubmit={handleVerifyPassword}>
@@ -401,11 +420,13 @@ function HomePage() {
                 onChange={(e) => setInputPass(e.target.value)}
                 style={{
                   width: "100%",
-                  padding: "12px 14px",
-                  borderRadius: 10,
-                  border: passError ? "2px solid #ef4444" : "2px solid #cbd5e1",
+                  padding: "10px 14px",
+                  borderRadius: 8,
+                  border: passError
+                    ? "2px solid #ef4444"
+                    : "1.5px solid #cbd5e1",
                   outline: "none",
-                  fontSize: 15,
+                  fontSize: 14,
                   textAlign: "center",
                   boxSizing: "border-box",
                   marginBottom: 10,
@@ -425,7 +446,7 @@ function HomePage() {
                 </p>
               )}
 
-              <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+              <div style={{ display: "flex", gap: 10 }}>
                 <button
                   type="button"
                   onClick={() => {
@@ -434,12 +455,13 @@ function HomePage() {
                   }}
                   style={{
                     flex: 1,
-                    padding: "10px",
+                    padding: "9px",
                     borderRadius: 8,
                     border: "1px solid #cbd5e1",
                     background: "#f1f5f9",
                     color: "#475569",
                     fontWeight: 600,
+                    fontSize: 12,
                     cursor: "pointer",
                   }}
                 >
@@ -449,12 +471,13 @@ function HomePage() {
                   type="submit"
                   style={{
                     flex: 1,
-                    padding: "10px",
+                    padding: "9px",
                     borderRadius: 8,
                     border: "none",
                     background: "#0284c7",
                     color: "#ffffff",
                     fontWeight: 700,
+                    fontSize: 12,
                     cursor: "pointer",
                   }}
                 >
@@ -468,5 +491,3 @@ function HomePage() {
     </div>
   );
 }
-
-export default HomePage;

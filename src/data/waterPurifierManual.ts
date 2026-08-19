@@ -73,4 +73,58 @@ export const waterPurifierManuals: ManualItem[] = [
     pdfUrl:
       "https://drive.google.com/file/d/190OAiseM6MMa93SSXCXujKxh1rfkPHyh/preview",
   },
+  {
+    id: "mwp9",
+    category: "waterPurifierError",
+    brand: "TOSHIBA",
+    model: "RWF-IW2469BVN(W)",
+    title: "Sách HDSD Máy Nước Nóng Lạnh RWF-IW2469BVN(W)",
+    pdfUrl:
+      "https://drive.google.com/file/d/14bbE-lCAjjJQxy_wQZC945iQyI8IKC8x/preview",
+  },
+  {
+    id: "mwp10",
+    category: "waterPurifierError",
+    brand: "TOSHIBA",
+    model: "RWF-IW2469BVN(K)",
+    title: "Sách HDSD Máy Nước Nóng Lạnh RWF-IW2469BVN(K)",
+    pdfUrl:
+      "https://drive.google.com/file/d/14bbE-lCAjjJQxy_wQZC945iQyI8IKC8x/preview",
+  },
+  {
+    id: "mwp11",
+    category: "waterPurifierError",
+    brand: "TOSHIBA",
+    model: "TWP-NA1SVN(K)",
+    title: "Sách HDSD Máy Lọc Nước TWP-NA1SVN(K)",
+    pdfUrl:
+      "https://drive.google.com/file/d/18xLRDRd1BehQr2tmi0paN96T80RIwRKq/preview",
+  },
+  {
+    id: "mwp12",
+    category: "waterPurifierError",
+    brand: "TOSHIBA",
+    model: "TWP-WA2SVN(K)",
+    title: "Sách HDSD Máy Lọc Nước TWP-WA2SVN(K)",
+    pdfUrl:
+      "https://drive.google.com/file/d/1h2o8BOyMJ1bQpX7whwNEKWZ8s2k7oMMa/preview",
+  },
+  {
+    id: "mwp13",
+    category: "waterPurifierError",
+    brand: "TOSHIBA",
+    model: "TWP-IW2469SVN(W)",
+    title: "Sách HDSD Máy Lọc Nước TWP-IW2469SVN(W)",
+    pdfUrl:
+      "https://drive.google.com/file/d/1Z7c5mkZFkAGDdWIc_E6h0jNjZ4qGxwKy/preview",
+  },
+  {
+    id: "mwp13",
+    category: "waterPurifierError",
+    brand: "TOSHIBA",
+    model: "TWP-IW2469SVN(K)",
+    title: "Sách HDSD Máy Lọc Nước TWP-IW2469SVN(K)",
+    pdfUrl:
+      "https://drive.google.com/file/d/1Z7c5mkZFkAGDdWIc_E6h0jNjZ4qGxwKy/preview",
+  },
 ];

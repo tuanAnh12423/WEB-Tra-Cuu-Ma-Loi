@@ -7,7 +7,7 @@ import ReportPage from "./pages/ReportPage";
 import ManualListPage from "./pages/ManualListPage";
 import RepairSupportPage from "./pages/RepairSupportPage";
 import ToolsPage from "./pages/toolsPage";
-import ChatbotWidget from "./components/ChatBotWidget";
+import ChatbotWidget from "./components/ChatBot";
 
 function OfflineNotification() {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);

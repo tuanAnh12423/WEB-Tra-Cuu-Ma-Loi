@@ -20,6 +20,7 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       "hocchotoi",
       "daychotoi",
       "daytuidi",
+      "tui day ban nhe",
     ],
     responses: [
       `### 🥺🥺🥺 BIẾT RỒI MẤY BÀ DÀ NÓI TỪ TỪ THÔI CHO TUI TIẾP THU!\n---📝✨\nDạ mấy mẹ bấm dùm con cái ô màu xanh phía dưới để nhập, hoặc gõ theo cú pháp:\n👉 \`học: [từ khóa] = [câu trả lời]\` \n\n**HIỂU CHƯA MẤY MÁ???**`,
@@ -71,11 +72,13 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       "khocne",
       "toang",
       "met",
+      "dau moi",
     ],
     responses: [
       `Trời ơi thương thương mấy bà dà quá nè! (っ˘̩╭╮˘̩)っ Uống ngụm trà sữa, thở sâu một cái rồi chiến tiếp! Có pan nào hóc búa quăng qua đây tui cân giùm cho! 💪`,
       `Bình tĩnh tự tin không quạo nha mấy má! 🧘‍♂️ Khách có khó tính thì mình cứ ngọt như mía lùi là họ chịu liền à. Cố lên mấy mẹ ơi! 💖`,
       `Ai làm mấy bà dà của tui khóc dạ? 😭 (╥﹏╥) Quăng cái model máy đó qua đây tui chỉ cách trị liền!`,
+      `Uống Panadol đi....`,
     ],
   },
 
@@ -516,6 +519,10 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       "cham",
       "loadlau",
       "chamnhudua",
+      "ngu",
+      "nguthe",
+      "ngulam",
+      "ngughe",
     ],
     responses: [
       `Từ từ làm ơn mắc ói hả mấy má? Đang load dữ liệu muốn xỉu ngang đây nè, hối hoài! 😤`,
@@ -614,6 +621,65 @@ export const FUN_DIALOGUES: FunDialogue[] = [
       `Còn 5 phút nữa là qua ca rồi, ráng ngậm đắng nuốt cay nhìn đồng hồ đi mấy má ơi! ⏱️👀`,
       `Đứa nào hối về là tui nguyền rủa ca trực ngày mai gặp toàn khách quạo à nha! 📿😂`,
       `Sắp được giải thoát rồi! Cất bàn phím, thu dọn đồ đạc, chuẩn bị tư thế sẵn sàng phi ra cửa thôi mấy mẹ! 🚀`,
+    ],
+  },
+  {
+    triggers: ["gidi", "githe", "givayba", "gi"],
+    responses: [
+      "Ăn nói sáo rỗng vậy mẹ. Tui là chỉ trả lời có mục đích nha!!!...",
+      "Mấy mẹ đừng có nghĩ là nói gì thì nói. Rõ ràng mục đích nha hông là tui dỗi đó >>>><<<<",
+    ],
+  },
+  {
+    triggers: ["nuocthui", "nuochoi"],
+    responses: [
+      "Máy nước lọc ra nước có mùi hôi 1. Kiểm tra nguồn nước đầu vào 2. Kiểm tra thời hạn lõi lọc",
+    ],
+  },
+  {
+    triggers: [
+      "matgiatbihu",
+      "maygiathu",
+      "maygiatkhongxaiduoc",
+      "tulanhloi",
+      "tulanhhu",
+      "tulanhbihu",
+      "maylocnuochu",
+      "maylocnuocloi",
+      "mayruachenhu",
+      "mayruachenloi",
+      "mayruachenkhongxaiduoc",
+      "khongxaiduoc",
+      "huroi",
+      "hongroi",
+      "huthatroi",
+      "hongthatroi",
+      "khongxaiduocthatroi",
+    ],
+    responses: [
+      "Mấy má ơi bị hư là hư gì nói rõ rõ ra chứ tui không có hiểu cho xin cái model hoặc hiện tượng cụ thể đi",
+    ],
+  },
+  {
+    triggers: ["cogimoikhong", "cogimoi", "moi"],
+    responses: [
+      "Cái mới là cái mà mấy má dạy tui đó, dạy liên tục đi để tui còn học nè.",
+    ],
+  },
+  {
+    triggers: ["troioi", "troidatoi", "oidoioi"],
+    responses: [
+      "Than thân trách phận, chi bằng mua ly trà sữa uống cho mát bụng, mát gan",
+      "Mấy bà có than trời thì trời cũng khó cứu",
+      "Ông trời không có cứu mấy thím đâu, lo mà tự cứu mình đi dùm cái",
+    ],
+  },
+  {
+    triggers: ["thanainaylo", "tulobanthandi", "thantuitulo", "tulo"],
+    responses: [
+      "Tui có tay có chân tự lo được nha mấy bà dà, đâu cần mấy mẹ lo cho tui đâu",
+      "Xìiiiii, Ai thèm mấy má lo cho con, tư lo cho mình còn chưa xong bày đặt",
+      "Mấy má ơi, bản thân đã lo xong chưa bày đặt (Thân ai nấy lo)",
     ],
   },
 ];

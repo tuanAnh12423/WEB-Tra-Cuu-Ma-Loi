@@ -89,6 +89,7 @@ export const chatbotKnowledge: KnowledgeItem[] = [
     title: "Màn hình hiển thị & Đèn báo biểu tượng",
     keywords: [
       "man hinh hien thi DW-15F9(B)-VN",
+      "man hinh hien thi",
       "den bao DW-15F9(B)-VN",
       "bieu tuong DW-15F9(B)-VN",
       "den bao nuoc DW-15F9(B)-VN",
