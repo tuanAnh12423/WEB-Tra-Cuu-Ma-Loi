@@ -267,10 +267,24 @@ export const washingErrors: ErrorItem[] = [
     description:
       "Trong quá trình sử dụng nếu gặp mã cảnh báo E30. Nguyên nhân: Cửa máy giặt chưa đóng kín hoặc kẹt đồ",
     steps: [
-      { text: "Kiểm tra và đóng nắp máy giặt" },
-      { text: "Kiểm tra có kẹt quần áo khi đóng lại hay không ?" },
+      {
+        text: "Kiểm tra và đóng nắp máy giặt",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhOFHZsmIW5Xl3m-qWOM72L_IXurk1Exr8mjrmsT43VQ&s=10",
+        ],
+      },
+      {
+        text: "Kiểm tra có kẹt quần áo khi đóng lại hay không ?",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp1luue-wobrGSEjI68LJbIcsz9iQxfNyUaQMWA8gPvQ&s=10",
+        ],
+      },
       {
         text: "Nếu máy đang đặt trên chân đế thử để máy xuống nền phẳng và thử chu trình khác",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSmSaizHBTOp6Ul-AytMx6F9rummagx4F5zRk81n_nwA&s=10",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjQL0HtL1s0-xy7ShXuVhpf9pZOW5gRGRwVSY6oAJ9qA&s=10",
+        ],
       },
     ],
     images: [
@@ -334,6 +348,11 @@ export const washingErrors: ErrorItem[] = [
     steps: [
       {
         text: "Nếu model sản phẩm là loại có tự đông châm nước giặt/ xả, cần mở tính năng lên",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSXJpSihXYW-A6tgRsaeDVuqNKK5V35yq5ZRtoxlKGBA&s=10",
+          "https://web-res.midea.com/content/dam/toshiba-aem/vn/vn-new/pdp/feature/laundry/washer/tw-t25bzp140mwv(mg)/LAD-VN7-TW-T25BZP140MWV-MG-1-PC-Color-panel-smart-touch-control.jpg",
+          "https://web-res.midea.com/content/dam/toshiba-aem/vn/vn-new/pdp/feature/laundry/washer/tw-t25bzp140mwv(mg)/LAD-VN7-TW-T25BZP140MWV-MG-4-PC-SenseDose.jpg",
+        ],
       },
       {
         text: "Hãy chú ý xem bạn có bỏ nhầm nước giặt/ bột giặt, vào ngăn chứa nước xả hay không, hoặc ngược lại",
@@ -365,6 +384,11 @@ export const washingErrors: ErrorItem[] = [
     steps: [
       {
         text: "Hãy chú ý chọn chương trình giặt phù hợp với lượng quần áo cho vào",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFA5tDfddISWOvmcn5FmZZ-Z8eNkIFlzoSBf3Q6_qhDw&s=10",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuA8d8fDzap2lbWRw3FQyJCodMUt6HD3BuYOyYpASzYg&s=10",
+          "https://dienmaybaominh.vn/wp-content/uploads/2024/02/Bang-nut-dieu-khien-may-giat-Toshiba.jpg",
+        ],
       },
       { text: "Hãy lấy hết giấy tờ, hoá đơn khỏi các túi áo, túi quần" },
       { text: "Chú ý bỏ vừa phải lượng đồ, không bỏ quá số ký máy giặt" },
@@ -401,18 +425,33 @@ export const washingErrors: ErrorItem[] = [
     description:
       "Bạn mở máy lên bấm giặt máy giảm thời gian, nhưng không giặt, không thấy nước cấp hoặc nước cấp vào rất yếu",
     steps: [
-      { text: "Kiểm tra van khoá nước cấp của máy. Nếu van bị khoá cần mở ra" },
+      {
+        text: "Kiểm tra van khoá nước cấp của máy. Nếu van bị khoá cần mở ra",
+        images: [
+          "https://cdn2.fptshop.com.vn/unsafe/1920x0/filters:format(webp):quality(75)/van_cap_nuoc_may_giat_d8f56417c2.png",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQskNLVP_ZiQ6NhJqBxibQD5O_5Uc_QRfoLvuR4GZjyyA&s=10",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDkW8jSpRVb0G8F0ZIzmTZBiOu9MAaipYzuMZKCApGZQ&s=10",
+        ],
+      },
       {
         text: "Kiểm tra ổ điện cắm máy, nếu ổ điện kém chất lượng cần thay thế và thử lại chương trình khác",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNVv7PdiDSPxfGfz7jNxs5k_ou8xFT3LgpwfpW9D2hpg&s=10",
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHpfSITD6TYZluGJ_AaKLzFXuINw-ru3q4pjOyUrCugQ&s=10",
+        ],
       },
-      { text: "Nếu sử dụng máy được một thời gian cần vệ sinh bộ lọc van cấp" },
+      {
+        text: "Nếu sử dụng máy được một thời gian cần vệ sinh bộ lọc van cấp",
+        images: [
+          "https://lh3.googleusercontent.com/d/1ZduTPVJIyppJ4GxqYcZ-nUAufEZLj1hB",
+          "https://lh3.googleusercontent.com/d/1nk21oHoXrBX-d0KODdRJef5jl3MrX1zJ",
+        ],
+      },
       {
         text: "Mẹo: Hãy thử chương trình chỉ vắt => Nếu máy vẫn vắt bình thường hãy kiểm tra lại nguồn nước của bạn.",
       },
     ],
     images: [
-      "https://lh3.googleusercontent.com/d/14sWU6WV8ItvLxf-ebop9q4bX8UMIWyCz",
-      "https://lh3.googleusercontent.com/d/1wm2MThJLQqFllCJRitltj7xT1LK7ygsW",
       "https://lh3.googleusercontent.com/d/17N3mSG5_dGn_Tu_eNMrR2tFa10S9jFYj",
     ],
     videoUrls: [],
@@ -504,7 +543,12 @@ export const washingErrors: ErrorItem[] = [
       "Bạn mở máy lên bấm giặt máy giảm thời gian, nhưng không giặt, không thấy nước cấp hoặc nước cấp vào rất yếu, hoặc giặt một lúc máy rung lắc sau đó ngưng không giặt nữa.",
     steps: [
       { text: "Kiểm tra van khoá nước cấp của máy. Nếu van bị khoá cần mở ra" },
-      { text: "Áp lực nước không đủ (Áp lực nước tiêu chuẩn: 0.1 - 0.4MPa" },
+      {
+        text: "Áp lực nước không đủ (Áp lực nước tiêu chuẩn: 0.1 - 0.4MPa",
+        images: [
+          "https://lh3.googleusercontent.com/d/17RWtS1AsR0Qfxtd3B_Te09xQX3AagB9v",
+        ],
+      },
       {
         text: "Kiểm tra ổ điện cắm máy, nếu ổ điện kém chất lượng cần thay thế và thử lại chương trình khác",
         images: [
@@ -527,6 +571,9 @@ export const washingErrors: ErrorItem[] = [
       },
       {
         text: "Mẹo: Hãy thử chương trình chỉ vắt => Nếu máy vẫn vắt bình thường hãy kiểm tra lại nguồn nước của bạn.",
+        images: [
+          "https://cdn.tgdd.vn/Files/2016/11/30/920126/may-giat-khong-vat-nguyen-nhan-va-cach-khac-phuc2-1.jpg",
+        ],
       },
     ],
     images: [],
@@ -548,12 +595,26 @@ export const washingErrors: ErrorItem[] = [
       {
         text: "Kiểm tra dây thoát nước của máy có bị đưa lên cao quá 15cm hoặc gấp khúc hay không. Ống xả của máy cửa trên không được treo cao mà phải thả xuống sàn.",
       },
-      { text: "Kiểm tra lại cân bằng của máy." },
       {
-        text: "Kiểm tra khi bỏ quần áo vào có bị dồn về 1 phía hay không hãy sắp xếp lại quần áo",
+        text: "Kiểm tra lại cân bằng của máy.",
+        images: [
+          "https://lh3.googleusercontent.com/d/1wyEChm-IpBFB7GVPybXgM5RNbHwQ-7iy",
+          "https://lh3.googleusercontent.com/d/1iCf5jKtSF9_Af4SSC0AVCLb6A3g3pByn",
+          "https://lh3.googleusercontent.com/d/109q3aiisp1Wm88G8059J0Y6FpwbneG8R",
+        ],
       },
       {
-        text: "Kiểm tra máy có lắp đặt trên chân kệ hay không. Bỏ máy xuống sản phẳng và cân bằng lại máy",
+        text: "Kiểm tra khi bỏ quần áo vào có bị dồn về 1 phía hay không hãy sắp xếp lại quần áo",
+        images: [
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6DxgHBvt8zn_GYzO_gfUbS0cMDLV0_PVXygoy3KNAoQ&s=10",
+        ],
+      },
+      {
+        text: "Kiểm tra máy có lắp đặt trên chân kệ hay không. Bỏ máy xuống sản phẳng và cân bằng lại máy",images: [
+          "https://lh3.googleusercontent.com/d/1wyEChm-IpBFB7GVPybXgM5RNbHwQ-7iy",
+          "https://lh3.googleusercontent.com/d/1iCf5jKtSF9_Af4SSC0AVCLb6A3g3pByn",
+          "https://lh3.googleusercontent.com/d/109q3aiisp1Wm88G8059J0Y6FpwbneG8R",
+        ],
       },
     ],
     images: [],

@@ -94,9 +94,7 @@ const MessageBubble = memo(function MessageBubble({
 }: MessageBubbleProps) {
   const formattedHtml = useMemo(
     () =>
-      msg.sender === "bot"
-        ? renderFormattedText(msg.text, highlightTerm)
-        : "",
+      msg.sender === "bot" ? renderFormattedText(msg.text, highlightTerm) : "",
     [msg.text, msg.sender, highlightTerm],
   );
 
@@ -114,9 +112,7 @@ const MessageBubble = memo(function MessageBubble({
           color: msg.sender === "user" ? "#fff" : "#0f172a",
           padding: "10px 14px",
           borderRadius:
-            msg.sender === "user"
-              ? "14px 14px 2px 14px"
-              : "14px 14px 14px 2px",
+            msg.sender === "user" ? "14px 14px 2px 14px" : "14px 14px 14px 2px",
           fontSize: 13,
           lineHeight: 1.6,
           border: msg.sender === "bot" ? "1px solid #e2e8f0" : "none",
@@ -502,7 +498,7 @@ export default function ChatBotWidget() {
       `### 🖼️ SƠ ĐỒ HÌNH ẢNH (${categoryName.toUpperCase()})\n---\nChọn đúng Model cần xem:`,
       [
         ...filtered.map((img) => ({
-          label: `📌 [${img.model}] ${img.title} (${img.images.length} ảnh)`,
+          label: `📌 ${img.title} (${img.images.length} ảnh)`,
           action: () => displayImageResult(img),
         })),
         { label: "⬅️ Chọn ngành hàng khác", action: () => showImageCatalog() },
@@ -686,7 +682,8 @@ export default function ChatBotWidget() {
     Object.keys(SEARCH_MAPPING).forEach((key) => {
       if (
         SEARCH_MAPPING[key].some(
-          (s) => cleanString(s).length >= 4 && containsWholePhrase(queryText, s),
+          (s) =>
+            cleanString(s).length >= 4 && containsWholePhrase(queryText, s),
         )
       ) {
         expandedKeywords.push(cleanString(key));
@@ -1079,9 +1076,7 @@ export default function ChatBotWidget() {
               transition: "transform 0.2s ease, box-shadow 0.15s ease",
             }}
             title={
-              hasQuickSearch
-                ? "Mở trợ lý chat hoặc tìm kiếm mã lỗi"
-                : undefined
+              hasQuickSearch ? "Mở trợ lý chat hoặc tìm kiếm mã lỗi" : undefined
             }
           >
             {isMobile && !hasQuickSearch
@@ -1637,7 +1632,8 @@ export default function ChatBotWidget() {
                     padding: "6px 10px",
                     cursor: "pointer",
                     textAlign: "left",
-                    transition: "background 0.15s ease, border-color 0.15s ease",
+                    transition:
+                      "background 0.15s ease, border-color 0.15s ease",
                   }}
                 >
                   <span>{item.icon}</span>
