@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories, errors } from "../data/errors";
-
-// 🔑 CẤU HÌNH MẬT KHẨU TRUY CẬP DÀNH CHO KỸ THUẬT VIÊN (Bạn có thể đổi mật khẩu tại đây)
-const TECHNICIAN_PASSWORD = "123456";
+import { TECHNICIAN_PASSWORD, setTechnicianAuthed } from "../utils/technicianAuth";
+import HotErrorDashboard from "../components/HotErrorDashboard";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -11,14 +10,23 @@ export default function HomePage() {
   const [showPassModal, setShowPassModal] = useState(false);
   const [inputPass, setInputPass] = useState("");
   const [passError, setPassError] = useState("");
+  // Trang đích sau khi nhập đúng mật khẩu — vì giờ có 2 thẻ cùng dùng chung
+  // 1 popup mật khẩu (Hỗ trợ sửa chữa & Thống kê tra cứu), không còn cố định 1 nơi.
+  const [passTarget, setPassTarget] = useState("/repair-support");
+
+  const openPassModal = (target: string) => {
+    setPassTarget(target);
+    setShowPassModal(true);
+  };
 
   const handleVerifyPassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputPass === TECHNICIAN_PASSWORD) {
+      setTechnicianAuthed();
       setShowPassModal(false);
       setInputPass("");
       setPassError("");
-      navigate("/repair-support");
+      navigate(passTarget);
     } else {
       setPassError("❌ Mật khẩu không đúng! Vui lòng thử lại.");
     }
@@ -41,6 +49,7 @@ export default function HomePage() {
       <div style={{ maxWidth: 1100, width: "100%" }}>
         {/* 🌟 BANNER TIÊU ĐỀ CHÍNH */}
         <div
+          className="home-fade-in"
           style={{
             background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
             borderRadius: 14,
@@ -74,8 +83,15 @@ export default function HomePage() {
           </h1>
         </div>
 
+        {/* 📊 Bảng theo dõi mã lỗi HOT / cần tập trung tìm ảnh — ai cũng xem
+            được (chỉ Top 3 mỗi mục), xem đầy đủ mới cần mật khẩu (/analytics) */}
+        <HotErrorDashboard />
+
         {/* 🎧 PHÂN VÙNG 1: DÀNH CHO TỔNG ĐÀI VIÊN */}
-        <div style={{ marginBottom: 32 }}>
+        <div
+          className="home-fade-in"
+          style={{ marginBottom: 32, animationDelay: "0.05s" }}
+        >
           <div
             style={{
               display: "flex",
@@ -99,9 +115,10 @@ export default function HomePage() {
             </h2>
           </div>
 
-          {/* 📚 Sách HDSD (Nằm full chiều ngang trên cùng) */}
+          {/* 📚 Sách HDSD */}
           <div
             onClick={() => navigate("/manuals")}
+            className="btn-press"
             style={{
               background: "#ffffff",
               borderRadius: 12,
@@ -157,18 +174,19 @@ export default function HomePage() {
             </span>
           </div>
 
-          {/* 🧺 5 Ngành hàng dàn đều thành 1 hàng ngang trên Desktop */}
+          {/* 🧺 5 Ngành hàng */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(5, 1fr)",
+              gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
               gap: 14,
             }}
           >
-            {categories.map((cat) => (
+            {categories.map((cat, idx) => (
               <div
                 key={cat.id}
                 onClick={() => navigate(`/error-list/${cat.id}`)}
+                className="btn-press home-fade-in"
                 style={{
                   background: "#ffffff",
                   borderRadius: 12,
@@ -181,6 +199,7 @@ export default function HomePage() {
                   border: "1px solid #e2e8f0",
                   boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
                   transition: "all 0.15s ease",
+                  animationDelay: `${0.05 + idx * 0.04}s`,
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.borderColor = "#0284c7";
@@ -224,7 +243,14 @@ export default function HomePage() {
         </div>
 
         {/* 🛠️ PHÂN VÙNG 2: DÀNH CHO KỸ THUẬT VIÊN */}
-        <div style={{ paddingTop: 20, borderTop: "2px dashed #cbd5e1" }}>
+        <div
+          className="home-fade-in"
+          style={{
+            paddingTop: 20,
+            borderTop: "2px dashed #cbd5e1",
+            animationDelay: "0.15s",
+          }}
+        >
           <div
             style={{
               display: "flex",
@@ -248,6 +274,7 @@ export default function HomePage() {
                 Dành cho kỹ thuật viên (Sửa chữa)
               </h2>
             </div>
+          </div>
 
           <div
             style={{
@@ -256,30 +283,29 @@ export default function HomePage() {
               gap: 12,
             }}
           >
-            {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu (Bấm vào hỏi Mật Khẩu) */}
+            {/* Thẻ Hỗ Trợ Sửa Chữa Chuyên Sâu */}
             <div
-              onClick={() => setShowPassModal(true)} // 🟢 MỞ DIALOG NHẬP MẬT KHẨU
+              onClick={() => openPassModal("/repair-support")}
+              className="btn-press"
               style={{
-                background: "#0284c7",
-                color: "#ffffff",
-                border: "none",
-                padding: "6px 14px",
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: 12,
+                background: "#ffffff",
+                borderRadius: 12,
+                padding: "18px 20px",
                 cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                boxShadow: "0 2px 6px rgba(2, 132, 199, 0.2)",
-                transition: "background 0.15s",
+                border: "1px solid #cbd5e1",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+                position: "relative",
+                transition: "all 0.15s ease",
               }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.background = "#0369a1")
-              }
-              onMouseOut={(e) => (e.currentTarget.style.background = "#0284c7")}
+              onMouseOver={(e) => {
+                e.currentTarget.style.borderColor = "#0284c7";
+                e.currentTarget.style.background = "#f0f9ff";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.borderColor = "#cbd5e1";
+                e.currentTarget.style.background = "#ffffff";
+              }}
             >
-              {/* Biểu tượng 🔒 góc thẻ */}
               <span
                 style={{
                   position: "absolute",
@@ -290,35 +316,130 @@ export default function HomePage() {
               >
                 🔒
               </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <span style={{ fontSize: 28 }}>🧰</span>
+                <div>
+                  <h3
+                    style={{
+                      margin: "0 0 3px 0",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#0f172a",
+                    }}
+                  >
+                    SỬA CHỮA CHUYÊN SÂU
+                  </h3>
+                  <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>
+                    Sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
+                  </p>
+                </div>
+              </div>
+            </div>
 
-              <div
+            {/* Thẻ Thống kê tra cứu mã lỗi (mã nào được xem nhiều nhất, mã nào thiếu ảnh) */}
+            <div
+              onClick={() => openPassModal("/analytics")}
+              className="btn-press"
+              style={{
+                background: "#ffffff",
+                borderRadius: 12,
+                padding: "18px 20px",
+                cursor: "pointer",
+                border: "1px solid #cbd5e1",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.02)",
+                position: "relative",
+                transition: "all 0.15s ease",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.borderColor = "#0284c7";
+                e.currentTarget.style.background = "#f0f9ff";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.borderColor = "#cbd5e1";
+                e.currentTarget.style.background = "#ffffff";
+              }}
+            >
+              <span
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 8,
+                  position: "absolute",
+                  top: 16,
+                  right: 16,
+                  fontSize: 16,
                 }}
               >
-                <span style={{ fontSize: 24 }}>🧰</span>
-                <h3
-                  style={{
-                    margin: "0 0 3px 0",
-                    fontSize: 13,
-                    fontWeight: 700,
-                    color: "#0f172a",
-                  }}
-                >
-                  SỬA CHỮA CHUYÊN SÂU
-                </h3>
-                <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>
-                  Sơ đồ mạch, thông số đo đạc linh kiện, pan bệnh thực tế
-                </p>
+                🔒
+              </span>
+              <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                <span style={{ fontSize: 28 }}>📊</span>
+                <div>
+                  <h3
+                    style={{
+                      margin: "0 0 3px 0",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#0f172a",
+                    }}
+                  >
+                    THỐNG KÊ TRA CỨU
+                  </h3>
+                  <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>
+                    Mã lỗi được xem nhiều nhất, mã nào đang thiếu hình ảnh
+                  </p>
+                </div>
               </div>
+            </div>
+            {/* 🧮 Nút Bộ công cụ tính toán (Thiết kế nhỏ gọn) */}
+            <div
+              onClick={() => navigate("/tools")}
+              className="btn-press"
+              style={{
+                background: "#ffffff",
+                borderRadius: 10,
+                padding: "12px 16px",
+                cursor: "pointer",
+                border: "1px solid #cbd5e1",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                transition: "all 0.15s ease",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.borderColor = "#0284c7";
+                e.currentTarget.style.background = "#f0f9ff";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.borderColor = "#cbd5e1";
+                e.currentTarget.style.background = "#ffffff";
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 20 }}>🧮</span>
+                <div>
+                  <h3
+                    style={{
+                      margin: "0 0 2px 0",
+                      fontSize: 12,
+                      fontWeight: 700,
+                      color: "#0f172a",
+                    }}
+                  >
+                    BỘ CÔNG CỤ TÍNH TOÁN
+                  </h3>
+                  <p style={{ margin: 0, fontSize: 10, color: "#64748b" }}>
+                    Tra sensor, mã màu trở, dây điện & CB
+                  </p>
+                </div>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#0284c7" }}>
+                Mở →
+              </span>
             </div>
 
             {/* Đóng góp pan bệnh mới */}
             <div
               onClick={() => navigate("/report")}
+              className="btn-press"
               style={{
                 background: "#ffffff",
                 borderRadius: 12,
@@ -359,6 +480,7 @@ export default function HomePage() {
       {/* 🔒 MODAL XÁC NHẬN MẬT KHẨU */}
       {showPassModal && (
         <div
+          className="chat-fade-in"
           onClick={() => {
             setShowPassModal(false);
             setPassError("");
@@ -380,6 +502,7 @@ export default function HomePage() {
           }}
         >
           <div
+            className="chat-scale-in"
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "100%",
@@ -403,13 +526,14 @@ export default function HomePage() {
               XÁC NHẬN KỸ THUẬT VIÊN
             </h3>
             <p style={{ margin: "0 0 16px 0", fontSize: 12, color: "#64748b" }}>
-              Nhập mật khẩu để truy cập dữ liệu sửa chữa chuyên sâu.
+              Nhập mật khẩu để truy cập khu vực dành cho kỹ thuật viên.
             </p>
 
             <form onSubmit={handleVerifyPassword}>
               <input
                 type="password"
                 autoFocus
+                className="chat-input-focus"
                 placeholder="Nhập mật khẩu"
                 value={inputPass}
                 onChange={(e) => setInputPass(e.target.value)}
@@ -425,6 +549,7 @@ export default function HomePage() {
                   textAlign: "center",
                   boxSizing: "border-box",
                   marginBottom: 10,
+                  transition: "border-color 0.15s ease, box-shadow 0.15s ease",
                 }}
               />
 
@@ -444,6 +569,7 @@ export default function HomePage() {
               <div style={{ display: "flex", gap: 10 }}>
                 <button
                   type="button"
+                  className="btn-press"
                   onClick={() => {
                     setShowPassModal(false);
                     setPassError("");
@@ -464,6 +590,7 @@ export default function HomePage() {
                 </button>
                 <button
                   type="submit"
+                  className="btn-press"
                   style={{
                     flex: 1,
                     padding: "9px",

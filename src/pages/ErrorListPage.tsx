@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { categories, errors } from "../data/errors";
+import { onOpenQuickSearch } from "../utils/quickSearchBus";
 
 // Hàm loại bỏ dấu tiếng Việt giúp tìm kiếm chính xác
 function removeVietnameseTones(str: string): string {
@@ -32,6 +33,10 @@ function ErrorListPage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // Nút chatbot nổi (toàn app) sẽ "bung ra" 1 lựa chọn "Tìm mã lỗi khác" —
+  // khi bấm vào lựa chọn đó, nó phát sự kiện để trang này tự mở popup tìm kiếm.
+  useEffect(() => onOpenQuickSearch(() => setShowQuickSearch(true)), []);
 
   const category = categories.find((c) => c.id === categoryId);
 
@@ -490,34 +495,9 @@ function ErrorListPage() {
         ← Quay lại
       </button>
 
-      {/* 🔍 NÚT KÍNH LÚP NỔI BẤM TÌM KIẾM CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
-      <button
-        onClick={() => setShowQuickSearch(true)}
-        style={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          width: 54,
-          height: 54,
-          borderRadius: "50%",
-          backgroundColor: "#0284c7",
-          color: "#ffffff",
-          border: "none",
-          fontSize: 22,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
-          zIndex: 999,
-          transition: "transform 0.2s ease",
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-        onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-        title="Mở ô tìm kiếm nhanh"
-      >
-        🔍
-      </button>
+      {/* Nút "kính lúp" nổi riêng của trang này đã gộp vào nút Chatbot nổi
+          (bấm nút chatbot → bung ra lựa chọn "Tìm mã lỗi khác" → phát sự kiện
+          mở popup bên dưới), để tránh 2 nút nổi đè lên nhau ở góc dưới phải. */}
 
       {/* 🚀 POPUP BẢNG TÌM KIẾM NHANH KHI BẤM KÍNH LÚP */}
       {showQuickSearch && (

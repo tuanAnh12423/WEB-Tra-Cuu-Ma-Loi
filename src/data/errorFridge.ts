@@ -4,7 +4,7 @@ export const fridgeErrors: ErrorItem[] = [
   {
     id: "F01",
     category: "fridge",
-    code: "(R001) Cả tủ không lạnh",
+    code: "(R001) Cả tủ không lạnh, Tủ không lạnh",
     title: "Tủ lạnh không làm lạnh",
     description: "Mở tủ ra không thấy có hơi lạnh",
     steps: [

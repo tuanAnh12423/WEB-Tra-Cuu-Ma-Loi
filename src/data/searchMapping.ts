@@ -40,4 +40,13 @@ export const SEARCH_MAPPING: { [key: string]: string[] } = {
     "khong sach",
   ],
   giatkhongsach: ["giatdo", "giatkhongsach", "khongsach"],
+  tulanhhuhong: ["tulanhhu", "tulanhhong", "tuhu", "tuhong"],
+  maygiathuhong: [
+    "maygiathu",
+    "maygiathong",
+    "maygiathuhong",
+    "giatchan",
+    "giatkhongduoc",
+  ],
+  ruado: ["ruado", "do", "ban", "khongsach", "doqua"],
 };

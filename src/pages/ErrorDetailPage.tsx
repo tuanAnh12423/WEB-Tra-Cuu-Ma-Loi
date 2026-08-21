@@ -1,6 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
 import { errors } from "../data/errors";
+import { onOpenQuickSearch } from "../utils/quickSearchBus";
+import { trackErrorView } from "../utils/analytics";
 
 // Hàm hỗ trợ tìm kiếm không dấu chuẩn xác
 function removeVietnameseTones(str: string): string {
@@ -26,6 +30,58 @@ function ErrorDetailPage() {
   // State BẬT/TẮT VÀ NHẬP TỪ KHÓA CHO KÍNH LÚP TÌM KIẾM NHANH
   const [showQuickSearch, setShowQuickSearch] = useState(false);
   const [quickSearchTerm, setQuickSearchTerm] = useState("");
+
+  // 👍👎 State PHẢN HỒI "Hữu ích / Không hữu ích" cho hướng dẫn xử lý
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
+
+  // Khôi phục lại lựa chọn đã bình chọn trước đó (theo máy, tránh vote lại)
+  useEffect(() => {
+    if (!errorId) return;
+    try {
+      const saved = localStorage.getItem(`feedback_vote_${errorId}`);
+      if (saved === "up" || saved === "down") setFeedback(saved);
+      else setFeedback(null);
+    } catch {
+      setFeedback(null);
+    }
+  }, [errorId]);
+
+  // Nút chatbot nổi (toàn app) sẽ "bung ra" 1 lựa chọn "Tìm mã lỗi khác" —
+  // khi bấm vào lựa chọn đó, nó phát sự kiện để trang này tự mở popup tìm kiếm.
+  useEffect(() => onOpenQuickSearch(() => setShowQuickSearch(true)), []);
+
+  // 📊 Ghi nhận lượt xem mã lỗi này (để làm báo cáo "mã lỗi được tra cứu nhiều nhất"
+  // ở trang Thống kê — /analytics). Mỗi lần mở trang với 1 errorId mới sẽ tính là 1 lượt.
+  useEffect(() => {
+    if (!errorId) return;
+    const item = errors.find((e) => e.id === errorId);
+    if (item) trackErrorView(item);
+  }, [errorId]);
+
+  const handleFeedback = (vote: "up" | "down") => {
+    if (!errorId || feedback) return; // đã bình chọn rồi thì thôi
+    setFeedback(vote); // cập nhật giao diện ngay, không chờ mạng
+
+    try {
+      localStorage.setItem(`feedback_vote_${errorId}`, vote);
+    } catch {
+      /* ignore */
+    }
+
+    // Gửi lên Firestore (đã có sẵn trong app, dùng chung cho tính năng
+    // "Dạy Bot" ở Chatbot) để có dữ liệu tổng hợp xem hướng dẫn nào cần
+    // cải thiện. Gửi kiểu "cố gắng gửi", lỗi mạng cũng không ảnh hưởng
+    // tới trải nghiệm người dùng.
+    addDoc(collection(db, "error_feedback"), {
+      errorId,
+      errorCode: error?.code || "",
+      errorTitle: error?.title || "",
+      vote,
+      createdAt: new Date().toISOString(),
+    }).catch((err) => {
+      console.error("Lỗi khi gửi phản hồi:", err);
+    });
+  };
 
   // HÀM TẢI ẢNH VỀ MÁY AN TOÀN
   const handleDownloadImage = async (
@@ -588,6 +644,83 @@ function ErrorDetailPage() {
         </div>
       )}
 
+      {/* 👍👎 PHẢN HỒI HƯỚNG DẪN CÓ HỮU ÍCH KHÔNG */}
+      <div
+        className="chat-msg-in"
+        style={{
+          background: "#fff",
+          borderRadius: 12,
+          padding: 20,
+          marginTop: 16,
+          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+          textAlign: "center",
+        }}
+      >
+        {feedback ? (
+          <p
+            style={{
+              margin: 0,
+              color: feedback === "up" ? "#16a34a" : "#334155",
+              fontWeight: 700,
+              fontSize: 13,
+            }}
+          >
+            {feedback === "up"
+              ? "✅ Cảm ơn bạn! Rất vui vì hướng dẫn này hữu ích."
+              : "📝 Cảm ơn phản hồi! Chúng tôi sẽ xem lại và cải thiện nội dung này."}
+          </p>
+        ) : (
+          <>
+            <p
+              style={{
+                margin: "0 0 10px",
+                color: "#334155",
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+            >
+              Hướng dẫn này có giúp ích cho bạn không?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button
+                type="button"
+                className="btn-press"
+                onClick={() => handleFeedback("up")}
+                style={{
+                  padding: "8px 18px",
+                  borderRadius: 8,
+                  border: "1px solid #bbf7d0",
+                  background: "#f0fdf4",
+                  color: "#15803d",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: "pointer",
+                }}
+              >
+                👍 Hữu ích
+              </button>
+              <button
+                type="button"
+                className="btn-press"
+                onClick={() => handleFeedback("down")}
+                style={{
+                  padding: "8px 18px",
+                  borderRadius: 8,
+                  border: "1px solid #e2e8f0",
+                  background: "#f8fafc",
+                  color: "#475569",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: "pointer",
+                }}
+              >
+                👎 Chưa hữu ích
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
       {/* 🖼️ MODAL PHÓNG TO ẢNH */}
       {selectedImg && (
         <div
@@ -726,34 +859,9 @@ function ErrorDetailPage() {
         ← Quay lại
       </button>
 
-      {/* 🚀 2. NÚT NỔI "KÍNH LÚP" CỐ ĐỊNH Ở GÓC DƯỚI PHẢI MÀN HÌNH */}
-      <button
-        onClick={() => setShowQuickSearch(true)}
-        style={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          width: 54,
-          height: 54,
-          borderRadius: "50%",
-          backgroundColor: "#0284c7",
-          color: "#ffffff",
-          border: "none",
-          fontSize: 22,
-          cursor: "pointer",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 4px 14px rgba(2, 132, 199, 0.4)",
-          zIndex: 999,
-          transition: "transform 0.2s ease",
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-        onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
-        title="Tìm kiếm mã lỗi khác"
-      >
-        🔍
-      </button>
+      {/* Nút "kính lúp" nổi riêng của trang này đã gộp vào nút Chatbot nổi
+          (bấm nút chatbot → bung ra lựa chọn "Tìm mã lỗi khác" → phát sự kiện
+          mở popup bên dưới), để tránh 2 nút nổi đè lên nhau ở góc dưới phải. */}
 
       {/* 🚀 POPUP TÌM KIẾM NHANH KHI BẤM KÍNH LÚP */}
       {showQuickSearch && (

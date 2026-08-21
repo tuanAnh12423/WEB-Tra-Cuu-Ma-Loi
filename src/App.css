@@ -6,6 +6,183 @@ select {
   touch-action: manipulation;
 }
 
+/* ============================================
+   🎬 HIỆU ỨNG CHUYỂN ĐỘNG DÙNG CHUNG (mượt & nhẹ)
+   Chỉ animate transform/opacity để tận dụng GPU,
+   tránh giật lag trên máy yếu / điện thoại.
+   ============================================ */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes typingBounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* Tin nhắn chat / gợi ý xuất hiện mượt, không giật cục */
+.chat-msg-in {
+  animation: fadeInUp 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.chat-fade-in {
+  animation: fadeIn 0.18s ease both;
+}
+
+.chat-scale-in {
+  animation: scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Khung chatbot mở ra mượt mà thay vì bật ra đột ngột */
+.chat-panel-in {
+  animation: popIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.chat-panel-in-mobile {
+  animation: fadeIn 0.18s ease both;
+}
+
+.chat-fab-in {
+  animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Nút bấm có phản hồi chạm nhẹ nhàng, cảm giác "mượt tay" hơn */
+.btn-press {
+  transition:
+    transform 0.1s ease,
+    filter 0.1s ease;
+}
+.btn-press:active {
+  transform: scale(0.94);
+  filter: brightness(0.96);
+}
+
+/* Input focus có viền sáng nhẹ thay vì đổi màu đột ngột */
+.chat-input-focus:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+/* Thanh cuộn tin nhắn mảnh & mượt hơn thanh cuộn mặc định */
+.chat-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.chat-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+}
+.chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Chấm nhấp nháy "bot đang gõ..." */
+.typing-dots span {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+  animation: typingBounce 1.1s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.offline-banner-in {
+  animation: slideDown 0.25s ease both;
+}
+
+/* Trang chủ: các khối nội dung xuất hiện mượt, so le nhẹ */
+.home-fade-in {
+  animation: fadeInUp 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Người dùng có bật "giảm hiệu ứng chuyển động" thì tắt animation để tránh khó chịu */
+@media (prefers-reduced-motion: reduce) {
+  .chat-msg-in,
+  .chat-fade-in,
+  .chat-scale-in,
+  .chat-panel-in,
+  .chat-panel-in-mobile,
+  .chat-fab-in,
+  .offline-banner-in,
+  .home-fade-in,
+  .typing-dots span {
+    animation: none !important;
+  }
+  .btn-press:active {
+    transform: none;
+  }
+}
+
 /* Mặc định trên Máy tính (Desktop): Hiện giao diện web bình thường */
 .main-web-content {
   display: block;
@@ -17,7 +194,11 @@ select {
     font-size: 14px;
     margin: 0;
     padding: 0;
-    overflow: hidden; /* Ngăn trang nền cuộn khi đang dùng chatbot */
+    /* Lưu ý: không dùng overflow:hidden ở đây vì sẽ khoá luôn việc cuộn
+       trang nền khi người dùng đóng Chatbot trên điện thoại. Khi Chatbot
+       mở toàn màn hình, nó đã tự phủ kín (position:fixed, 100dvh) nên
+       không cần khoá scroll của body. */
+    overflow-x: hidden;
   }
 
   /* 1. Ẩn toàn bộ giao diện web nền trên điện thoại */

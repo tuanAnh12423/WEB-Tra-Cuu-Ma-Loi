@@ -1,9 +1,10 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef, useEffect, useMemo, useCallback, memo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useFirestore } from "../../hooks/useFirestore";
 import { useTimer } from "../../hooks/useTimer";
 import {
   cleanString,
+  containsWholePhrase,
   renderFormattedText,
   cleanTextForCopy,
 } from "../../utils/chatUtils";
@@ -15,6 +16,8 @@ import type { DiagnosisNode } from "../../data/diagnosisTree";
 import { deviceImages, type DeviceImageItem } from "../../data/deviceImages";
 import { FUN_DIALOGUES } from "../../data/funDialogues";
 import { SEARCH_MAPPING } from "../../data/searchMapping";
+import { openQuickSearch } from "../../utils/quickSearchBus";
+import { rankByRelevance } from "../../utils/smartMatch";
 import type { Message, Option, SuggestionItem } from "../../types/chat";
 import TeachModal from "./modals/TeachModal";
 import LearnModal from "./modals/LearnModal";
@@ -51,17 +54,278 @@ const DEFAULT_MESSAGE: Message = {
   text: "Dạ kính chào mấy bà dà! 🤖 Tui là Trợ lý Toshiba đây, mấy mẹ cần tra mã lỗi, sơ đồ ảnh hay muốn dạy dỗ tui cái gì thì gõ vô đây lẹ lên nha!",
 };
 
+// 🚀 Giới hạn số tin nhắn lưu trong lịch sử để tránh phình bộ nhớ & giật lag
+// khi chat lâu ngày (localStorage + re-render toàn bộ danh sách tin nhắn).
+const MAX_HISTORY_LENGTH = 120;
+
+function trimHistory(list: Message[]): Message[] {
+  if (list.length <= MAX_HISTORY_LENGTH) return list;
+  // Luôn giữ lại các tin đã ghim + N tin gần nhất
+  const pinned = list.filter((m) => m.isPinned);
+  const recent = list.slice(-MAX_HISTORY_LENGTH);
+  const recentIds = new Set(recent.map((m) => m.id));
+  const keptPinned = pinned.filter((m) => !recentIds.has(m.id));
+  return [...keptPinned, ...recent];
+}
+
+// ============================================
+// MESSAGE BUBBLE (memo hóa để gõ phím mượt hơn)
+// ============================================
+type MessageBubbleProps = {
+  msg: Message;
+  highlightTerm: string;
+  isCopiedCustomer: boolean;
+  isCopiedTechnical: boolean;
+  onCopyCustomer: (text: string, msgId: string) => void;
+  onCopyTechnical: (text: string, msgId: string) => void;
+  onTogglePin: (msgId: string) => void;
+  onPreviewImage: (url: string) => void;
+};
+
+const MessageBubble = memo(function MessageBubble({
+  msg,
+  highlightTerm,
+  isCopiedCustomer,
+  isCopiedTechnical,
+  onCopyCustomer,
+  onCopyTechnical,
+  onTogglePin,
+  onPreviewImage,
+}: MessageBubbleProps) {
+  const formattedHtml = useMemo(
+    () =>
+      msg.sender === "bot"
+        ? renderFormattedText(msg.text, highlightTerm)
+        : "",
+    [msg.text, msg.sender, highlightTerm],
+  );
+
+  return (
+    <div
+      className="chat-msg-in"
+      style={{
+        alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+        maxWidth: msg.sender === "user" ? "75%" : "100%",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: msg.sender === "user" ? "#0284c7" : "#fff",
+          color: msg.sender === "user" ? "#fff" : "#0f172a",
+          padding: "10px 14px",
+          borderRadius:
+            msg.sender === "user"
+              ? "14px 14px 2px 14px"
+              : "14px 14px 14px 2px",
+          fontSize: 13,
+          lineHeight: 1.6,
+          border: msg.sender === "bot" ? "1px solid #e2e8f0" : "none",
+          width:
+            msg.sender === "user"
+              ? "fit-content"
+              : msg.images && msg.images.length > 0
+                ? "100%"
+                : "fit-content",
+          boxSizing: "border-box",
+        }}
+      >
+        {msg.sender === "bot" ? (
+          <>
+            <div dangerouslySetInnerHTML={{ __html: formattedHtml }} />
+            {msg.images && msg.images.length > 0 && (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns:
+                    msg.images.length === 1
+                      ? "1fr"
+                      : msg.images.length === 2
+                        ? "1fr 1fr"
+                        : "1fr 1fr 1fr",
+                  gap: 8,
+                  marginTop: 10,
+                  width: "100%",
+                }}
+              >
+                {msg.images.map((imgUrl, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => onPreviewImage(imgUrl)}
+                    style={{
+                      position: "relative",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      cursor: "pointer",
+                      aspectRatio: "4/3",
+                      border: "1px solid #cbd5e1",
+                      backgroundColor: "#f1f5f9",
+                      width: "100%",
+                    }}
+                  >
+                    <img
+                      src={imgUrl}
+                      alt={`Ảnh ${idx + 1}`}
+                      loading="lazy"
+                      decoding="async"
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            {msg.videoUrl && (
+              <button
+                type="button"
+                onClick={() => window.open(msg.videoUrl, "_blank")}
+                style={{
+                  marginTop: 8,
+                  background: "#dc2626",
+                  color: "#fff",
+                  border: "none",
+                  padding: "6px 12px",
+                  borderRadius: 6,
+                  fontSize: 11,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                }}
+              >
+                🎬 Xem Video Hướng Dẫn ➔
+              </button>
+            )}
+          </>
+        ) : (
+          msg.text
+        )}
+      </div>
+
+      {/* Action buttons */}
+      {msg.sender === "bot" && (
+        <div
+          style={{
+            display: "flex",
+            gap: 4,
+            marginTop: 4,
+            flexWrap: "wrap",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => onCopyCustomer(msg.text, msg.id)}
+            className="btn-press"
+            style={{
+              background: "#e0f2fe",
+              border: "1px solid #bae6fd",
+              color: "#0369a1",
+              cursor: "pointer",
+              padding: "2px 5px",
+              borderRadius: 4,
+              fontSize: 10,
+              fontWeight: 600,
+            }}
+          >
+            {isCopiedCustomer ? "✓ Đã copy" : "📋 Cho khách"}
+          </button>
+          <button
+            type="button"
+            onClick={() => onCopyTechnical(msg.text, msg.id)}
+            className="btn-press"
+            style={{
+              background: "#f1f5f9",
+              border: "1px solid #cbd5e1",
+              color: "#334155",
+              cursor: "pointer",
+              padding: "2px 5px",
+              borderRadius: 4,
+              fontSize: 10,
+              fontWeight: 600,
+            }}
+          >
+            {isCopiedTechnical ? "✓ Đã copy" : "🛠️ Kỹ thuật"}
+          </button>
+          <button
+            type="button"
+            onClick={() => onTogglePin(msg.id)}
+            className="btn-press"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              opacity: msg.isPinned ? 1 : 0.4,
+            }}
+          >
+            {msg.isPinned ? "⭐" : "☆"}
+          </button>
+        </div>
+      )}
+
+      {/* Options */}
+      {msg.options && msg.options.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            marginTop: 8,
+          }}
+        >
+          {msg.options.map((opt, idx) => {
+            const isTeach = opt.label.includes("DẠY");
+            return (
+              <button
+                key={idx}
+                type="button"
+                className="btn-press"
+                onClick={(e) => {
+                  e.preventDefault();
+                  opt.action();
+                }}
+                style={{
+                  backgroundColor: isTeach ? "#10b981" : "#fff",
+                  color: isTeach ? "#fff" : "#0369a1",
+                  border: isTeach ? "1px solid #34d399" : "1px solid #bae6fd",
+                  padding: isTeach ? "10px 14px" : "8px 12px",
+                  borderRadius: 8,
+                  fontSize: isTeach ? 13 : 12,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  textAlign: "left",
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+});
+
 // ============================================
 // MAIN COMPONENT
 // ============================================
 export default function ChatBotWidget() {
   const navigate = useNavigate();
+  const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // --- State ---
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 640);
   const [isOpen, setIsOpen] = useState(true);
+  // Ở các trang có sẵn nút "kính lúp tìm kiếm nhanh" (ErrorDetailPage,
+  // ErrorListPage) 2 nút nổi góc dưới phải sẽ đè lên nhau → gộp lại thành
+  // 1 nút duy nhất: bấm vào sẽ "bung ra" 2 lựa chọn thay vì mở thẳng chat.
+  const [fabExpanded, setFabExpanded] = useState(false);
+  const hasQuickSearch = /^\/error-(detail|list)\//.test(location.pathname);
+  // Đổi trang thì thu gọn lại menu bung ra, tránh còn sót lại trạng thái cũ
+  useEffect(() => {
+    setFabExpanded(false);
+  }, [location.pathname]);
   const [isMaximized, setIsMaximized] = useState(false);
   const [input, setInput] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -71,21 +335,34 @@ export default function ChatBotWidget() {
     "PINNED" | "CALC" | "COMPARE" | "LEARN" | "TEACH" | null
   >(null);
   const [teachKeyword, setTeachKeyword] = useState("");
+  const [isBotTyping, setIsBotTyping] = useState(false);
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem("chat_history");
-      return saved ? JSON.parse(saved) : [DEFAULT_MESSAGE];
+      const parsed = saved ? JSON.parse(saved) : [DEFAULT_MESSAGE];
+      return trimHistory(parsed);
     } catch {
       return [DEFAULT_MESSAGE];
     }
   });
+
+  // 🚀 Chỉ cập nhật (debounce) sau khi ngừng gõ ~250ms, tránh việc format lại
+  // toàn bộ lịch sử chat (regex + markdown) trên MỌI phím bấm gây giật lag.
+  const [debouncedInput, setDebouncedInput] = useState("");
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedInput(input), 250);
+    return () => clearTimeout(t);
+  }, [input]);
 
   // --- Hooks ---
   const { learnedList, deleteKnowledge, exportToFile } = useFirestore();
   const { timerSeconds } = useTimer();
 
   // --- Computed ---
-  const pinnedMessages = messages.filter((m) => m.isPinned);
+  const pinnedMessages = useMemo(
+    () => messages.filter((m) => m.isPinned),
+    [messages],
+  );
 
   // --- Effects ---
   useEffect(() => {
@@ -117,7 +394,9 @@ export default function ChatBotWidget() {
 
   // --- Helpers ---
   const addMessage = (msg: Omit<Message, "id">) => {
-    setMessages((prev) => [...prev, { ...msg, id: Date.now().toString() }]);
+    setMessages((prev) =>
+      trimHistory([...prev, { ...msg, id: Date.now().toString() }]),
+    );
   };
 
   const addBotMessage = (
@@ -126,7 +405,9 @@ export default function ChatBotWidget() {
     images?: string[],
     videoUrl?: string,
   ) => {
+    setIsBotTyping(true);
     setTimeout(() => {
+      setIsBotTyping(false);
       addMessage({ sender: "bot", text, options, images, videoUrl });
     }, 200);
   };
@@ -136,30 +417,39 @@ export default function ChatBotWidget() {
     if (isMobile) setIsOpen(false);
   };
 
-  const handleCopyForCustomer = (text: string, msgId: string) => {
+  const handleCopyForCustomer = useCallback((text: string, msgId: string) => {
     const clean = cleanTextForCopy(text);
     navigator.clipboard.writeText(
       `Dạ Toshiba xin hướng dẫn anh/chị ạ:\n\n${clean}\n\nNếu cần hỗ trợ thêm, anh/chị liên hệ lại tổng đài 1800 1529 nhé!`,
     );
     setCopiedId(`cust_${msgId}`);
     setTimeout(() => setCopiedId(null), 2000);
-  };
+  }, []);
 
-  const handleCopyTechnical = (text: string, msgId: string) => {
+  const handleCopyTechnical = useCallback((text: string, msgId: string) => {
     navigator.clipboard.writeText(cleanTextForCopy(text));
     setCopiedId(`tech_${msgId}`);
     setTimeout(() => setCopiedId(null), 2000);
-  };
+  }, []);
 
-  const togglePinMessage = (msgId: string) => {
+  const togglePinMessage = useCallback((msgId: string) => {
     setMessages((prev) =>
       prev.map((m) => (m.id === msgId ? { ...m, isPinned: !m.isPinned } : m)),
     );
-  };
+  }, []);
+
+  const handlePreviewImage = useCallback((url: string) => {
+    setPreviewImage(url);
+  }, []);
 
   const handleClearHistory = () => {
     localStorage.removeItem("chat_history");
-    setMessages([{ ...DEFAULT_MESSAGE, id: Date.now().toString() }]);
+    const freshMessage: Message = {
+      id: Date.now().toString(),
+      sender: "bot",
+      text: DEFAULT_MESSAGE.text,
+    };
+    setMessages([freshMessage]);
   };
 
   // --- Diagnosis Tree ---
@@ -221,7 +511,6 @@ export default function ChatBotWidget() {
   };
 
   const displayImageResult = (img: DeviceImageItem) => {
-    addMessage({ sender: "user", text: img.title });
     addBotMessage(
       `### 🖼️ ${img.title.toUpperCase()}\n---\n**Mô tả:** ${img.description}`,
       [
@@ -235,7 +524,7 @@ export default function ChatBotWidget() {
   };
 
   // --- Smart Suggestions ---
-  const smartSuggestions: SuggestionItem[] = (() => {
+  const smartSuggestions: SuggestionItem[] = useMemo(() => {
     const q = cleanString(input);
     if (q.length < 2) return [];
     const results: SuggestionItem[] = [];
@@ -269,7 +558,99 @@ export default function ChatBotWidget() {
     });
 
     return results.slice(0, 5);
-  })();
+  }, [input, learnedList]);
+
+  // 🧠 Gộp tất cả nguồn dữ liệu (mã lỗi, kiến thức có sẵn, kiến thức mấy má
+  // dạy, sách HDSD) thành 1 danh sách chung, dùng để "đoán ý" bằng
+  // rankByRelevance khi cách dò từ khóa y hệt ở trên không ra kết quả nào —
+  // xem thêm src/utils/smartMatch.ts.
+  type SmartCandidate = {
+    text: string;
+    icon: string;
+    label: string;
+    action: () => void;
+  };
+
+  const buildSmartCandidates = useCallback((): SmartCandidate[] => {
+    const list: SmartCandidate[] = [];
+
+    errors.forEach((item) => {
+      list.push({
+        text: [item.code, item.title, item.description]
+          .filter(Boolean)
+          .join(" "),
+        icon: "🚀",
+        label: `${item.code} — ${item.title}`,
+        action: () => handleGoToErrorPage(item),
+      });
+    });
+
+    chatbotKnowledge.forEach((k) => {
+      list.push({
+        text: [k.title, (k.keywords || []).join(" "), k.answer]
+          .filter(Boolean)
+          .join(" "),
+        icon: "📌",
+        label: k.title || "Xem chi tiết",
+        action: () =>
+          addBotMessage(
+            k.answer,
+            k.link
+              ? [
+                  {
+                    label: "🔗 Xem chi tiết",
+                    action: () => window.open(k.link, "_blank"),
+                  },
+                ]
+              : undefined,
+          ),
+      });
+    });
+
+    learnedList.forEach((item) => {
+      list.push({
+        text: [item.title, item.keywords.join(" "), item.answer]
+          .filter(Boolean)
+          .join(" "),
+        icon: "☁️",
+        label: item.title,
+        action: () =>
+          addBotMessage(
+            `### ☁️ [BÀI MẤY MÁ DẠY NÈ] ${item.title.toUpperCase()}\n---\n${item.answer}`,
+            item.videoUrl
+              ? [
+                  {
+                    label: "🎬 Mở Video",
+                    action: () => window.open(item.videoUrl, "_blank"),
+                  },
+                ]
+              : undefined,
+            item.imageUrl ? [item.imageUrl] : undefined,
+            item.videoUrl,
+          ),
+      });
+    });
+
+    (manuals || []).forEach((item: any) => {
+      const displayModel = item.model || item.modelName || item.code || "PDF";
+      const displayTitle = item.title || item.name || "Sách HDSD";
+      const pdfLink = item.pdfUrl || item.link || item.url || item.file;
+      list.push({
+        text: [displayModel, displayTitle, item.category]
+          .filter(Boolean)
+          .join(" "),
+        icon: "📖",
+        label: displayTitle,
+        action: () => {
+          if (pdfLink) window.open(pdfLink, "_blank");
+          else navigate(`/manuals?search=${encodeURIComponent(displayModel)}`);
+        },
+      });
+    });
+
+    return list;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [learnedList]);
 
   // --- Handle Send ---
   const handleSend = (textToSend?: string) => {
@@ -288,10 +669,27 @@ export default function ChatBotWidget() {
       }
     });
 
+    // 🧠 Trước đây chỗ này chỉ nhận diện từ lóng khi người dùng gõ ĐÚNG Y HỆT
+    // cả câu (VD chỉ gõ mỗi "không lên điện") — còn gõ nguyên câu dài kiểu
+    // "máy tôi bị không lên điện luôn nè" thì không nhận ra được. Đổi thành
+    // "câu hỏi có CHỨA cụm từ lóng" để bắt được cả khi cụm từ lóng nằm giữa 1
+    // câu dài hơn — dùng containsWholePhrase (so khớp theo TỪ NGUYÊN VẸN) chứ
+    // không so trên chuỗi dính liền không dấu cách, để tránh 1 từ lóng ngắn
+    // (VD "do") vô tình khớp trúng giữa 1 từ khác không liên quan (VD "random").
+    //
+    // Chỉ áp dụng cho cụm ĐỦ DÀI (>=4 ký tự sau khi bỏ dấu): các từ lóng quá
+    // ngắn kiểu "do" (dơ), "ban" (bẩn) sau khi bỏ dấu sẽ TRÙNG với những từ
+    // tiếng Việt rất thông dụng khác (VD "độ" trong "chế độ"/"nhiệt độ" cũng
+    // thành "do"; "bạn"/"bán"/"bàn" cũng thành "ban") — khớp trúng những từ đó
+    // sẽ trả lời sai chủ đề hoàn toàn dù đúng kỹ thuật là "khớp 1 từ nguyên vẹn".
     const expandedKeywords = [cleanKeyword];
     Object.keys(SEARCH_MAPPING).forEach((key) => {
-      if (SEARCH_MAPPING[key].some((s) => cleanString(s) === cleanKeyword)) {
-        expandedKeywords.push(key);
+      if (
+        SEARCH_MAPPING[key].some(
+          (s) => cleanString(s).length >= 4 && containsWholePhrase(queryText, s),
+        )
+      ) {
+        expandedKeywords.push(cleanString(key));
       }
     });
 
@@ -459,7 +857,7 @@ export default function ChatBotWidget() {
 
       matchedErrors.slice(0, 5).forEach((item: any) => {
         botOptions.push({
-          label: `🚀 [MÃ LỖI ${item.code}] ${item.title}`,
+          label: `🚀 ${item.code}`, // Chỉ lấy tiêu đề, bỏ item.code đi
           action: () => handleGoToErrorPage(item),
         });
       });
@@ -469,7 +867,7 @@ export default function ChatBotWidget() {
         const displayTitle = item.title || item.name || "Sách HDSD";
         const pdfLink = item.pdfUrl || item.link || item.url || item.file;
         botOptions.push({
-          label: `📖 [SÁCH HDSD] ${displayModel} - ${displayTitle}`,
+          label: `📖 ${displayTitle}`,
           action: () => {
             if (pdfLink) window.open(pdfLink, "_blank");
             else
@@ -496,22 +894,53 @@ export default function ChatBotWidget() {
         });
       }
     } else {
-      botResponseText = `### ❌ HỔNG TÌM THẤY "${queryText.toUpperCase()}"!\n---\nBấm nút Dạy Bot bên dưới để nạp kiến thức nha!`;
-      botOptions = [
-        {
-          label: "✨ DẠY TUI CÂU NÀY ĐI",
+      // 🧠 Cách dò từ khóa y hệt ở trên không ra kết quả nào → trước khi đầu
+      // hàng báo "không tìm thấy", thử "đoán ý" bằng cách so điểm từng từ
+      // trong câu hỏi với TOÀN BỘ dữ liệu (không cần đúng thứ tự từ, chấp
+      // nhận gõ sai nhẹ) — xem src/utils/smartMatch.ts. Không phải AI thật,
+      // chỉ là luật + tính điểm, nhưng đỡ hơn nhiều so với báo "không tìm
+      // thấy" cụt ngủn.
+      const smartCandidates = buildSmartCandidates();
+      const guessed = rankByRelevance(
+        queryText,
+        smartCandidates,
+        (c) => c.text,
+        0.45,
+      ).slice(0, 4);
+
+      if (guessed.length > 0) {
+        botResponseText = `### 🤔 CÓ PHẢI MẤY MÁ ĐANG HỎI...\n---\nTui hông chắc 100% (câu hỏi hơi khác kiểu tui hay gặp), nhưng chắc 1 trong mấy cái này nè:`;
+        guessed.forEach(({ item }) => {
+          botOptions.push({
+            label: `${item.icon} ${item.label}`,
+            action: item.action,
+          });
+        });
+        botOptions.push({
+          label: "❌ Hông phải, dạy tui luôn",
           action: () => {
             setTeachKeyword(queryText);
             setActiveModal("TEACH");
           },
-        },
-        { label: "🖼️ Xem thư viện hình ảnh", action: showImageCatalog },
-        { label: "🌳 Chẩn đoán theo hiện tượng", action: startDecisionTree },
-        ...categories.map((cat) => ({
-          label: `${cat.icon} ${cat.name}`,
-          action: () => handleSelectCategory(cat.id, cat.name),
-        })),
-      ];
+        });
+      } else {
+        botResponseText = `### ❌ HỔNG TÌM THẤY "${queryText.toUpperCase()}"!\n---\nBấm nút Dạy Bot bên dưới để nạp kiến thức nha!`;
+        botOptions = [
+          {
+            label: "✨ DẠY TUI CÂU NÀY ĐI",
+            action: () => {
+              setTeachKeyword(queryText);
+              setActiveModal("TEACH");
+            },
+          },
+          { label: "🖼️ Xem thư viện hình ảnh", action: showImageCatalog },
+          { label: "🌳 Chẩn đoán theo hiện tượng", action: startDecisionTree },
+          ...categories.map((cat) => ({
+            label: `${cat.icon} ${cat.name}`,
+            action: () => handleSelectCategory(cat.id, cat.name),
+          })),
+        ];
+      }
     }
 
     addBotMessage(
@@ -539,36 +968,135 @@ export default function ChatBotWidget() {
   // ============================================
   return (
     <>
-      {/* Nút mở chatbot */}
+      {/* Nút mở chatbot. Ở các trang có nút "tìm kiếm nhanh" riêng (ErrorDetailPage,
+          ErrorListPage) — thay vì vẽ 2 nút nổi chồng lên nhau ở góc dưới phải, ta gộp
+          thành 1 nút duy nhất: bấm vào sẽ "bung ra" 2 lựa chọn (Tìm mã lỗi khác / Mở
+          trợ lý chat) xếp thẳng hàng phía trên, bấm ra ngoài hoặc chọn xong thì thu lại. */}
       {!isOpen && (
-        <button
-          type="button"
-          onClick={() => setIsOpen(true)}
+        <div
           style={{
             position: "fixed",
             bottom: 20,
             right: 20,
-            backgroundColor: "#0284c7",
-            color: "#fff",
-            border: "none",
-            borderRadius: isMobile ? 24 : "50%",
-            width: isMobile ? "auto" : 56,
-            height: isMobile ? "auto" : 56,
-            padding: isMobile ? "10px 16px" : 0,
-            fontSize: isMobile ? 13 : 24,
-            fontWeight: 700,
-            cursor: "pointer",
             zIndex: 9999,
-            boxShadow: "0 4px 14px rgba(2,132,199,0.4)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end",
+            gap: 10,
           }}
         >
-          {isMobile ? "🤖 Mở Chatbot" : "💬"}
-        </button>
+          {/* Lớp phủ trong suốt để bấm ra ngoài là tự thu gọn lại */}
+          {fabExpanded && (
+            <div
+              onClick={() => setFabExpanded(false)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: -1,
+              }}
+            />
+          )}
+
+          {hasQuickSearch && fabExpanded && (
+            <>
+              <button
+                type="button"
+                className="chat-scale-in btn-press"
+                onClick={() => {
+                  setFabExpanded(false);
+                  setIsOpen(true);
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  backgroundColor: "#0f172a",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 24,
+                  padding: "10px 16px",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 4px 14px rgba(15,23,42,0.35)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                💬 Mở trợ lý chat
+              </button>
+              <button
+                type="button"
+                className="chat-scale-in btn-press"
+                onClick={() => {
+                  setFabExpanded(false);
+                  openQuickSearch();
+                }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  backgroundColor: "#0284c7",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 24,
+                  padding: "10px 16px",
+                  fontSize: 13,
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  boxShadow: "0 4px 14px rgba(2,132,199,0.4)",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                🔍 Tìm mã lỗi khác
+              </button>
+            </>
+          )}
+
+          <button
+            type="button"
+            className="chat-fab-in btn-press"
+            onClick={() => {
+              if (hasQuickSearch) {
+                setFabExpanded((v) => !v);
+              } else {
+                setIsOpen(true);
+              }
+            }}
+            style={{
+              backgroundColor: "#0284c7",
+              color: "#fff",
+              border: "none",
+              borderRadius: isMobile && !hasQuickSearch ? 24 : "50%",
+              width: isMobile && !hasQuickSearch ? "auto" : 56,
+              height: isMobile && !hasQuickSearch ? "auto" : 56,
+              padding: isMobile && !hasQuickSearch ? "10px 16px" : 0,
+              fontSize: isMobile && !hasQuickSearch ? 13 : 24,
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 4px 14px rgba(2,132,199,0.4)",
+              transform:
+                hasQuickSearch && fabExpanded ? "rotate(45deg)" : "rotate(0)",
+              transition: "transform 0.2s ease, box-shadow 0.15s ease",
+            }}
+            title={
+              hasQuickSearch
+                ? "Mở trợ lý chat hoặc tìm kiếm mã lỗi"
+                : undefined
+            }
+          >
+            {isMobile && !hasQuickSearch
+              ? "🤖 Mở Chatbot"
+              : hasQuickSearch && fabExpanded
+                ? "➕"
+                : "💬"}
+          </button>
+        </div>
       )}
 
       {/* Khung chatbot */}
       {isOpen && (
         <div
+          className={isMobile ? "chat-panel-in-mobile" : "chat-panel-in"}
           style={
             isMobile
               ? {
@@ -596,6 +1124,8 @@ export default function ChatBotWidget() {
                   overflow: "hidden",
                   zIndex: 9999,
                   border: "1px solid #e2e8f0",
+                  transition:
+                    "width 0.25s cubic-bezier(0.22,1,0.36,1), height 0.25s cubic-bezier(0.22,1,0.36,1), bottom 0.25s cubic-bezier(0.22,1,0.36,1)",
                 }
           }
         >
@@ -668,6 +1198,7 @@ export default function ChatBotWidget() {
                 <button
                   key={modal}
                   type="button"
+                  className="btn-press"
                   onClick={() =>
                     setActiveModal(activeModal === modal ? null : modal)
                   }
@@ -687,6 +1218,7 @@ export default function ChatBotWidget() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    transition: "background 0.15s ease, transform 0.1s ease",
                   }}
                 >
                   {icon}
@@ -721,6 +1253,7 @@ export default function ChatBotWidget() {
 
               <button
                 type="button"
+                className="btn-press"
                 onClick={handleClearHistory}
                 title="Dọn dẹp lịch sử"
                 style={{
@@ -737,6 +1270,7 @@ export default function ChatBotWidget() {
               {!isMobile && (
                 <button
                   type="button"
+                  className="btn-press"
                   onClick={() => setIsMaximized(!isMaximized)}
                   title="Phóng to / Thu nhỏ"
                   style={{
@@ -753,6 +1287,7 @@ export default function ChatBotWidget() {
               )}
               <button
                 type="button"
+                className="btn-press"
                 onClick={() => setIsOpen(false)}
                 title="Đóng"
                 style={{
@@ -791,6 +1326,7 @@ export default function ChatBotWidget() {
             <div style={{ display: "flex", gap: 6 }}>
               <button
                 type="button"
+                className="btn-press"
                 onClick={() => setActiveModal("TEACH")}
                 style={{
                   flex: 1,
@@ -808,6 +1344,7 @@ export default function ChatBotWidget() {
                   justifyContent: "center",
                   gap: 4,
                   boxShadow: "0 2px 6px rgba(16,185,129,0.3)",
+                  transition: "transform 0.12s ease, box-shadow 0.12s ease",
                 }}
               >
                 <span>✨</span> Dạy Tuiiii!!
@@ -815,6 +1352,7 @@ export default function ChatBotWidget() {
 
               <button
                 type="button"
+                className="btn-press"
                 onClick={showImageCatalog}
                 style={{
                   flex: 1,
@@ -830,6 +1368,7 @@ export default function ChatBotWidget() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 4,
+                  transition: "transform 0.12s ease",
                 }}
               >
                 <span>🖼️</span> Tra Ảnh
@@ -837,6 +1376,7 @@ export default function ChatBotWidget() {
 
               <button
                 type="button"
+                className="btn-press"
                 onClick={startDecisionTree}
                 style={{
                   flex: 1,
@@ -852,6 +1392,7 @@ export default function ChatBotWidget() {
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 4,
+                  transition: "transform 0.12s ease",
                 }}
               >
                 <span>🌳</span> Chẩn Đoán
@@ -871,6 +1412,7 @@ export default function ChatBotWidget() {
                 <button
                   key={f.id}
                   type="button"
+                  className="btn-press"
                   onClick={() => setSelectedModelFilter(f.id)}
                   style={{
                     background:
@@ -888,6 +1430,7 @@ export default function ChatBotWidget() {
                     fontWeight: 600,
                     cursor: "pointer",
                     whiteSpace: "nowrap",
+                    transition: "background 0.15s ease, color 0.15s ease",
                   }}
                 >
                   {f.label}
@@ -1002,6 +1545,7 @@ export default function ChatBotWidget() {
 
           {/* Messages */}
           <div
+            className="chat-scroll"
             style={{
               flex: 1,
               padding: "12px",
@@ -1013,200 +1557,38 @@ export default function ChatBotWidget() {
             }}
           >
             {messages.map((msg) => (
-              <div
+              <MessageBubble
                 key={msg.id}
-                style={{
-                  alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-                  maxWidth: "92%",
-                }}
-              >
+                msg={msg}
+                highlightTerm={debouncedInput}
+                isCopiedCustomer={copiedId === `cust_${msg.id}`}
+                isCopiedTechnical={copiedId === `tech_${msg.id}`}
+                onCopyCustomer={handleCopyForCustomer}
+                onCopyTechnical={handleCopyTechnical}
+                onTogglePin={togglePinMessage}
+                onPreviewImage={handlePreviewImage}
+              />
+            ))}
+            {isBotTyping && (
+              <div className="chat-msg-in" style={{ alignSelf: "flex-start" }}>
                 <div
+                  className="typing-dots"
                   style={{
-                    backgroundColor: msg.sender === "user" ? "#0284c7" : "#fff",
-                    color: msg.sender === "user" ? "#fff" : "#0f172a",
+                    display: "flex",
+                    gap: 4,
                     padding: "10px 14px",
-                    borderRadius:
-                      msg.sender === "user"
-                        ? "14px 14px 2px 14px"
-                        : "14px 14px 14px 2px",
-                    fontSize: 13,
-                    lineHeight: 1.6,
-                    border: msg.sender === "bot" ? "1px solid #e2e8f0" : "none",
+                    background: "#fff",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "14px 14px 14px 2px",
+                    width: "fit-content",
                   }}
                 >
-                  {msg.sender === "bot" ? (
-                    <>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: renderFormattedText(msg.text, input),
-                        }}
-                      />
-                      {msg.images && msg.images.length > 0 && (
-                        <div
-                          style={{
-                            display: "grid",
-                            gridTemplateColumns:
-                              msg.images.length === 1
-                                ? "1fr"
-                                : "repeat(auto-fit, minmax(130px, 1fr))",
-                            gap: 6,
-                            marginTop: 10,
-                          }}
-                        >
-                          {msg.images.map((imgUrl, idx) => (
-                            <div
-                              key={idx}
-                              onClick={() => setPreviewImage(imgUrl)}
-                              style={{
-                                position: "relative",
-                                borderRadius: 8,
-                                overflow: "hidden",
-                                cursor: "pointer",
-                                height: 110,
-                                border: "1px solid #cbd5e1",
-                              }}
-                            >
-                              <img
-                                src={imgUrl}
-                                alt={`Ảnh ${idx + 1}`}
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  objectFit: "cover",
-                                }}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {msg.videoUrl && (
-                        <button
-                          type="button"
-                          onClick={() => window.open(msg.videoUrl, "_blank")}
-                          style={{
-                            marginTop: 8,
-                            background: "#dc2626",
-                            color: "#fff",
-                            border: "none",
-                            padding: "6px 12px",
-                            borderRadius: 6,
-                            fontSize: 11,
-                            fontWeight: 700,
-                            cursor: "pointer",
-                          }}
-                        >
-                          🎬 Xem Video Hướng Dẫn ➔
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    msg.text
-                  )}
+                  <span />
+                  <span />
+                  <span />
                 </div>
-
-                {/* Action buttons */}
-                {msg.sender === "bot" && (
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 4,
-                      marginTop: 4,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => handleCopyForCustomer(msg.text, msg.id)}
-                      style={{
-                        background: "#e0f2fe",
-                        border: "1px solid #bae6fd",
-                        color: "#0369a1",
-                        cursor: "pointer",
-                        padding: "2px 5px",
-                        borderRadius: 4,
-                        fontSize: 10,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {copiedId === `cust_${msg.id}`
-                        ? "✓ Đã copy"
-                        : "📋 Cho khách"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyTechnical(msg.text, msg.id)}
-                      style={{
-                        background: "#f1f5f9",
-                        border: "1px solid #cbd5e1",
-                        color: "#334155",
-                        cursor: "pointer",
-                        padding: "2px 5px",
-                        borderRadius: 4,
-                        fontSize: 10,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {copiedId === `tech_${msg.id}`
-                        ? "✓ Đã copy"
-                        : "🛠️ Kỹ thuật"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => togglePinMessage(msg.id)}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        opacity: msg.isPinned ? 1 : 0.4,
-                      }}
-                    >
-                      {msg.isPinned ? "⭐" : "☆"}
-                    </button>
-                  </div>
-                )}
-
-                {/* Options */}
-                {msg.options && msg.options.length > 0 && (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 6,
-                      marginTop: 8,
-                    }}
-                  >
-                    {msg.options.map((opt, idx) => {
-                      const isTeach = opt.label.includes("DẠY");
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            opt.action();
-                          }}
-                          style={{
-                            backgroundColor: isTeach ? "#10b981" : "#fff",
-                            color: isTeach ? "#fff" : "#0369a1",
-                            border: isTeach
-                              ? "1px solid #34d399"
-                              : "1px solid #bae6fd",
-                            padding: isTeach ? "10px 14px" : "8px 12px",
-                            borderRadius: 8,
-                            fontSize: isTeach ? 13 : 12,
-                            fontWeight: 700,
-                            cursor: "pointer",
-                            textAlign: "left",
-                          }}
-                        >
-                          {opt.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
               </div>
-            ))}
+            )}
             <div ref={messagesEndRef} />
           </div>
 
@@ -1239,6 +1621,7 @@ export default function ChatBotWidget() {
                 <button
                   key={idx}
                   type="button"
+                  className="chat-msg-in btn-press"
                   onClick={() =>
                     item.type === "ERROR" && item.dataItem
                       ? handleGoToErrorPage(item.dataItem)
@@ -1254,6 +1637,7 @@ export default function ChatBotWidget() {
                     padding: "6px 10px",
                     cursor: "pointer",
                     textAlign: "left",
+                    transition: "background 0.15s ease, border-color 0.15s ease",
                   }}
                 >
                   <span>{item.icon}</span>
@@ -1305,6 +1689,7 @@ export default function ChatBotWidget() {
             <input
               ref={inputRef}
               type="text"
+              className="chat-input-focus"
               placeholder="Nhập mã lỗi, Model máy hoặc từ khóa..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -1315,10 +1700,12 @@ export default function ChatBotWidget() {
                 border: "1px solid #cbd5e1",
                 outline: "none",
                 fontSize: 14,
+                transition: "border-color 0.15s ease, box-shadow 0.15s ease",
               }}
             />
             <button
               type="submit"
+              className="btn-press"
               style={{
                 backgroundColor: "#0284c7",
                 color: "#fff",
@@ -1328,6 +1715,7 @@ export default function ChatBotWidget() {
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: "pointer",
+                transition: "transform 0.1s ease",
               }}
             >
               Gửi
@@ -1339,6 +1727,7 @@ export default function ChatBotWidget() {
       {/* Lightbox */}
       {previewImage && (
         <div
+          className="chat-fade-in"
           onClick={() => setPreviewImage(null)}
           style={{
             position: "fixed",
@@ -1355,6 +1744,7 @@ export default function ChatBotWidget() {
           }}
         >
           <div
+            className="chat-scale-in"
             style={{
               position: "relative",
               maxWidth: "90vw",

@@ -11,6 +11,34 @@ export function cleanString(str: string): string {
     .trim();
 }
 
+// Giong cleanString (bo dau, viet thuong) nhung GIU LAI khoang trang giua
+// cac tu -- dung khi can so khop theo TU NGUYEN VEN (co ranh gioi ro rang)
+// thay vi so khop tren 1 chuoi dinh lien khong dau cach, de tranh nhan nham
+// 1 tu long ngan (VD "do") khop trung vao GIUA 1 tu khac khong lien quan
+// (VD "random") chi vi tinh co trung vai ky tu lien nhau.
+export function cleanKeepSpaces(str: string): string {
+  if (!str) return "";
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Co phai `phrase` xuat hien trong `text` duoi dang (cac) TU NGUYEN VEN,
+// khong bi dinh vao giua 1 tu khac? (so khop co ranh gioi tu, dung
+// cleanKeepSpaces o tren roi boc them khoang trang o 2 dau).
+export function containsWholePhrase(text: string, phrase: string): boolean {
+  const cleanText = ` ${cleanKeepSpaces(text)} `;
+  const cleanPhrase = cleanKeepSpaces(phrase);
+  if (!cleanPhrase) return false;
+  return cleanText.includes(` ${cleanPhrase} `);
+}
+
 // Hàm format text markdown đơn giản thành HTML
 export function renderFormattedText(text: string, highlight?: string): string {
   let formatted = text

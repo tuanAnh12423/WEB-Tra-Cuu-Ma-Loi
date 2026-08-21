@@ -168,6 +168,7 @@ function ReportPage() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder="Ví dụ: Lỗi E3, Đèn nhấp nháy 3 lần, Kêu to khi vắt..."
+              className="chat-input-focus"
               style={{
                 width: "100%",
                 padding: "12px 14px",
@@ -175,8 +176,10 @@ function ReportPage() {
                 border: "1px solid #cbd5e1",
                 outline: "none",
                 fontSize: 14,
-                color: "#f5f6f8", // Màu chữ nhập
+                color: "#0f172a", // Màu chữ nhập (đã sửa: trước đây gần trùng màu nền nên gõ vào không thấy chữ)
+                backgroundColor: "#ffffff",
                 boxSizing: "border-box",
+                transition: "border-color 0.15s ease, box-shadow 0.15s ease",
               }}
               required
             />
@@ -201,6 +204,7 @@ function ReportPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Mô tả hoàn cảnh bị lỗi, nguyên nhân do đâu hoặc các bước bạn đã xử lý thành công..."
+              className="chat-input-focus"
               style={{
                 width: "100%",
                 padding: "12px 14px",
@@ -208,10 +212,12 @@ function ReportPage() {
                 border: "1px solid #cbd5e1",
                 outline: "none",
                 fontSize: 14,
-                color: "#fcfdfe",
+                color: "#0f172a", // Đã sửa: trước đây gần trùng màu nền nên gõ vào không thấy chữ
+                backgroundColor: "#ffffff",
                 boxSizing: "border-box",
                 fontFamily: "inherit",
                 resize: "vertical",
+                transition: "border-color 0.15s ease, box-shadow 0.15s ease",
               }}
               required
             />

@@ -6,6 +6,7 @@ import ErrorDetailPage from "./pages/ErrorDetailPage";
 import ReportPage from "./pages/ReportPage";
 import ManualListPage from "./pages/ManualListPage";
 import RepairSupportPage from "./pages/RepairSupportPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 import ToolsPage from "./pages/toolsPage";
 import ChatbotWidget from "./components/ChatBot";
 
@@ -29,6 +30,7 @@ function OfflineNotification() {
 
   return (
     <div
+      className="offline-banner-in"
       style={{
         position: "fixed",
         top: 0,
@@ -62,7 +64,9 @@ function App() {
           <Route path="/error-detail/:errorId" element={<ErrorDetailPage />} />
           <Route path="/report" element={<ReportPage />} />
           <Route path="/repair-support" element={<RepairSupportPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/manuals" element={<ManualListPage />} />
+          <Route path="/tools" element={<ToolsPage />} />
           <Route path="*" element={<HomePage />} />
         </Routes>
       </div>

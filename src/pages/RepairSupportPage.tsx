@@ -2,6 +2,11 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories } from "../data/errors";
 import { repairErrors } from "../data/repairErrors";
+import {
+  TECHNICIAN_PASSWORD,
+  isTechnicianAuthed,
+  setTechnicianAuthed,
+} from "../utils/technicianAuth";
 
 function removeVietnameseTones(str: string): string {
   return str
@@ -13,7 +18,151 @@ function removeVietnameseTones(str: string): string {
     .trim();
 }
 
+// 🔒 CỔNG XÁC THỰC: chặn truy cập thẳng bằng URL /repair-support mà không
+// qua màn hình nhập mật khẩu ở Trang chủ. Trước đây route này hoàn toàn
+// không kiểm tra gì cả, nên ai gõ thẳng địa chỉ là vào được luôn.
 function RepairSupportPage() {
+  const navigate = useNavigate();
+  const [isAuthed, setIsAuthed] = useState(() => isTechnicianAuthed());
+  const [gatePass, setGatePass] = useState("");
+  const [gateError, setGateError] = useState("");
+
+  const handleGateSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (gatePass === TECHNICIAN_PASSWORD) {
+      setTechnicianAuthed();
+      setIsAuthed(true);
+    } else {
+      setGateError("❌ Mật khẩu không đúng! Vui lòng thử lại.");
+    }
+  };
+
+  if (!isAuthed) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          minHeight: "100vh",
+          backgroundColor: "#f1f5f9",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 16,
+          boxSizing: "border-box",
+        }}
+      >
+        <div
+          className="chat-scale-in"
+          style={{
+            width: "100%",
+            maxWidth: 380,
+            background: "#ffffff",
+            borderRadius: 14,
+            padding: "24px",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.2)",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
+          <h3
+            style={{
+              margin: "0 0 6px 0",
+              fontSize: 17,
+              fontWeight: 800,
+              color: "#0f172a",
+            }}
+          >
+            XÁC NHẬN KỸ THUẬT VIÊN
+          </h3>
+          <p style={{ margin: "0 0 16px 0", fontSize: 12, color: "#64748b" }}>
+            Trang này chỉ dành cho kỹ thuật viên. Nhập mật khẩu để tiếp tục.
+          </p>
+
+          <form onSubmit={handleGateSubmit}>
+            <input
+              type="password"
+              autoFocus
+              className="chat-input-focus"
+              placeholder="Nhập mật khẩu"
+              value={gatePass}
+              onChange={(e) => setGatePass(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: gateError
+                  ? "2px solid #ef4444"
+                  : "1.5px solid #cbd5e1",
+                outline: "none",
+                fontSize: 14,
+                color: "#0f172a",
+                textAlign: "center",
+                boxSizing: "border-box",
+                marginBottom: 10,
+                transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+              }}
+            />
+
+            {gateError && (
+              <p
+                style={{
+                  margin: "0 0 12px 0",
+                  fontSize: 12,
+                  color: "#ef4444",
+                  fontWeight: 600,
+                }}
+              >
+                {gateError}
+              </p>
+            )}
+
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                type="button"
+                className="btn-press"
+                onClick={() => navigate("/")}
+                style={{
+                  flex: 1,
+                  padding: "9px",
+                  borderRadius: 8,
+                  border: "1px solid #cbd5e1",
+                  background: "#f1f5f9",
+                  color: "#475569",
+                  fontWeight: 600,
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                Về trang chủ
+              </button>
+              <button
+                type="submit"
+                className="btn-press"
+                style={{
+                  flex: 1,
+                  padding: "9px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "#0284c7",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: 12,
+                  cursor: "pointer",
+                }}
+              >
+                Truy cập →
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  return <RepairSupportPageContent />;
+}
+
+function RepairSupportPageContent() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ALL");

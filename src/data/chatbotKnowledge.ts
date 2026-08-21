@@ -7,7 +7,19 @@ export interface KnowledgeItem {
   link?: string; // Link đính kèm nếu có (ví dụ link web/PDF)
 }
 
-export const chatbotKnowledge: KnowledgeItem[] = [
+// 🗂️ Kiến thức bổ sung lấy từ file Hot Key nội bộ (124 dòng — chủ yếu Tủ lạnh
+// + Máy giặt/Sấy) chưa từng có trong database mã lỗi chính thức — xem chi
+// tiết ở src/data/hotkeyKnowledge.ts. Gộp vào đây để chatbot tìm được luôn mà
+// không cần sửa gì thêm ở phần code xử lý tìm kiếm.
+import { hotkeyKnowledge } from "./hotkeyKnowledge";
+// 📖 Kiến thức bổ sung chắt lọc từ sách HDSD chính thức trên website Toshiba
+// VN (Tủ lạnh + Máy giặt/Sấy) — xem chi tiết ở src/data/manualKnowledge.ts.
+import { manualKnowledge } from "./manualKnowledge";
+// 📖 Kiến thức bổ sung ĐỢT 2 — chắt lọc từ các sách HDSD MỚI (thêm vào phần
+// tra cứu Manual đợt trước) — xem chi tiết ở src/data/manualKnowledge2.ts.
+import { manualKnowledge2 } from "./manualKnowledge2";
+
+const baseChatbotKnowledge: KnowledgeItem[] = [
   {
     id: "k1",
     keywords: ["bao hanh", "tong dai", "so dien thoại", "hotline", "lien he"],
@@ -1542,4 +1554,23 @@ export const chatbotKnowledge: KnowledgeItem[] = [
     answer:
       "### 🥺 DẠ EM SẼ HỌC MÀ ĐỪNG MẮNG EM!!!\n---\nEm đang sẵn sàng tiếp thu kiến thức mới đây ạ! 📝✨\n\nHÃY BẤM VÀO **☁️ DẠY BOT (LƯU CLOUD)** ở thanh công cụ phía trên NHA MẤY BÀ DÀ. hoặc gõ theo cú pháp:\n👉 `học: [từ khóa] = [câu trả lời]`",
   },
+  {
+    id: "k101",
+    title: "MÁY GIẶT HƯ HỎNG",
+    keywords: ["maygiathuhong"],
+    answer: "Kiểm tra lại nguồn nước cấp và nguồn điện",
+  },
+  {
+    id: "k102",
+    title: "TỦ LẠNH KHÔNG LẠNH",
+    keywords: ["tulanhhuhong"],
+    answer: "Kiểm tra lại nguồn điện. Ổ điện",
+  },
+];
+
+export const chatbotKnowledge: KnowledgeItem[] = [
+  ...baseChatbotKnowledge,
+  ...hotkeyKnowledge,
+  ...manualKnowledge,
+  ...manualKnowledge2,
 ];

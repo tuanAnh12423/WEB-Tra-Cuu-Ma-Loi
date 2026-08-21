@@ -3,6 +3,9 @@ import { fridgeErrors } from "./errorFridge";
 import { dishWasherError } from "./errorDishWasher";
 import { waterPurifierError } from "./errorWaterPurifier";
 import { airConditionalError } from "./errorAirConditional";
+import { inductionHoodError } from "./errorInductionHood";
+import { riceCookerError } from "./errorRiceCooker";
+import { waterHeaterError } from "./errorWaterHeater";
 
 export type Category = {
   id: string;
@@ -50,6 +53,21 @@ export const categories: Category[] = [
     name: "MÁY LẠNH",
     icon: "🌬️",
   },
+  {
+    id: "inductionHood",
+    name: "BẾP TỪ - HÚT MÙI",
+    icon: "🍳",
+  },
+  {
+    id: "riceCooker",
+    name: "NỒI CƠM ĐIỆN",
+    icon: "🍚",
+  },
+  {
+    id: "waterHeater",
+    name: "MÁY TẮM NÓNG TRỰC TIẾP",
+    icon: "🚿",
+  },
 ];
 
 export const errors: ErrorItem[] = [
@@ -58,4 +76,7 @@ export const errors: ErrorItem[] = [
   ...dishWasherError,
   ...waterPurifierError,
   ...airConditionalError,
+  ...inductionHoodError,
+  ...riceCookerError,
+  ...waterHeaterError,
 ];

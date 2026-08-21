@@ -91,4 +91,59 @@ export const fridgeManuals: ManualItem[] = [
     pdfUrl:
       "https://drive.google.com/file/d/1nJomiS6Y_yWMMzC4gecxY-G_qDi-IR2M/preview",
   },
+  // ==== Bổ sung 20/08/2026: các model chưa có sách HDSD, lấy link PDF TRỰC TIẾP từ toshiba-lifestyle.com/vn ====
+  {
+    id: "mf11",
+    category: "fridge",
+    brand: "TOSHIBA",
+    model: "GR-RF670WI-PGV(A9)-BG",
+    title: "Sách HDSD Tủ lạnh thông minh nhiều cửa TOSHIBA GR-RF670WI-PGV(A9)-BG",
+    pdfUrl:
+      "https://www.toshiba-lifestyle.com/content/dam/toshiba-aem/vn/download/tu-lanh/SHD_RF670.pdf",
+  },
+  {
+    id: "mf12",
+    category: "fridge",
+    brand: "TOSHIBA",
+    model: "GR-RF677WI-PMV(06)-MG",
+    title: "Sách HDSD Tủ lạnh thông minh Side by Side TOSHIBA GR-RF677WI-PMV(06)-MG",
+    pdfUrl:
+      "https://www.toshiba-lifestyle.com/content/dam/toshiba-aem/vn/tu-lanh/tu-lanh-side-by-side/gr-rf677wi-pmv/SHD-RF677.pdf",
+  },
+  {
+    id: "mf13",
+    category: "fridge",
+    brand: "TOSHIBA",
+    model: "GR-RF675WI-PMV(06)-MG",
+    title: "Sách HDSD Tủ lạnh thông minh Side by Side TOSHIBA GR-RF675WI-PMV(06)-MG",
+    pdfUrl:
+      "https://www.toshiba-lifestyle.com/content/dam/toshiba-aem/vn/tu-lanh/tu-lanh-side-by-side/gr-rf675wi-pmv/SHD-RF675.pdf",
+  },
+  {
+    id: "mf14",
+    category: "fridge",
+    brand: "TOSHIBA",
+    model: "GR-RS600WI-PMV(37)-SG, GR-RS600WI-PMV(49)-SL",
+    title: "Sách HDSD Tủ lạnh Inverter Side by Side TOSHIBA GR-RS600WI-PMV(37)-SG, GR-RS600WI-PMV(49)-SL",
+    pdfUrl:
+      "https://www.toshiba-lifestyle.com/content/dam/toshiba-aem/vn/download/tu-lanh/SHD_RS600.pdf",
+  },
+  {
+    id: "mf15",
+    category: "fridge",
+    brand: "TOSHIBA",
+    model: "GR-RT234WE-PMV(52), GR-RT329WE-PMV(52)",
+    title: "Sách HDSD Tủ lạnh ngăn đá trên TOSHIBA GR-RT234WE-PMV(52), GR-RT329WE-PMV(52)",
+    pdfUrl:
+      "https://www.toshiba-lifestyle.com/content/dam/toshiba-aem/vn/download/tu-lanh/SHD_RT234,252,303,329.pdf",
+  },
+  {
+    id: "mf16",
+    category: "fridge",
+    brand: "TOSHIBA",
+    model: "GR-B22VU, GR-B31VU",
+    title: "Sách HDSD Tủ lạnh ngăn đá trên TOSHIBA GR-B22VU, GR-B31VU",
+    pdfUrl:
+      "https://www.toshiba-lifestyle.com/content/dam/toshiba-aem/vn/download/tu-lanh/SDH_B22VP,B22VU,B31VU.pdf",
+  },
 ];
