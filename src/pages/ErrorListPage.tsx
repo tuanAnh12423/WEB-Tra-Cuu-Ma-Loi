@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { categories, errors } from "../data/errors";
 import { onOpenQuickSearch } from "../utils/quickSearchBus";
+import { cleanString, containsWholePhrase } from "../utils/chatUtils";
+import { SEARCH_MAPPING } from "../data/shared/searchMapping";
 
 // Hàm loại bỏ dấu tiếng Việt giúp tìm kiếm chính xác
 function removeVietnameseTones(str: string): string {
@@ -79,6 +81,30 @@ function ErrorListPage() {
     ];
   }, [categoryId]);
 
+  // 🔗 22/08/2026: Mở rộng từ khóa tìm kiếm qua bảng SEARCH_MAPPING (từ lóng/
+  // viết tắt như "lồng ngang", "máy chết ngúm", "611"...) — trước đây chỉ
+  // ChatBot mới hiểu được các từ này, trang tra cứu mã lỗi này gõ y hệt vậy
+  // sẽ không ra kết quả gì. Logic giống hệt ChatBot (index.tsx handleSend):
+  // so khớp NGUYÊN CỤM (containsWholePhrase, chỉ áp dụng cụm >=4 ký tự để
+  // tránh khớp nhầm từ lóng quá ngắn) rồi quy về "key" chuẩn (viết liền,
+  // không dấu) để so với code/title/description đã viết liền không dấu.
+  const expandedSearchKeywords = useMemo(() => {
+    const rawKeyword = searchTerm.trim();
+    if (!rawKeyword) return [];
+    const list = [cleanString(rawKeyword)];
+    Object.keys(SEARCH_MAPPING).forEach((key) => {
+      if (
+        SEARCH_MAPPING[key].some(
+          (s) =>
+            cleanString(s).length >= 4 && containsWholePhrase(rawKeyword, s),
+        )
+      ) {
+        list.push(cleanString(key));
+      }
+    });
+    return list;
+  }, [searchTerm]);
+
   // 2. Hàm lọc mã lỗi (Tích hợp tìm kiếm Tiếng Việt Không Dấu)
   const filteredErrors = useMemo(() => {
     return errors.filter((e) => {
@@ -95,11 +121,25 @@ function ErrorListPage() {
         ? removeVietnameseTones(e.description)
         : "";
 
+      // 🔗 So khớp thêm qua từ khóa đã mở rộng từ SEARCH_MAPPING (viết liền,
+      // không dấu, không khoảng trắng) với code/title/description viết liền.
+      const noSpaceCode = e.code ? cleanString(e.code) : "";
+      const noSpaceTitle = e.title ? cleanString(e.title) : "";
+      const noSpaceDesc = e.description ? cleanString(e.description) : "";
+      const isMappingMatch = expandedSearchKeywords.some(
+        (kw) =>
+          kw.length >= 2 &&
+          (noSpaceCode.includes(kw) ||
+            noSpaceTitle.includes(kw) ||
+            noSpaceDesc.includes(kw)),
+      );
+
       const isSearchMatch =
         cleanKeyword === "" ||
         cleanCode.includes(cleanKeyword) ||
         cleanTitle.includes(cleanKeyword) ||
-        cleanDesc.includes(cleanKeyword);
+        cleanDesc.includes(cleanKeyword) ||
+        isMappingMatch;
 
       // Lọc theo nút Subtype đang chọn
       const selected = selectedSubtype.trim().toLowerCase();
@@ -122,7 +162,7 @@ function ErrorListPage() {
 
       return isCategoryMatch && isSearchMatch && isSubtypeMatch;
     });
-  }, [categoryId, searchTerm, selectedSubtype]);
+  }, [categoryId, searchTerm, selectedSubtype, expandedSearchKeywords]);
 
   return (
     <div

@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories } from "../data/errors";
-import { repairErrors } from "../data/repairErrors";
+import { repairErrors } from "../data/repair/repairErrors";
 import {
   TECHNICIAN_PASSWORD,
   isTechnicianAuthed,
@@ -545,7 +545,7 @@ function RepairSupportPageContent() {
                                     style={{
                                       display: "grid",
                                       gridTemplateColumns:
-                                        "repeat(auto-fill, minmax(160px, 1fr))",
+                                        "repeat(auto-fill, minmax(clamp(150px, 20vw, 230px), 1fr))",
                                       gap: 12,
                                     }}
                                   >
@@ -555,7 +555,7 @@ function RepairSupportPageContent() {
                                         onClick={() => setSelectedImg(imgUrl)}
                                         style={{
                                           width: "100%",
-                                          height: 180,
+                                          height: "clamp(150px, 20vw, 230px)",
                                           borderRadius: 8,
                                           overflow: "hidden",
                                           cursor: "pointer",
@@ -612,7 +612,7 @@ function RepairSupportPageContent() {
                                       style={{
                                         display: "grid",
                                         gridTemplateColumns:
-                                          "repeat(auto-fill, minmax(160px, 1fr))",
+                                          "repeat(auto-fill, minmax(clamp(150px, 20vw, 230px), 1fr))",
                                         gap: 12,
                                         marginTop: 8,
                                       }}
@@ -626,7 +626,7 @@ function RepairSupportPageContent() {
                                             }
                                             style={{
                                               width: "100%",
-                                              height: 180,
+                                              height: "clamp(150px, 20vw, 230px)",
                                               borderRadius: 8,
                                               overflow: "hidden",
                                               cursor: "pointer",
@@ -688,7 +688,7 @@ function RepairSupportPageContent() {
                                       style={{
                                         display: "grid",
                                         gridTemplateColumns:
-                                          "repeat(auto-fill, minmax(160px, 1fr))",
+                                          "repeat(auto-fill, minmax(clamp(150px, 20vw, 230px), 1fr))",
                                         gap: 12,
                                         marginTop: 8,
                                       }}
@@ -702,7 +702,7 @@ function RepairSupportPageContent() {
                                             }
                                             style={{
                                               width: "100%",
-                                              height: 180,
+                                              height: "clamp(150px, 20vw, 230px)",
                                               borderRadius: 8,
                                               overflow: "hidden",
                                               cursor: "pointer",
@@ -764,7 +764,7 @@ function RepairSupportPageContent() {
                                       style={{
                                         display: "grid",
                                         gridTemplateColumns:
-                                          "repeat(auto-fill, minmax(160px, 1fr))",
+                                          "repeat(auto-fill, minmax(clamp(150px, 20vw, 230px), 1fr))",
                                         gap: 12,
                                         marginTop: 8,
                                       }}
@@ -778,7 +778,7 @@ function RepairSupportPageContent() {
                                             }
                                             style={{
                                               width: "100%",
-                                              height: 180,
+                                              height: "clamp(150px, 20vw, 230px)",
                                               borderRadius: 8,
                                               overflow: "hidden",
                                               cursor: "pointer",
@@ -942,7 +942,7 @@ function RepairSupportPageContent() {
                                           onClick={() => setSelectedImg(imgUrl)}
                                           style={{
                                             width: "100%",
-                                            height: 240, // Kích thước ảnh cao 240px rất rõ nét
+                                            height: "clamp(220px, 45vw, 340px)", // To hơn trên máy tính, tự co giãn theo màn hình điện thoại
                                             borderRadius: 8,
                                             overflow: "hidden",
                                             cursor: "pointer",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { modelComparisons } from "../../../data/modelComparisons";
+import { modelComparisons } from "../../../data/shared/modelComparisons";
 
 interface Props {
   onClose: () => void;

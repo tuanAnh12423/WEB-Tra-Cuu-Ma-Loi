@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { categories } from "../data/errors";
 import { manuals } from "../data/manuals";
 import type { ManualItem } from "../data/manuals";
+import { cleanString, cleanKeepSpaces, containsWholePhrase } from "../utils/chatUtils";
+import { SEARCH_MAPPING } from "../data/shared/searchMapping";
 
 function ManualListPage() {
   const navigate = useNavigate();
@@ -33,18 +35,60 @@ function ManualListPage() {
     ),
   );
 
+  // 🔗 22/08/2026: Mở rộng từ khóa tìm kiếm qua bảng SEARCH_MAPPING (từ lóng/
+  // viết tắt như "611", "15f9"...) — trước đây chỉ ChatBot mới hiểu được các
+  // từ này. Đồng thời BỎ DẤU tiếng Việt cho từ khóa gõ vào (trước đây trang
+  // này chỉ .toLowerCase() nên gõ không dấu sẽ không khớp được tiêu đề có
+  // dấu, ví dụ gõ "may giat" sẽ không ra "Máy Giặt").
+  const expandedSearchKeywords = useMemo(() => {
+    const rawKeyword = searchTerm.trim();
+    if (!rawKeyword) return [];
+    const list = [cleanString(rawKeyword)];
+    Object.keys(SEARCH_MAPPING).forEach((key) => {
+      if (
+        SEARCH_MAPPING[key].some(
+          (s) =>
+            cleanString(s).length >= 4 && containsWholePhrase(rawKeyword, s),
+        )
+      ) {
+        list.push(cleanString(key));
+      }
+    });
+    return list;
+  }, [searchTerm]);
+
   // Bộ lọc thông minh 3 cấp: Ngành Hàng -> Hãng -> Model
   const filteredManuals = manuals.filter((m) => {
     const matchesCategory =
       selectedCategory === "all" || m.category === selectedCategory;
     const matchesBrand = selectedBrand === "all" || m.brand === selectedBrand;
 
-    const keyword = searchTerm.trim().toLowerCase();
+    // So khớp không dấu, giữ khoảng trắng (khớp cụm từ như trước đây, chỉ
+    // thêm bỏ dấu để không bị bỏ sót khi gõ không dấu).
+    const keyword = cleanKeepSpaces(searchTerm.trim());
+    const modelClean = cleanKeepSpaces(m.model || "");
+    const titleClean = cleanKeepSpaces(m.title || "");
+    const brandClean = cleanKeepSpaces(m.brand || "");
+
+    // So khớp thêm qua từ khóa đã mở rộng từ SEARCH_MAPPING (viết liền,
+    // không dấu, không khoảng trắng) với model/title/brand viết liền.
+    const noSpaceModel = cleanString(m.model || "");
+    const noSpaceTitle = cleanString(m.title || "");
+    const noSpaceBrand = cleanString(m.brand || "");
+    const isMappingMatch = expandedSearchKeywords.some(
+      (kw) =>
+        kw.length >= 2 &&
+        (noSpaceModel.includes(kw) ||
+          noSpaceTitle.includes(kw) ||
+          noSpaceBrand.includes(kw)),
+    );
+
     const matchesSearch =
       keyword === "" ||
-      m.model.toLowerCase().includes(keyword) ||
-      m.title.toLowerCase().includes(keyword) ||
-      m.brand.toLowerCase().includes(keyword);
+      modelClean.includes(keyword) ||
+      titleClean.includes(keyword) ||
+      brandClean.includes(keyword) ||
+      isMappingMatch;
 
     return matchesCategory && matchesBrand && matchesSearch;
   });

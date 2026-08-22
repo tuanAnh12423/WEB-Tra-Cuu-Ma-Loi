@@ -1,4 +1,4 @@
-import type { RepairErrorItem } from "../repairErrors";
+import type { RepairErrorItem } from "./repairErrors";
 
 export const dishWasherRepairErrors: RepairErrorItem[] = [
   {

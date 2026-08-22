@@ -11,13 +11,28 @@ export interface KnowledgeItem {
 // + Máy giặt/Sấy) chưa từng có trong database mã lỗi chính thức — xem chi
 // tiết ở src/data/hotkeyKnowledge.ts. Gộp vào đây để chatbot tìm được luôn mà
 // không cần sửa gì thêm ở phần code xử lý tìm kiếm.
-import { hotkeyKnowledge } from "./hotkeyKnowledge";
+import { hotkeyKnowledge } from "./knowledge/hotkeyKnowledge";
 // 📖 Kiến thức bổ sung chắt lọc từ sách HDSD chính thức trên website Toshiba
 // VN (Tủ lạnh + Máy giặt/Sấy) — xem chi tiết ở src/data/manualKnowledge.ts.
-import { manualKnowledge } from "./manualKnowledge";
+import { manualKnowledge } from "./knowledge/manualKnowledge";
 // 📖 Kiến thức bổ sung ĐỢT 2 — chắt lọc từ các sách HDSD MỚI (thêm vào phần
 // tra cứu Manual đợt trước) — xem chi tiết ở src/data/manualKnowledge2.ts.
-import { manualKnowledge2 } from "./manualKnowledge2";
+import { manualKnowledge2 } from "./knowledge/manualKnowledge2";
+// 📖 Kiến thức bổ sung ĐỢT 3 — mở rộng tìm kiếm sang Google cho các model mà
+// sách HDSD gốc trên web Toshiba là bản scan ảnh hoặc không có link tải, xem
+// chi tiết ở src/data/manualKnowledge3.ts.
+import { manualKnowledge3 } from "./knowledge/manualKnowledge3";
+// 📖 Kiến thức bổ sung ĐỢT 4 — nốt các model Toshiba còn thiếu (nồi cơm
+// RC-JFM/JH1T, bếp từ IC-20S2/S3/S4PV, cây nước RWF-W1664TV(K1)) + TOÀN BỘ
+// kiến thức MỚI cho sản phẩm mang thương hiệu COMFEE (máy lạnh, máy rửa
+// chén, bếp từ, hút mùi, máy nước nóng, lò vi sóng, hút ẩm, làm đá, hút
+// bụi, quạt, đồ bếp) lấy từ trang chính thức feelcomfee.com/vn — xem chi
+// tiết ở src/data/manualKnowledge4.ts.
+import { manualKnowledge4 } from "./knowledge/manualKnowledge4";
+// 📖 Kiến thức bổ sung ĐỢT 5 — tích hợp toàn bộ dòng Lò vi sóng TOSHIBA (Cơ, Cơ có
+// nướng, Điện tử, Điện tử có nướng) từ toshiba-lifestyle.com/vn — xem chi tiết ở
+// src/data/knowledge/manualKnowledge5.ts.
+import { manualKnowledge5 } from "./knowledge/manualKnowledge5";
 
 const baseChatbotKnowledge: KnowledgeItem[] = [
   {
@@ -1573,4 +1588,7 @@ export const chatbotKnowledge: KnowledgeItem[] = [
   ...hotkeyKnowledge,
   ...manualKnowledge,
   ...manualKnowledge2,
+  ...manualKnowledge3,
+  ...manualKnowledge4,
+  ...manualKnowledge5,
 ];

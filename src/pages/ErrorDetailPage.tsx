@@ -412,8 +412,8 @@ function ErrorDetailPage() {
                           <div
                             onClick={() => setSelectedImg(imgUrl)}
                             style={{
-                              width: 110,
-                              height: 110,
+                              width: "clamp(90px, 26vw, 170px)",
+                              height: "clamp(90px, 26vw, 170px)",
                               borderRadius: 8,
                               overflow: "hidden",
                               border: "2px solid #e1e8ed",
@@ -514,8 +514,8 @@ function ErrorDetailPage() {
                 <div
                   onClick={() => setSelectedImg(imgUrl)}
                   style={{
-                    width: 100,
-                    height: 100,
+                    width: "clamp(80px, 24vw, 150px)",
+                    height: "clamp(80px, 24vw, 150px)",
                     borderRadius: 8,
                     overflow: "hidden",
                     border: "2px solid #eee",

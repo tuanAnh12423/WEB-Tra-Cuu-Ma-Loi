@@ -4,7 +4,7 @@ import {
   SENSOR_OPTIONS,
   COLOR_MAP,
   POWER_ELECTRICAL_DATA,
-} from "../data/toolsData";
+} from "../data/shared/toolsData";
 
 export default function ToolsPage() {
   const navigate = useNavigate();
